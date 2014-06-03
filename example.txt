@@ -1,7 +1,7 @@
-int do_math(int a) {
-  int x = a * 5
-  return x + 3
-}
-
-echo(do_math(11))
-echo(do_math(12))
+begin # example of the simple toy language
+    x = 23;
+    while x > 0 do begin
+        x = x - 1;
+        print(x*x);
+    end;
+end;

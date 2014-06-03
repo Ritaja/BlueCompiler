@@ -1,111 +1,69 @@
+%error-verbose /* instruct bison to generate verbose error messages*/
 %{
-	#include "node.h"
-        #include <cstdio>
-        #include <cstdlib>
-	NBlock *programBlock; /* the top level root node of our final AST */
+#include "astgen.h"
+#define YYDEBUG 1
 
-	extern int yylex();
-	void yyerror(const char *s) { std::printf("Error: %s\n", s);std::exit(1); }
+/* Since the parser must return the AST, it must get a parameter where
+ * the AST can be stored. The type of the parameter will be void*. */
+struct AstElement* astDest;
+extern int yylex();
 %}
 
-/* Represents the many different ways we can access our data */
 %union {
-	Node *node;
-	NBlock *block;
-	NExpression *expr;
-	NStatement *stmt;
-	NIdentifier *ident;
-	NVariableDeclaration *var_decl;
-	std::vector<NVariableDeclaration*> *varvec;
-	std::vector<NExpression*> *exprvec;
-	std::string *string;
-	int token;
+    int val;
+    char op;
+    char* name;
+    struct AstElement* ast; /* this is the new member to store AST elements */
 }
 
-/* Define our terminal symbols (tokens). This should
-   match our tokens.l lex file. We also define the node type
-   they represent.
- */
-%token <string> TIDENTIFIER TINTEGER TDOUBLE
-%token <token> TCEQ TCNE TCLT TCLE TCGT TCGE TEQUAL
-%token <token> TLPAREN TRPAREN TLBRACE TRBRACE TCOMMA TDOT
-%token <token> TPLUS TMINUS TMUL TDIV
-%token <token> TRETURN
-
-/* Define the type of node our nonterminal symbols represent.
-   The types refer to the %union declaration above. Ex: when
-   we call an ident (defined by union type ident) we are really
-   calling an (NIdentifier*). It makes the compiler happy.
- */
-%type <ident> ident
-%type <expr> numeric expr 
-%type <varvec> func_decl_args
-%type <exprvec> call_args
-%type <block> program stmts block
-%type <stmt> stmt var_decl func_decl
-%type <token> comparison
-
-/* Operator precedence for mathematical operators */
-%left TPLUS TMINUS
-%left TMUL TDIV
-
+%token TOKEN_BEGIN TOKEN_END TOKEN_WHILE TOKEN_DO
+%token<name> TOKEN_ID
+%token<val> TOKEN_NUMBER
+%token<op> TOKEN_OPERATOR
+%type<ast> program block statements statement assignment expression whileStmt call
 %start program
 
-%%
+%{
+/* Forward declarations */
+void yyerror(const char* const message);
 
-program : stmts { programBlock = $1; }
-		;
-		
-stmts : stmt { $$ = new NBlock(); $$->statements.push_back($<stmt>1); }
-	  | stmts stmt { $1->statements.push_back($<stmt>2); }
-	  ;
 
-stmt : var_decl | func_decl
-	 | expr { $$ = new NExpressionStatement(*$1); }
-	 | TRETURN expr { $$ = new NReturnStatement(*$2); }
-     ;
-
-block : TLBRACE stmts TRBRACE { $$ = $2; }
-	  | TLBRACE TRBRACE { $$ = new NBlock(); }
-	  ;
-
-var_decl : ident ident { $$ = new NVariableDeclaration(*$1, *$2); }
-		 | ident ident TEQUAL expr { $$ = new NVariableDeclaration(*$1, *$2, $4); }
-		 ;
-		
-func_decl : ident ident TLPAREN func_decl_args TRPAREN block 
-			{ $$ = new NFunctionDeclaration(*$1, *$2, *$4, *$6); delete $4; }
-		  ;
-	
-func_decl_args : /*blank*/  { $$ = new VariableList(); }
-		  | var_decl { $$ = new VariableList(); $$->push_back($<var_decl>1); }
-		  | func_decl_args TCOMMA var_decl { $1->push_back($<var_decl>3); }
-		  ;
-
-ident : TIDENTIFIER { $$ = new NIdentifier(*$1); delete $1; }
-	  ;
-
-numeric : TINTEGER { $$ = new NInteger(atol($1->c_str())); delete $1; }
-		| TDOUBLE { $$ = new NDouble(atof($1->c_str())); delete $1; }
-		;
-	
-expr : ident TEQUAL expr { $$ = new NAssignment(*$<ident>1, *$3); }
-	 | ident TLPAREN call_args TRPAREN { $$ = new NMethodCall(*$1, *$3); delete $3; }
-	 | ident { $<ident>$ = $1; }
-	 | numeric
-         | expr TMUL expr { $$ = new NBinaryOperator(*$1, $2, *$3); }
-         | expr TDIV expr { $$ = new NBinaryOperator(*$1, $2, *$3); }
-         | expr TPLUS expr { $$ = new NBinaryOperator(*$1, $2, *$3); }
-         | expr TMINUS expr { $$ = new NBinaryOperator(*$1, $2, *$3); }
- 	 | expr comparison expr { $$ = new NBinaryOperator(*$1, $2, *$3); }
-     | TLPAREN expr TRPAREN { $$ = $2; }
-	 ;
-	
-call_args : /*blank*/  { $$ = new ExpressionList(); }
-		  | expr { $$ = new ExpressionList(); $$->push_back($1); }
-		  | call_args TCOMMA expr  { $1->push_back($3); }
-		  ;
-
-comparison : TCEQ | TCNE | TCLT | TCLE | TCGT | TCGE;
+%}
 
 %%
+
+program: statement';' { astDest = $1; };
+
+block: TOKEN_BEGIN statements TOKEN_END{ $$ = $2; };
+
+statements: {$$=0;}
+    | statements statement ';' {$$=makeStatement($1, $2);}
+    | statements block';' {$$=makeStatement($1, $2);};
+
+statement: 
+      assignment {$$=$1;}
+    | whileStmt {$$=$1;}
+    | block {$$=$1;}
+    | call {$$=$1;}
+
+assignment: TOKEN_ID '=' expression {$$=makeAssignment($1, $3);}
+
+expression: TOKEN_ID {$$=makeExpByName($1);}
+    | TOKEN_NUMBER {$$=makeExpByNum($1);}
+    | expression TOKEN_OPERATOR expression {$$=makeExp($1, $3, $2);}
+
+whileStmt: TOKEN_WHILE expression TOKEN_DO statement{$$=makeWhile($2, $4);};
+
+call: TOKEN_ID '(' expression ')' {$$=makeCall($1, $3);};
+
+%%
+
+#include "astexec.h"
+#include <stdlib.h>
+
+void yyerror(const char* const message)
+{
+    fprintf(stderr, "Parse error:%s\n", message);
+    exit(1);
+}
+
