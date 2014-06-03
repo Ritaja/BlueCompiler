@@ -8,7 +8,7 @@ struct AstElement
     struct
     {
         int val;
-        char* name;
+        char* name; //only can accept char variable names not long names
         struct
         {
             struct AstElement *left, *right;

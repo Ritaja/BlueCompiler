@@ -64,6 +64,6 @@ call: TOKEN_ID '(' expression ')' {$$=makeCall($1, $3);};
 void yyerror(const char* const message)
 {
     fprintf(stderr, "Parse error:%s\n", message);
-    exit(1);
+    //exit(1);
 }
 

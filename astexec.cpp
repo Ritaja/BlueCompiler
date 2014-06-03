@@ -1,5 +1,6 @@
 #include "astexec.h"
 #include "astgen.h"
+#include <map>
 #include <iostream>
 #include <stdlib.h>
 #include <assert.h>
@@ -9,6 +10,7 @@
 struct ExecEnviron
 {
     int x; /* The value of the x variable, a real language would have some name->value lookup table instead */
+	std::map<char,int>var;
 };
 
 static int execTermExpression(struct ExecEnviron* e, struct AstElement* a);
@@ -64,13 +66,13 @@ static void onlyName(const char* name, const char* reference, const char* kind)
         fprintf(stderr,
             "This language knows only the %s '%s', not '%s'\n",
             kind, reference, name);
-        exit(1);
+        //exit(1);
     }
 }
 
 static void onlyX(const char* name)
 {
-    onlyName(name, "x", "variable");
+    //onlyName(name, "x", "variable"); block for testing remove this
 }
 
 static void onlyPrint(const char* name)
@@ -86,15 +88,25 @@ static int execTermExpression(struct ExecEnviron* e, struct AstElement* a)
     assert(a);
     if(AstElement::ekNumber == a->kind)
     {
-        return a->data.val;
+        //return a->data.val; //return value of new variable after setting it
+		//creates reference if not present else updates variable to new value
+		//required to return the correct value for the correct variable
+		//std::cout<<"Before violation"<<std::endl;
+		//std::cout<<"execTermexp:: "<<(a->data.name)<<"and::"<<a->data.val<<"for ID: "<<&(a->data.name)<<std::endl;
+		//e->var[*(a->data.name)] = a->data.val;
+		
+		return (a->data.val);
     }
     else
     {
         if(AstElement::ekId == a->kind)
         {
-            onlyX(a->data.name);
+            onlyX(a->data.name); //only checks if new variable is defined
             assert(e);
-            return e->x;
+            //return e->x; //returns if of type ID as value is assumed to be defined possible return x[*name]
+			std::cout<<"execTermexp:: "<<e->var[*(a->data.name)]<<"ekID: "<<a->data.name<<std::endl;
+			int temp = e->var[*(a->data.name)];
+			return temp;
         }
     }
     fprintf(stderr, "OOPS: tried to get the value of a non-expression(%d)\n", a->kind);
@@ -118,9 +130,17 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
             return left < right;
         case '>':
             return left > right;
+		case '<=':
+			return left <= right;
+		case '>=':
+			return left >= right;
+		case '==':
+			return left == right;
+		case '!=':
+			return left != right;
         default:
             fprintf(stderr,  "OOPS: Unknown operator:%c\n", a->data.expression.op);
-            exit(1);
+            //exit(1);
     }
     /* no return here, since every switch case returns some value (or bails out) */
 }
@@ -132,7 +152,8 @@ static void execAssign(struct ExecEnviron* e, struct AstElement* a)
     onlyX(a->data.assignment.name);
     assert(e);
     struct AstElement* r = a->data.assignment.right;
-    e->x = dispatchExpression(e, r);
+    //e->x = dispatchExpression(e, r); //this needs to assign new value
+	e->var[*(a->data.assignment.name)] = dispatchExpression(e, r);
 }
 
 static void execWhile(struct ExecEnviron* e, struct AstElement* a)
@@ -149,12 +170,13 @@ static void execWhile(struct ExecEnviron* e, struct AstElement* a)
     }
 }
 
+//has only print defined now
 static void execCall(struct ExecEnviron* e, struct AstElement* a)
 {
     assert(a);
     assert(AstElement::ekCall == a->kind);
     onlyPrint(a->data.call.name);
-    printf("%d\n", dispatchExpression(e, a->data.call.param));
+    printf("%d\n", dispatchExpression(e, a->data.call.param)); //final aim is to return a value change here
 }
 
 static void execStmt(struct ExecEnviron* e, struct AstElement* a)

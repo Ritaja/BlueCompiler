@@ -1,7 +1,9 @@
-begin # example of the simple toy language
-    x = 23;
-    while x > 0 do begin
-        x = x - 1;
-        print(x*x);
-    end;
-end;
+{ # example of the simple language
+    y = 23;
+	x = y - 20;
+    while y>=x do 
+	{
+        y = y - 1;
+        print(y*y);
+    }; #IMP use ; to terminate blocks
+};

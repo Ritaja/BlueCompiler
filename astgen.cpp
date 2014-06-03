@@ -40,7 +40,7 @@ struct AstElement* makeExpByName(char*name)
 {
     //struct AstElement* result = checkAlloc(sizeof(*result));
 	struct AstElement* result = new AstElement();
-    result->kind = AstElement::ekId;
+    result->kind = AstElement::ekId; //check here for value of name then assign maybe
     result->data.name = name;
     return result;
 }
@@ -53,6 +53,7 @@ struct AstElement* makeExp(struct AstElement* left, struct AstElement* right, ch
     result->data.expression.left = left;
     result->data.expression.right = right;
     result->data.expression.op = op;
+	std::cout<<"SCOPE ASTGEN::operator found at: "<<left<<op<<right<<std::endl;
     return result;
 }
 
