@@ -16,11 +16,12 @@ extern int yylex();
     struct AstElement* ast; /* this is the new member to store AST elements */
 }
 
-%token TOKEN_BEGIN TOKEN_END TOKEN_WHILE TOKEN_DO
+%token TOKEN_BEGIN TOKEN_END TOKEN_WHILE TOKEN_DO 
+%token TOKEN_IF TOKEN_ELSE
 %token<name> TOKEN_ID
 %token<val> TOKEN_NUMBER
 %token<op> TOKEN_OPERATOR
-%type<ast> program block statements statement assignment expression whileStmt call
+%type<ast> program block statements statement assignment expression whileStmt call ifStmt
 %start program
 
 %{
@@ -43,6 +44,7 @@ statements: {$$=0;}
 statement: 
       assignment {$$=$1;}
     | whileStmt {$$=$1;}
+	| ifStmt{$$=$1;}
     | block {$$=$1;}
     | call {$$=$1;}
 
@@ -54,6 +56,8 @@ expression: TOKEN_ID {$$=makeExpByName($1);}
 
 whileStmt: TOKEN_WHILE expression TOKEN_DO statement{$$=makeWhile($2, $4);};
 
+ifStmt: TOKEN_IF expression TOKEN_DO statement TOKEN_ELSE TOKEN_DO statement{$$=makeIf($2, $4, $7);};
+
 call: TOKEN_ID '(' expression ')' {$$=makeCall($1, $3);};
 
 %%
@@ -64,6 +68,6 @@ call: TOKEN_ID '(' expression ')' {$$=makeCall($1, $3);};
 void yyerror(const char* const message)
 {
     fprintf(stderr, "Parse error:%s\n", message);
-    //exit(1);
+    exit(1);
 }
 

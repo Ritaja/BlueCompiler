@@ -19,6 +19,7 @@ static void execAssign(struct ExecEnviron* e, struct AstElement* a);
 static void execWhile(struct ExecEnviron* e, struct AstElement* a);
 static void execCall(struct ExecEnviron* e, struct AstElement* a);
 static void execStmt(struct ExecEnviron* e, struct AstElement* a);
+static void execIf(struct ExecEnviron* e, struct AstElement* a);
 
 /* Lookup Array for AST elements which yields values */
 static int(*valExecs[])(struct ExecEnviron* e, struct AstElement* a) =
@@ -42,6 +43,7 @@ static void(*runExecs[])(struct ExecEnviron* e, struct AstElement* a) =
     execWhile,
     execCall,
     execStmt,
+	execIf
 };
 
 /* Dispatches any value expression */
@@ -143,6 +145,7 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
             //exit(1);
     }
     /* no return here, since every switch case returns some value (or bails out) */
+	//check not all control paths return a value
 }
 
 static void execAssign(struct ExecEnviron* e, struct AstElement* a)
@@ -170,6 +173,24 @@ static void execWhile(struct ExecEnviron* e, struct AstElement* a)
     }
 }
 
+//added new
+static void execIf(struct ExecEnviron* e, struct AstElement* a)
+{
+	assert(a);
+	assert(AstElement::ekIf == a->kind);
+	struct AstElement* const c = a->data.ifStatement.cond;
+	struct AstElement* const t = a->data.ifStatement.ifTrue;
+	struct AstElement* const f = a->data.ifStatement.ifFalse;
+	if(dispatchExpression(e, c))
+	{
+		dispatchStatement(e, t);
+	}
+	else
+	{
+		dispatchStatement(e, f);
+	}
+}
+
 //has only print defined now
 static void execCall(struct ExecEnviron* e, struct AstElement* a)
 {
@@ -185,7 +206,7 @@ static void execStmt(struct ExecEnviron* e, struct AstElement* a)
     assert(AstElement::ekStatements == a->kind);
     int i;
 	//traversing of the aray of structures for each statement now its vectors
-	for(i=0; i<a->data.statements.statements.size(); i++)
+	for(i=0; i<(a->data.statements.statements.size()); i++)
     {
 		std::cout<<"size"<<a->data.statements.statements.size()<<std::endl;
         dispatchStatement(e, a->data.statements.statements[i]);
@@ -199,8 +220,8 @@ void execAst(struct ExecEnviron* e, struct AstElement* a)
 
 struct ExecEnviron* createEnv()
 {
-    assert(AstElement::ekLastElement == (sizeof(valExecs)/sizeof(*valExecs)));
-    assert(AstElement::ekLastElement == (sizeof(runExecs)/sizeof(*runExecs)));
+    //assert(AstElement::ekLastElement == (sizeof(valExecs)/sizeof(*valExecs)));
+    //assert(AstElement::ekLastElement == (sizeof(runExecs)/sizeof(*runExecs)));
     //return calloc(1, sizeof(struct ExecEnviron));
 	return new ExecEnviron();
 }

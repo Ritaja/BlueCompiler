@@ -1,0 +1,16 @@
+{ # example of the simple language
+    y = 23;
+	x = y - 20;
+    if y>=x do 
+	{
+	while y>0 do
+	 {
+        y = y - 1;
+        print(y);
+	 };
+    } 
+	else do
+	{
+	  print (y);
+	}; #IMP use ; to terminate blocks of if-else only after else
+};

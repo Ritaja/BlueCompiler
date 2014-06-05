@@ -91,6 +91,16 @@ struct AstElement* makeWhile(struct AstElement* cond, struct AstElement* exec)
     return result;
 }
 
+struct AstElement* makeIf(struct AstElement* cond, struct AstElement* ifTrue, struct AstElement* ifFalse)
+{
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekIf;
+	result->data.ifStatement.cond = cond;
+	result->data.ifStatement.ifTrue = ifTrue;
+	result->data.ifStatement.ifFalse = ifFalse;
+	return result;
+}
+
 struct AstElement* makeCall(char* name, struct AstElement* param)
 {
     //struct AstElement* result = checkAlloc(sizeof(*result));

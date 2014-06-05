@@ -14,7 +14,7 @@ int main()
     //yydebug = 0;
 	//struct AstElement *a = new AstElement;
 	FILE *fp ;
-	fopen_s(&fp,"example.txt","r");
+	fopen_s(&fp,"example3.txt","r");
 	//std::cout<<fp;
 	if (fp==NULL)
 	{
