@@ -10,10 +10,10 @@
 %%
 
 "while" return TOKEN_WHILE;
-"{" return TOKEN_BEGIN;
+"{"   return TOKEN_BEGIN;
 "}"   return TOKEN_END;
-"do"   return TOKEN_DO;
-"if"   return TOKEN_IF;
+"do"  return TOKEN_DO;
+"if"  return TOKEN_IF;
 "else" return TOKEN_ELSE;
 "=="    {yylval.op = *yytext; return TOKEN_OPERATOR;}
 "!="    {yylval.op = *yytext; return TOKEN_OPERATOR;}

@@ -14,11 +14,11 @@ int main()
     //yydebug = 0;
 	//struct AstElement *a = new AstElement;
 	FILE *fp ;
-	fopen_s(&fp,"example3.txt","r");
+	fopen_s(&fp,"example4.txt","r");
 	//std::cout<<fp;
 	if (fp==NULL)
 	{
-		std::cout<<"error";
+		std::cout<<"error no file read!";
 	}
 	yyin=fp;
     yyparse();
@@ -29,11 +29,11 @@ int main()
     execAst(e, astDest);
     freeEnv(e);
 	int x = 23;
-	int y;
 	while(x>0)
 	{
-		x=x-1;
+	
 		std::cout<<"program output:: "<<x*x<<std::endl;
+		x=x-1;
 	}
 	
 	int a;

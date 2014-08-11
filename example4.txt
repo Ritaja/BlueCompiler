@@ -4,13 +4,20 @@
     if (you>=xii) do 
 	{
 	while (you>0) do
-	 {
-        you = you - 1;
-        print(you);
+	 { 
+        print(you*you);
+		you = you - 1;
 	 };
     } 
 	else do
 	{
 	  print (you);
 	}; #IMP use ; to terminate blocks of if-else only after else
+	void funcA(int test)
+	{
+	 x=8;
+	 print(x);
+	};
+	print (xii);
+	funcA(3);
 };
