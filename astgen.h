@@ -6,11 +6,11 @@
 struct AstElement
 {
 	//this enum provides reference lookup for array search in astexec.cpp
-    enum {ekId, ekNumber, ekBinExpression, ekAssignment, ekWhile, ekFunc, ekSignatures, ekSignature, ekCall, ekStatements, ekIf, ekLastElement} kind;
+    enum {ekId, ekNumber, ekBinExpression, ekAssignment, ekWhile, ekFunc, ekSignatures, ekSignature, ekCall, ekStatements, ekIf, ekArray, ekLastElement} kind;
     struct
     {
         int val; //only one value... look for arrays implementation
-        char* name; //only can accept char variable names not long names
+        char* name; 
         struct
         {
             struct AstElement *left, *right;
@@ -62,6 +62,11 @@ struct AstElement
 			char* type;
 			struct AstElement* assignment;
 		}signature;
+		struct
+		{
+			int count;
+			std::vector<struct AstElement *>element;
+		}array;
     } data;
 };
 
@@ -77,4 +82,6 @@ struct AstElement* makeIf(struct AstElement* cond, struct AstElement* ifTrue, st
 struct AstElement* makeFunc(char* name, struct AstElement* signature, struct AstElement* statement);
 struct AstElement* makeSignatures(struct AstElement* result,struct AstElement* signature);
 struct AstElement* makeSignature(char* type,struct AstElement* assignment);
+struct AstElement* makeArray(struct AstElement* result, struct AstElement* expression);
+struct AstElement* makeArray2d(struct AstElement* result, struct AstElement* expression);
 #endif

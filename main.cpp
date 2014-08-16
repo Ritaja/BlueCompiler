@@ -14,7 +14,7 @@ int main()
     //yydebug = 0;
 	//struct AstElement *a = new AstElement;
 	FILE *fp ;
-	fopen_s(&fp,"example4.txt","r");
+	fopen_s(&fp,"example5.txt","r");
 	//std::cout<<fp;
 	if (fp==NULL)
 	{
@@ -28,13 +28,13 @@ int main()
     struct ExecEnviron* e = createEnv();
     execAst(e, astDest);
     freeEnv(e);
-	int x = 23;
+	/*int x = 23;
 	while(x>0)
 	{
 	
 		std::cout<<"program output:: "<<x*x<<std::endl;
 		x=x-1;
-	}
+	}*/
 	
 	int a;
 	std::cin>>a;

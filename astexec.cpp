@@ -11,9 +11,10 @@
 struct ExecEnviron
 {
     int x; /* The value of the x variable, a real language would have some name->value lookup table instead */
-	std::map<char,int>var; //check why we need this
+	std::map<std::string,int>var; //check why we need this
 	std::map<std::string,AstElement*>func;//store the function with signature as key and store the functions
-	std::map<char*,int>funvar;
+	std::vector<int>arr;
+	
 };
 
 static int execTermExpression(struct ExecEnviron* e, struct AstElement* a);
@@ -24,11 +25,10 @@ static void execCall(struct ExecEnviron* e, struct AstElement* a);
 static void execStmt(struct ExecEnviron* e, struct AstElement* a);
 static void execIf(struct ExecEnviron* e, struct AstElement* a);
 static void execFunc(struct ExecEnviron* e, struct AstElement* a);
-static int execSignatures(struct ExecEnviron* e, struct AstElement* a);
-static int execSignature(struct ExecEnviron* e, struct AstElement* a);
 static void execfuncCall(struct ExecEnviron* e, struct AstElement* a);
 static void execPrint(struct ExecEnviron* e, struct AstElement* a);
-static ExecEnviron* retFuncPtr(struct ExecEnviron* e, char* fname);
+static ExecEnviron* execArray(struct ExecEnviron* e, struct AstElement* a);
+
 
 /* Lookup Array for AST elements which yields values */
 static int(*valExecs[])(struct ExecEnviron* e, struct AstElement* a) =
@@ -39,11 +39,12 @@ static int(*valExecs[])(struct ExecEnviron* e, struct AstElement* a) =
     NULL,
     NULL,
     NULL,
-    execSignatures,
-    execSignature,
+	NULL,
+	NULL,
     NULL,
     NULL,
-    NULL
+    NULL,
+	NULL
 };
 
 /* lookup array for non-value AST elements */
@@ -59,7 +60,24 @@ static void(*runExecs[])(struct ExecEnviron* e, struct AstElement* a) =
 	NULL,
     execCall,
     execStmt,
-	execIf
+	execIf,
+	NULL
+};
+
+static ExecEnviron* (*arrExecs[])(struct ExecEnviron* e, struct AstElement* a) =
+{
+    NULL, /* ID and numbers are canonical and */
+    NULL, /* don't need to be executed */
+    NULL, /* a binary expression is not executed */
+	NULL,
+    NULL,
+	NULL,
+	NULL, 
+	NULL,
+    NULL,
+    NULL,
+	NULL,
+	execArray
 };
 
 /* Dispatches any value expression */
@@ -79,6 +97,16 @@ static void dispatchStatement(struct ExecEnviron* e, struct AstElement* a)
 	std::cout<<"dispatchStatement:: "<<std::endl;
     runExecs[a->kind](e, a);
 }
+
+
+static ExecEnviron* dispatchArray(struct ExecEnviron* e, struct AstElement* a)
+{
+	assert(a);
+	std::cout<<"dispatchArray:: "<<arrExecs[a->kind];
+	assert(arrExecs[a->kind]);
+	return arrExecs[a->kind](e, a);
+}
+
 
 static void onlyName(const char* name, const char* reference, const char* kind)
 {
@@ -101,20 +129,25 @@ static void onlyPrint(const char* name)
     onlyName(name, "print", "function");
 }
 
+static ExecEnviron* execArray(struct ExecEnviron* e, struct AstElement* a)
+{
+	for(int i=0;i<(a->data.array.element.size());i++)
+	{
+		e->arr.resize(i+1);
+		e->arr[i]= dispatchExpression(e,a->data.array.element[i]);
+	}
+
+	return e;
+}
+
 static int execTermExpression(struct ExecEnviron* e, struct AstElement* a)
 {
-    /* This function looks ugly because it handles two different kinds of
-     * AstElement. I would refactor it to an execNameExp and execVal
-     * function to get rid of this two if statements. */
+    /* This function handles two different kinds of
+     * AstElement.  */
     assert(a);
     if(AstElement::ekNumber == a->kind)
     {
-        //return a->data.val; //return value of new variable after setting it
-		//creates reference if not present else updates variable to new value
-		//required to return the correct value for the correct variable
-		//std::cout<<"Before violation"<<std::endl;
-		//std::cout<<"execTermexp:: "<<(a->data.name)<<"and::"<<a->data.val<<"for ID: "<<&(a->data.name)<<std::endl;
-		//e->var[*(a->data.name)] = a->data.val;
+        
 		std::cout<<"execTermexp:: value "<<a->data.val<<std::endl;
 		return (a->data.val);
     }
@@ -125,8 +158,8 @@ static int execTermExpression(struct ExecEnviron* e, struct AstElement* a)
             onlyX(a->data.name); //only checks if new variable is defined
             assert(e);
             //return e->x; //returns if of type ID as value is assumed to be defined possible return x[*name]
-			std::cout<<"execTermexp:: "<<e->var[*(a->data.name)]<<"ekID: "<<a->data.name<<std::endl;
-			int temp = e->var[*(a->data.name)];
+			std::cout<<"execTermexp:: "<<e->var[(a->data.name)]<<"  ekID: "<<a->data.name<<std::endl;
+			int temp = e->var[(a->data.name)];
 			return temp;
         }
     }
@@ -164,7 +197,7 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
             //exit(1);
     }
     /* no return here, since every switch case returns some value (or bails out) */
-	//check not all control paths return a value
+	
 }
 
 static void execAssign(struct ExecEnviron* e, struct AstElement* a)
@@ -174,8 +207,8 @@ static void execAssign(struct ExecEnviron* e, struct AstElement* a)
     onlyX(a->data.assignment.name);
     assert(e);
     struct AstElement* r = a->data.assignment.right;
-    //e->x = dispatchExpression(e, r); //this needs to assign new value
-	e->var[*(a->data.assignment.name)] = dispatchExpression(e, r); //check how this works
+    
+	e->var[(a->data.assignment.name)] = dispatchExpression(e, r); //check how this works
 }
 
 static void execWhile(struct ExecEnviron* e, struct AstElement* a)
@@ -192,7 +225,7 @@ static void execWhile(struct ExecEnviron* e, struct AstElement* a)
     }
 }
 
-//added new
+//support for the if statement
 static void execIf(struct ExecEnviron* e, struct AstElement* a)
 {
 	assert(a);
@@ -210,7 +243,7 @@ static void execIf(struct ExecEnviron* e, struct AstElement* a)
 	}
 }
 
-//has only print defined now
+//Need to refactor print handler to update new capabilities.
 static void execCall(struct ExecEnviron* e, struct AstElement* a)
 {
     assert(a);
@@ -236,16 +269,17 @@ static void execfuncCall(struct ExecEnviron* e, struct AstElement* a)
 {
 	std::cout<<"execfuncCall:: function called by name: "<< a->data.call.name << std::endl;
 	AstElement* funcExec = e->func[a->data.call.name];
+	std::cout<<"execfuncCall:: param passed: "<< a->data.call.param << " Number: " << a->data.call.param->kind << std::endl;
+	ExecEnviron* eTmp = dispatchArray(e, a->data.call.param);
 	for (int i=0;i<(funcExec->data.func.signatures->data.signatures.signature.size());i++) //check here for access violation
 	{
 		//most complicated line written. Take deep breath and break down in parts to understand. // check implementation
 		//problem with scope resolution.. check
 		std::cout<<"execfuncCall:: signature size: "<< i << std::endl;
 		std::cout<<"execfuncCall:: assigned to variable: "<< funcExec->data.func.signatures->data.signatures.signature[i]->data.signature.assignment->data.assignment.name << std::endl;
-		std::cout<<"execfuncCall:: param passed: "<< a->data.call.param << " Number: " << a->data.call.param->kind << std::endl;
-		//e->var[*(funcExec->data.signatures.signature[i]->data.signature.assignment->data.assignment.name)] = dispatchExpression(e, a->data.call.param);
-		e->var[*(funcExec->data.func.signatures->data.signatures.signature[i]->data.signature.assignment->data.assignment.name)] = dispatchExpression(e, a->data.call.param);
-		std::cout<<"execfuncCall:: assigned: "<< e->var[*(funcExec->data.func.signatures->data.signatures.signature[i]->data.signature.assignment->data.assignment.name)] << " to signature:: " << *(funcExec->data.func.signatures->data.signatures.signature[i]->data.signature.assignment->data.assignment.name) << std::endl;
+		
+		e->var[(funcExec->data.func.signatures->data.signatures.signature[i]->data.signature.assignment->data.assignment.name)] = eTmp->arr[(funcExec->data.func.signatures->data.signatures.signature.size())-(i+1)];
+		std::cout<<"execfuncCall:: assigned: "<< e->var[(funcExec->data.func.signatures->data.signatures.signature[i]->data.signature.assignment->data.assignment.name)] << " to signature:: " << (funcExec->data.func.signatures->data.signatures.signature[i]->data.signature.assignment->data.assignment.name) << std::endl;
 	}
 	dispatchStatement(e,funcExec->data.func.statements);
 	//after execution of function need to free env from function variable value
@@ -255,7 +289,9 @@ static void execPrint(struct ExecEnviron* e, struct AstElement* a)
 {
 	//logic for non func call, print in our case
 	std::cout<<"execPrint:: param for the print statement: "<< a->data.call.param << std::endl;
-    printf("%d\n", dispatchExpression(e, a->data.call.param)); //final aim is to return a value change here
+	//std::cout<<dispatchArray(e, a->data.call.param)->arr<<std::endl; 
+	std::copy(dispatchArray(e, a->data.call.param)->arr.begin(), dispatchArray(e, a->data.call.param)->arr.end(), std::ostream_iterator<int>(std::cout, " "));
+	std::cout<<" "<<std::endl;
 }
 
 static void execStmt(struct ExecEnviron* e, struct AstElement* a)
@@ -283,28 +319,10 @@ static void execFunc(struct ExecEnviron* e, struct AstElement* a)
 	//func namer is the key and the value is pointer to function structure (entire astelement)
 	e->func[fname]= a;
 	std::cout << "Value entered for key "<< e->func[fname] << std::endl;
-	retFuncPtr(e,fname);
-	//dispatchStatement(e,a->data.func.signatures);
-
+	
 }
 
-static ExecEnviron* retFuncPtr(struct ExecEnviron* e, char* fname)
-{
-	std::cout<<"the value of func pointer is: "<< e->func["funcA"] << std::endl;
-	return e;
-}
 
-static int execSignatures(struct ExecEnviron* e, struct AstElement* a)
-{
-	std::cout<<"for the love of god I do reach here!"<<std::cout;
-	return dispatchExpression(e,a->data.signatures.signature[0]);
-}
-
-static int execSignature(struct ExecEnviron* e, struct AstElement* a)
-{
-	std::cout<<"for the love of god I do reach here 2!"<<std::cout;
-	return dispatchExpression(e,a->data.signature.assignment);
-}
 
 void execAst(struct ExecEnviron* e, struct AstElement* a)
 {
@@ -312,10 +330,7 @@ void execAst(struct ExecEnviron* e, struct AstElement* a)
 }
 
 struct ExecEnviron* createEnv()
-{
-    //assert(AstElement::ekLastElement == (sizeof(valExecs)/sizeof(*valExecs)));
-    //assert(AstElement::ekLastElement == (sizeof(runExecs)/sizeof(*runExecs)));
-    //return calloc(1, sizeof(struct ExecEnviron));
+{ 
 	return new ExecEnviron();
 }
 

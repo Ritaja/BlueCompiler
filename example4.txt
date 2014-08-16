@@ -13,11 +13,13 @@
 	{
 	  print (you);
 	}; #IMP use ; to terminate blocks of if-else only after else
-	void funcA(int test)
+	void funcA(int test,int temp,int tar)
 	{
 	 x=8;
-	 print(x);
+	 print(test);
+	 print(temp);
+	 print(tar);
 	};
 	print (xii);
-	funcA(3);
+	funcA(5,7,4);
 };

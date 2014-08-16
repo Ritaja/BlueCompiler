@@ -17,11 +17,11 @@ extern int yylex();
 }
 
 %token TOKEN_BEGIN TOKEN_END TOKEN_WHILE TOKEN_DO 
-%token TOKEN_IF TOKEN_ELSE
+%token TOKEN_IF TOKEN_ELSE TOKEN_COMMA
 %token<name> TOKEN_ID
 %token<val> TOKEN_NUMBER
 %token<op> TOKEN_OPERATOR
-%type<ast> program block statements statement assignment expression whileStmt call ifStmt func signature signatures
+%type<ast> program block statements statement assignment expression whileStmt call ifStmt func signature signatures array
 %start program
 
 %{
@@ -51,12 +51,16 @@ statement:
 
 assignment: TOKEN_ID '=' expression {$$=makeAssignment($1, $3);}
           | TOKEN_ID {$$=makeAssignment($1);};
-          
-          
+                    
 
 expression: TOKEN_ID {$$=makeExpByName($1);}
     | TOKEN_NUMBER {$$=makeExpByNum($1);}
     | expression TOKEN_OPERATOR expression {$$=makeExp($1, $3, $2);}
+
+array: {$$=0;}
+     | array TOKEN_COMMA expression {$$=makeArray($1,$3);}
+	 | array expression  {$$=makeArray($1,$2);}
+
 
 whileStmt: TOKEN_WHILE '(' expression ')' TOKEN_DO statement{$$=makeWhile($3, $6);};
 
@@ -69,11 +73,12 @@ signatures: {$$=0;}
 		  |'(' ')'{;};
 
 signature: 
-         ',' TOKEN_ID assignment{$$=makeSignature($2,$3);} 
+         TOKEN_COMMA TOKEN_ID assignment{$$=makeSignature($2,$3);} 
          |TOKEN_ID assignment{$$=makeSignature($1,$2);}
 
 
-call: TOKEN_ID '(' expression ')' {$$=makeCall($1, $3);};
+call: TOKEN_ID '(' array ')' {$$=makeCall($1, $3);};
+
 
 %%
 

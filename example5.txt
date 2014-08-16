@@ -1,0 +1,11 @@
+{ # example of the simple language
+	void funcA(int test,int temp,int tar)
+	{
+	 x=8;
+	 print(test);
+	 print(temp);
+	 print(tar);
+	};
+
+	funcA(5,7,4);
+};

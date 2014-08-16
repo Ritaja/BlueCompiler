@@ -54,6 +54,30 @@ struct AstElement* makeExpByNum(int val)
     return result;
 }
 
+
+struct AstElement* makeArray(struct AstElement* result, struct AstElement* expression)
+{
+	
+	if(!result)
+    {
+	      result = new AstElement();
+		  result->kind = AstElement::ekArray;
+		  result->data.array.count=0;
+	}
+	assert(AstElement::ekArray == result->kind);
+	result->data.array.count++;
+	result->data.array.element.resize(result->data.array.count);
+	result->data.array.element[result->data.array.count-1]=expression;
+	std::cout<<"makeArray:: count"<<result->data.array.count<<" Pushed:: "<<result->data.array.element[result->data.array.count-1]->kind<<std::endl;
+	return result;
+}
+
+struct AstElement* makeArray2d(struct AstElement* result)
+{
+	//add reference to the array type here and add rule
+	return result;
+}
+
 struct AstElement* makeExpByName(char*name)
 {
     //struct AstElement* result = checkAlloc(sizeof(*result));
@@ -62,6 +86,8 @@ struct AstElement* makeExpByName(char*name)
     result->data.name = name;
     return result;
 }
+
+
 
 struct AstElement* makeExp(struct AstElement* left, struct AstElement* right, char op)
 {
@@ -128,8 +154,8 @@ struct AstElement* makeCall(char* name, struct AstElement* param)
 	struct AstElement* result = new AstElement();
     result->kind = AstElement::ekCall;
     result->data.call.name = name;
-    result->data.call.param = param;
-	std::cout<<"makeCall:: pushed: "<<std::endl;
+	result->data.call.param = param;
+	std::cout<<"makeCall:: pushed: "<<result->data.call.name<<std::endl;
 	std::cout<<"makeCall:: param: "<< result->data.call.param <<std::endl;
     return result;
 }

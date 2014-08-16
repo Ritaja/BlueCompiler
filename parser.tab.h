@@ -52,9 +52,10 @@ extern int yydebug;
      TOKEN_DO = 261,
      TOKEN_IF = 262,
      TOKEN_ELSE = 263,
-     TOKEN_ID = 264,
-     TOKEN_NUMBER = 265,
-     TOKEN_OPERATOR = 266
+     TOKEN_COMMA = 264,
+     TOKEN_ID = 265,
+     TOKEN_NUMBER = 266,
+     TOKEN_OPERATOR = 267
    };
 #endif
 
@@ -72,7 +73,7 @@ typedef union YYSTYPE
 
 
 /* Line 2058 of yacc.c  */
-#line 76 "parser.tab.h"
+#line 77 "parser.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

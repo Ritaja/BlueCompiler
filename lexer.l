@@ -15,6 +15,7 @@
 "do"  return TOKEN_DO;
 "if"  return TOKEN_IF;
 "else" return TOKEN_ELSE;
+","    return TOKEN_COMMA;
 "=="    {yylval.op = *yytext; return TOKEN_OPERATOR;}
 "!="    {yylval.op = *yytext; return TOKEN_OPERATOR;}
 [a-zA-Z_][a-zA-Z0-9_]* {yylval.name = _strdup(yytext); return TOKEN_ID;}
