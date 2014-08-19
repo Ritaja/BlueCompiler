@@ -1,0 +1,5 @@
+{ # example of the simple language
+	vector Name = (2,3,4,5,5);
+	vector2d Example = [(2,3,4),(3,4,5,6)];
+	vector2d Empty = [()];
+};

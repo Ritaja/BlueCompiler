@@ -12,9 +12,13 @@
 "while" return TOKEN_WHILE;
 "{"   return TOKEN_BEGIN;
 "}"   return TOKEN_END;
+"["   return BOX_OPEN;
+"]"   return BOX_CLOSE;
 "do"  return TOKEN_DO;
 "if"  return TOKEN_IF;
 "else" return TOKEN_ELSE;
+"vector" return TOKEN_VECTOR;
+"vector2d" return TOKEN_VECTOR2d;
 ","    return TOKEN_COMMA;
 "=="    {yylval.op = *yytext; return TOKEN_OPERATOR;}
 "!="    {yylval.op = *yytext; return TOKEN_OPERATOR;}

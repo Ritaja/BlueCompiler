@@ -50,12 +50,16 @@ extern int yydebug;
      TOKEN_END = 259,
      TOKEN_WHILE = 260,
      TOKEN_DO = 261,
-     TOKEN_IF = 262,
-     TOKEN_ELSE = 263,
-     TOKEN_COMMA = 264,
-     TOKEN_ID = 265,
-     TOKEN_NUMBER = 266,
-     TOKEN_OPERATOR = 267
+     BOX_OPEN = 262,
+     BOX_CLOSE = 263,
+     TOKEN_IF = 264,
+     TOKEN_ELSE = 265,
+     TOKEN_COMMA = 266,
+     TOKEN_VECTOR = 267,
+     TOKEN_VECTOR2d = 268,
+     TOKEN_ID = 269,
+     TOKEN_NUMBER = 270,
+     TOKEN_OPERATOR = 271
    };
 #endif
 
@@ -73,7 +77,7 @@ typedef union YYSTYPE
 
 
 /* Line 2058 of yacc.c  */
-#line 77 "parser.tab.h"
+#line 81 "parser.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

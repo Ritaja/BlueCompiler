@@ -16,12 +16,13 @@ extern int yylex();
     struct AstElement* ast; /* this is the new member to store AST elements */
 }
 
-%token TOKEN_BEGIN TOKEN_END TOKEN_WHILE TOKEN_DO 
-%token TOKEN_IF TOKEN_ELSE TOKEN_COMMA
+%token TOKEN_BEGIN TOKEN_END TOKEN_WHILE TOKEN_DO BOX_OPEN BOX_CLOSE
+%token TOKEN_IF TOKEN_ELSE TOKEN_COMMA TOKEN_VECTOR
+%token TOKEN_VECTOR2d
 %token<name> TOKEN_ID
 %token<val> TOKEN_NUMBER
 %token<op> TOKEN_OPERATOR
-%type<ast> program block statements statement assignment expression whileStmt call ifStmt func signature signatures array
+%type<ast> program block statements statement assignment expression whileStmt call ifStmt func signature signatures array vector vector2d vectors
 %start program
 
 %{
@@ -48,6 +49,8 @@ statement:
     | block {$$=$1;}
     | call {$$=$1;}
 	| func {$$=$1;}
+	| vector {$$=$1;}
+	| vector2d {$$=$1;}
 
 assignment: TOKEN_ID '=' expression {$$=makeAssignment($1, $3);}
           | TOKEN_ID {$$=makeAssignment($1);};
@@ -60,6 +63,17 @@ expression: TOKEN_ID {$$=makeExpByName($1);}
 array: {$$=0;}
      | array TOKEN_COMMA expression {$$=makeArray($1,$3);}
 	 | array expression  {$$=makeArray($1,$2);}
+
+vector: TOKEN_VECTOR TOKEN_ID '=' '(' array ')' {$$=makeVector($2,$5);}
+      | TOKEN_VECTOR TOKEN_ID '=' '(' ')' {$$=makeNullVector($2);}
+
+vector2d: TOKEN_VECTOR2d TOKEN_ID '=' BOX_OPEN vectors BOX_CLOSE {$$=makeVector2d($2,$5);}
+
+/*check null vectors creation*/
+vectors: {$$=0;}
+       | vectors TOKEN_COMMA '(' array ')' {$$=makeVectors($1,$4);}
+       | vectors '(' array ')' {$$=makeVectors($1,$3);}
+	   | '('  ')' {$$=makeNullVectors();}
 
 
 whileStmt: TOKEN_WHILE '(' expression ')' TOKEN_DO statement{$$=makeWhile($3, $6);};

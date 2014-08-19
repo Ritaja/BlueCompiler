@@ -72,9 +72,61 @@ struct AstElement* makeArray(struct AstElement* result, struct AstElement* expre
 	return result;
 }
 
-struct AstElement* makeArray2d(struct AstElement* result)
+struct AstElement* makeVector(char* name, struct AstElement* vector)
 {
-	//add reference to the array type here and add rule
+	std::cout<<"MakeVector:: "<<std::endl;
+	struct AstElement* result = new AstElement();
+    result->kind = AstElement::ekVector;
+	result->data.vector.name = name;
+	result->data.vector.array = vector;
+	return result;
+}
+
+struct AstElement* makeNullVector(char* name)
+{
+	std::cout<<"MakeNullVector:: "<<std::endl;
+	struct AstElement* result = new AstElement();
+    result->kind = AstElement::ekVector;
+	result->data.vector.name = name;
+	result->data.vector.array = NULL;
+	return result;
+}
+
+
+struct AstElement* makeVector2d(char* name, struct AstElement* vectors)
+{
+	std::cout<<"MakeVector2d:: "<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekVector2d;
+	result->data.vector2d.name=name;
+	result->data.vector2d.vectors=vectors;
+	return result;
+}
+
+struct AstElement* makeNullVectors()
+{
+	struct AstElement* result = new AstElement();
+	assert(AstElement::ekVectors == result->kind);
+	result->data.vectors.count=0;
+	result->data.vectors.vector.resize(1);
+	result->data.vectors.vector[result->data.vectors.count]=NULL;
+	std::cout<<"MakeNullVectors:: "<<std::endl;
+	return result;
+}
+
+struct AstElement* makeVectors(struct AstElement* result, struct AstElement* array)
+{
+	if(!result)
+    {
+	      result = new AstElement();
+		  result->kind = AstElement::ekVectors;
+		  result->data.vectors.count=0;
+	}
+	assert(AstElement::ekVectors == result->kind);
+	result->data.vectors.count++;
+	result->data.vectors.vector.resize(result->data.vectors.count);
+	result->data.vectors.vector[result->data.vectors.count-1]=array;
+	std::cout<<"MakeVectors:: "<<std::endl;
 	return result;
 }
 
