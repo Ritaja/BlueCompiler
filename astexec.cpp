@@ -10,13 +10,29 @@
 
 struct ExecEnviron
 {
-    int x; /* The value of the x variable, a real language would have some name->value lookup table instead */
-	std::map<std::string,int>var; //check why we need this
-	std::map<std::string,AstElement*>func;//store the function with signature as key and store the functions
+	/* Obsolete structure */
+    int x; 
+
+	/*  The stack for storing Numeric values from AST execution.  */
+	std::map<std::string,int>var; 
+
+	/* The stack for storing function mappings for calls later. */
+	std::map<std::string,AstElement*>func;
+
+	/* The stack for storing numeric arrays.reused as multi signature pass in function calls and dynamic print */
 	std::vector<int>arr;
-	
+
+	/* Obsolete structure */
+	std::map<std::string,std::vector<int>>Vector;
+
+	/* Store current position being acccessed in vector. OBSOLETE */
+	int vectorPosition1;
+
+	/* Store current position being acccessed in vector2d in combo with above. OBSOLETE*/
+	int vectorPosition2;
 };
 
+/* Forward declarations */
 static int execTermExpression(struct ExecEnviron* e, struct AstElement* a);
 static int execBinExp(struct ExecEnviron* e, struct AstElement* a);
 static void execAssign(struct ExecEnviron* e, struct AstElement* a);
@@ -27,7 +43,12 @@ static void execIf(struct ExecEnviron* e, struct AstElement* a);
 static void execFunc(struct ExecEnviron* e, struct AstElement* a);
 static void execfuncCall(struct ExecEnviron* e, struct AstElement* a);
 static void execPrint(struct ExecEnviron* e, struct AstElement* a);
+static int execArrSub(struct ExecEnviron* e,std::vector<int>arrLeft,std::vector<int>arrRight);
+static int execArrAdd(struct ExecEnviron* e,std::vector<int>arrLeft,std::vector<int>arrRight);
 static ExecEnviron* execArray(struct ExecEnviron* e, struct AstElement* a);
+static ExecEnviron* execVector(struct ExecEnviron* e, struct AstElement* a);
+static ExecEnviron* execVectors(struct ExecEnviron* e, struct AstElement* a);
+static ExecEnviron* execVector2d(struct ExecEnviron* e, struct AstElement* a);
 
 
 /* Lookup Array for AST elements which yields values */
@@ -44,6 +65,9 @@ static int(*valExecs[])(struct ExecEnviron* e, struct AstElement* a) =
     NULL,
     NULL,
     NULL,
+	NULL,
+	NULL,
+	NULL,
 	NULL
 };
 
@@ -61,6 +85,9 @@ static void(*runExecs[])(struct ExecEnviron* e, struct AstElement* a) =
     execCall,
     execStmt,
 	execIf,
+	NULL,
+	NULL,
+	NULL,
 	NULL
 };
 
@@ -77,7 +104,10 @@ static ExecEnviron* (*arrExecs[])(struct ExecEnviron* e, struct AstElement* a) =
     NULL,
     NULL,
 	NULL,
-	execArray
+	execArray,
+	execVector,
+	execVectors,
+	execVector2d
 };
 
 /* Dispatches any value expression */
@@ -89,6 +119,7 @@ static int dispatchExpression(struct ExecEnviron* e, struct AstElement* a)
     return valExecs[a->kind](e, a);
 }
 
+/* Dispatches any AST statement execution expression */
 static void dispatchStatement(struct ExecEnviron* e, struct AstElement* a)
 {
     assert(a);
@@ -98,11 +129,11 @@ static void dispatchStatement(struct ExecEnviron* e, struct AstElement* a)
     runExecs[a->kind](e, a);
 }
 
-
+/* Dispatches any array type expression and returns execution environment (or execution stack in theory)*/
 static ExecEnviron* dispatchArray(struct ExecEnviron* e, struct AstElement* a)
 {
 	assert(a);
-	std::cout<<"dispatchArray:: "<<arrExecs[a->kind];
+	std::cout<<"dispatchArray:: "<<a->kind;
 	assert(arrExecs[a->kind]);
 	return arrExecs[a->kind](e, a);
 }
@@ -131,11 +162,79 @@ static void onlyPrint(const char* name)
 
 static ExecEnviron* execArray(struct ExecEnviron* e, struct AstElement* a)
 {
+	//clear array before processing, if array is already filled
+	if (e->arr.size() != 0)
+	{
+	e->arr.clear();
+	}
+	
+	//fill array elements from AST
 	for(int i=0;i<(a->data.array.element.size());i++)
+	{
+		std::cout<<"Size: "<<a->data.array.element.size()<<std::endl;
+		e->arr.resize(i+1);
+		//set the vector element position to lookup (1D).
+		e->vectorPosition1 = i;
+		int value = dispatchExpression(e,a->data.array.element[i]);
+
+		//vector encountered. array is processed further down AST
+		if (value != NULL)
+		{
+			e->arr[i]= value;
+		std::cout<<"Value at: "<<i<<"is "<<e->arr[i]<<std::endl;
+           
+		}
+		
+	}
+
+	return e;
+}
+
+static ExecEnviron* execVector(struct ExecEnviron* e, struct AstElement* a)
+{
+	assert(a->kind == AstElement::ekVector);
+	//store the vector in the environment map named Vector
+	dispatchArray(e,a->data.vector.array);
+	
+	std::string vectorName;
+
+	for(int i=0;i<(e->arr.size());i++)
+	{
+		//store unique names in var by appending positions onto it
+		vectorName = (a->data.vector.name)+std::to_string(i);
+		e->var[vectorName] = e->arr[i];
+
+	}
+	return e;
+}
+
+static ExecEnviron* execVectors(struct ExecEnviron* e, struct AstElement* a)
+{
+	assert(a->kind == AstElement::ekVectors);
+
+	for(int i=0;i<(a->data.vectors.vector.size());i++)
+	{
+	    //dispatchArray(e,a->data.vectors.vector[i]); kind should be arrays
+		std::cout<<"vEl: "<<a->data.vectors.vector[i]->kind;
+	}
+	std::cout<<std::endl;
+	/*for(int i=0;i<(a->data.array.element.size());i++)
 	{
 		e->arr.resize(i+1);
 		e->arr[i]= dispatchExpression(e,a->data.array.element[i]);
-	}
+	}*/
+
+	return e;
+}
+
+static ExecEnviron* execVector2d(struct ExecEnviron* e, struct AstElement* a)
+{
+	assert(a->kind == AstElement::ekVector2d);
+	/*for(int i=0;i<(a->data.array.element.size());i++)
+	{
+		e->arr.resize(i+1);
+		e->arr[i]= dispatchExpression(e,a->data.array.element[i]);
+	}*/
 
 	return e;
 }
@@ -155,23 +254,74 @@ static int execTermExpression(struct ExecEnviron* e, struct AstElement* a)
     {
         if(AstElement::ekId == a->kind)
         {
-            onlyX(a->data.name); //only checks if new variable is defined
+            onlyX(a->data.name); //only checks if new variable is defined but obsolete in evolved code flow reutilise
             assert(e);
-            //return e->x; //returns if of type ID as value is assumed to be defined possible return x[*name]
-			std::cout<<"execTermexp:: "<<e->var[(a->data.name)]<<"  ekID: "<<a->data.name<<std::endl;
-			int temp = e->var[(a->data.name)];
-			return temp;
+			//limitation vectors and variables should have different names.As in all programming languages.
+			
+			if( e->var.find( ((a->data.name)+std::to_string(0)) ) == e->var.end() )
+			{
+
+				//No vectors exist. returns if of type ID as value is assumed to be defined.
+				std::cout<<"execTermexp:: "<<e->var[(a->data.name)]<<"  ekID: "<<a->data.name<<std::endl;
+				int value = e->var[(a->data.name)];
+				return value;
+
+			}
+			else
+			{
+				//vector found. Need to return values.
+				
+				int i=0;
+				
+				do
+				{
+					e->arr.resize(i+1);
+					e->arr[i]=e->var[((a->data.name)+std::to_string(i))];
+					std::cout<<"execTermexpVector:: "<<e->arr[i]<<"  ekID: "<<a->data.name<<std::endl;
+					i++;
+
+				}while( e->var.find( ((a->data.name)+std::to_string(i)) ) != e->var.end() );
+				return NULL;
+
+			}
         }
+		else if(AstElement::ekVector == a->kind)
+		{
+			std::cout<<"reached Here!"<<std::endl;
+		}
     }
     fprintf(stderr, "OOPS: tried to get the value of a non-expression(%d)\n", a->kind);
-    exit(1);
+    //exit(1);
 }
 
 static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 {
     assert(AstElement::ekBinExpression == a->kind);
+	/*if null is returned on either side. it has a vector variable
+	store it in temporary arrays to operate on them.*/
+	std::vector<int>arrLeft;
+	std::vector<int>arrRight;
     const int left = dispatchExpression(e, a->data.expression.left);
+	if(left == NULL)
+		arrLeft = e->arr;
     const int right = dispatchExpression(e, a->data.expression.right);
+	if(left == NULL)
+		arrRight = e->arr;
+
+	if(left == NULL && right == NULL)
+	{
+		/*vector encountered. Support Operation.As with all languages 
+		vetor * and / are impossible to support out of the box.*/
+		switch(a->data.expression.op)
+		{
+			case '+':
+            return execArrAdd(e,arrLeft,arrRight);
+			case '-':
+			return execArrSub(e,arrLeft,arrRight);
+			default:
+            fprintf(stderr,  "OOPS: Unknown operator:%c\n", a->data.expression.op);
+		}
+	}
     switch(a->data.expression.op)
     {
         case '+':
@@ -200,6 +350,36 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 	
 }
 
+static int execArrAdd(struct ExecEnviron* e,std::vector<int>arrLeft,std::vector<int>arrRight)
+{
+	if(arrLeft.size() == arrRight.size())
+	{
+		for(int i=0;i<arrLeft.size();i++)
+		{
+			e->arr[i] = arrLeft[i] + arrRight[i];
+		}
+	}
+	else
+     fprintf(stderr,  "Size of vectors to be added are not identical!");
+
+	return NULL;
+}
+
+static int execArrSub(struct ExecEnviron* e,std::vector<int>arrLeft,std::vector<int>arrRight)
+{
+	if(arrLeft.size() == arrRight.size())
+	{
+		for(int i=0;i<arrLeft.size();i++)
+		{
+			e->arr[i] = arrLeft[i] - arrRight[i];
+		}
+	}
+	else
+     fprintf(stderr,  "Size of vectors to be added are not identical!");
+
+	return NULL;
+}
+
 static void execAssign(struct ExecEnviron* e, struct AstElement* a)
 {
     assert(a);
@@ -207,8 +387,27 @@ static void execAssign(struct ExecEnviron* e, struct AstElement* a)
     onlyX(a->data.assignment.name);
     assert(e);
     struct AstElement* r = a->data.assignment.right;
-    
-	e->var[(a->data.assignment.name)] = dispatchExpression(e, r); //check how this works
+    //this line fucked me!
+	int value = dispatchExpression(e, r);
+	if (value != NULL)
+	{
+		//Not a vector assignment. do a normal one. 
+		e->var[(a->data.assignment.name)] = dispatchExpression(e, r); 
+	}
+	else
+	{
+		//vector assignment. Do operation.
+		std::string vectorName;
+		
+		for(int i=0;i<(e->arr.size());i++)
+		{
+			//store unique names in var by appending positions onto it
+			vectorName = (a->data.assignment.name)+std::to_string(i);
+			e->var[vectorName] = e->arr[i];
+
+		}
+	}
+	
 }
 
 static void execWhile(struct ExecEnviron* e, struct AstElement* a)
@@ -290,7 +489,9 @@ static void execPrint(struct ExecEnviron* e, struct AstElement* a)
 	//logic for non func call, print in our case
 	std::cout<<"execPrint:: param for the print statement: "<< a->data.call.param << std::endl;
 	//std::cout<<dispatchArray(e, a->data.call.param)->arr<<std::endl; 
-	std::copy(dispatchArray(e, a->data.call.param)->arr.begin(), dispatchArray(e, a->data.call.param)->arr.end(), std::ostream_iterator<int>(std::cout, " "));
+	// only pulling array is passed as param... so doesenot understand type vector or anything else
+	ExecEnviron* eTmp = dispatchArray(e, a->data.call.param);
+	std::copy(eTmp->arr.begin(), eTmp->arr.end(), std::ostream_iterator<int>(std::cout, " "));
 	std::cout<<" "<<std::endl;
 }
 
@@ -303,7 +504,16 @@ static void execStmt(struct ExecEnviron* e, struct AstElement* a)
 	for(i=0; i < (a->data.statements.statements.size()); i++)
     {
 		std::cout<<"execStmnt:: size"<<a->data.statements.statements.size()<<std::endl;
-        dispatchStatement(e, a->data.statements.statements[i]);
+		//operator != is not defined for enim types in c++ as of now BE careful
+		if(a->data.statements.statements[i]->kind == AstElement::ekArray||a->data.statements.statements[i]->kind == AstElement::ekVector||a->data.statements.statements[i]->kind == AstElement::ekVectors||a->data.statements.statements[i]->kind == AstElement::ekVector2d)
+		{
+			std::cout<<"execStmnt:KindNext "<<typeid(a->data.statements.statements[i]->kind).name()<<std::endl;
+		    dispatchArray(e, a->data.statements.statements[i]);
+		}
+		else
+		{
+			dispatchStatement(e, a->data.statements.statements[i]);
+		}
     }
 }
 
@@ -326,7 +536,9 @@ static void execFunc(struct ExecEnviron* e, struct AstElement* a)
 
 void execAst(struct ExecEnviron* e, struct AstElement* a)
 {
-    dispatchStatement(e, a);
+
+        dispatchStatement(e, a);
+	
 }
 
 struct ExecEnviron* createEnv()

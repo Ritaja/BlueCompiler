@@ -1,5 +1,12 @@
 { # example of the simple language
+    x=9;
+    print(x);
 	vector Name = (2,3,4,5,5);
-	vector2d Example = [(2,3,4),(3,4,5,6)];
-	vector2d Empty = [()];
+	print (Name);
+	vector Sample = Name;
+	print (Sample);
+	vector y = Sample + Name;
+	print (y);
+	#vector2d Example = [(2,3,4),(3,4,5,6)];
+	#vector2d Empty = [()];
 };

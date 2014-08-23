@@ -74,9 +74,10 @@ struct AstElement* makeArray(struct AstElement* result, struct AstElement* expre
 
 struct AstElement* makeVector(char* name, struct AstElement* vector)
 {
-	std::cout<<"MakeVector:: "<<std::endl;
+	std::cout<<"MakeVector:: name:: "<< name <<std::endl;
 	struct AstElement* result = new AstElement();
     result->kind = AstElement::ekVector;
+	std::cout<<"MakeVector:: kind:: "<<result->kind<<std::endl;
 	result->data.vector.name = name;
 	result->data.vector.array = vector;
 	return result;
@@ -106,7 +107,6 @@ struct AstElement* makeVector2d(char* name, struct AstElement* vectors)
 struct AstElement* makeNullVectors()
 {
 	struct AstElement* result = new AstElement();
-	assert(AstElement::ekVectors == result->kind);
 	result->data.vectors.count=0;
 	result->data.vectors.vector.resize(1);
 	result->data.vectors.vector[result->data.vectors.count]=NULL;
@@ -172,9 +172,9 @@ struct AstElement* makeStatement(struct AstElement* result, struct AstElement* t
     //result->data.statements.statements = realloc(result->data.statements.statements, result->data.statements.count*sizeof(*result->data.statements.statements));
 	result->data.statements.statements.resize(result->data.statements.count);
 	std::cout<<"makeStatement:: no of Statement: "<<result->data.statements.count<<std::endl;
-	std::cout<<"makeStatement:: size of vector statements: "<<result->data.statements.statements.size()<<std::endl;
+	std::cout<<"makeStatement:: kind: "<<result->kind<<std::endl;
     result->data.statements.statements[result->data.statements.count-1] = toAppend;
-	std::cout<<"makeStatement:: pushed: "<<(result->data.statements.statements[result->data.statements.count-1])<<std::endl;
+	std::cout<<"makeStatement:: pushed: "<<(result->data.statements.statements[result->data.statements.count-1])->kind<<std::endl;
     return result;
 }
 

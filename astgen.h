@@ -9,7 +9,7 @@ struct AstElement
     enum {ekId, ekNumber, ekBinExpression, ekAssignment, ekWhile, ekFunc, ekSignatures, ekSignature, ekCall, ekStatements, ekIf, ekArray, ekVector, ekVectors, ekVector2d, ekLastElement} kind;
     struct
     {
-        int val; //only one value... look for arrays implementation
+        int val; //only one value... arrays implementation as a struct refer below
         char* name; 
         struct
         {

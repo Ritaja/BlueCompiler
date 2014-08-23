@@ -66,6 +66,7 @@ array: {$$=0;}
 
 vector: TOKEN_VECTOR TOKEN_ID '=' '(' array ')' {$$=makeVector($2,$5);}
       | TOKEN_VECTOR TOKEN_ID '=' '(' ')' {$$=makeNullVector($2);}
+	  | TOKEN_VECTOR TOKEN_ID '=' expression {$$=makeAssignment($2, $4);}
 
 vector2d: TOKEN_VECTOR2d TOKEN_ID '=' BOX_OPEN vectors BOX_CLOSE {$$=makeVector2d($2,$5);}
 
@@ -73,7 +74,7 @@ vector2d: TOKEN_VECTOR2d TOKEN_ID '=' BOX_OPEN vectors BOX_CLOSE {$$=makeVector2
 vectors: {$$=0;}
        | vectors TOKEN_COMMA '(' array ')' {$$=makeVectors($1,$4);}
        | vectors '(' array ')' {$$=makeVectors($1,$3);}
-	   | '('  ')' {$$=makeNullVectors();}
+	   | vectors '('  ')' {$$=makeNullVectors();}
 
 
 whileStmt: TOKEN_WHILE '(' expression ')' TOKEN_DO statement{$$=makeWhile($3, $6);};
