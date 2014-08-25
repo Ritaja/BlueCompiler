@@ -110,6 +110,7 @@ struct AstElement* makeNullVectors()
 	result->data.vectors.count=0;
 	result->data.vectors.vector.resize(1);
 	result->data.vectors.vector[result->data.vectors.count]=NULL;
+	result->data.vectors.name = NULL;
 	std::cout<<"MakeNullVectors:: "<<std::endl;
 	return result;
 }
@@ -126,6 +127,7 @@ struct AstElement* makeVectors(struct AstElement* result, struct AstElement* arr
 	result->data.vectors.count++;
 	result->data.vectors.vector.resize(result->data.vectors.count);
 	result->data.vectors.vector[result->data.vectors.count-1]=array;
+	result->data.vectors.name = NULL;
 	std::cout<<"MakeVectors:: "<<std::endl;
 	return result;
 }

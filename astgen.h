@@ -74,6 +74,7 @@ struct AstElement
 		}vector;
 		struct
 		{
+			char* name;
 			int count;
 			std::vector<struct AstElement*>vector;
 		}vectors;

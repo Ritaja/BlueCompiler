@@ -69,6 +69,7 @@ vector: TOKEN_VECTOR TOKEN_ID '=' '(' array ')' {$$=makeVector($2,$5);}
 	  | TOKEN_VECTOR TOKEN_ID '=' expression {$$=makeAssignment($2, $4);}
 
 vector2d: TOKEN_VECTOR2d TOKEN_ID '=' BOX_OPEN vectors BOX_CLOSE {$$=makeVector2d($2,$5);}
+        | TOKEN_VECTOR2d TOKEN_ID '=' expression {$$=makeAssignment($2, $4);}
 
 /*check null vectors creation*/
 vectors: {$$=0;}
