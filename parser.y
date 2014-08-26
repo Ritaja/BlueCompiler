@@ -22,7 +22,8 @@ extern int yylex();
 %token<name> TOKEN_ID
 %token<val> TOKEN_NUMBER
 %token<op> TOKEN_OPERATOR
-%type<ast> program block statements statement assignment expression whileStmt call ifStmt func signature signatures array vector vector2d vectors
+%type<ast> program block statements statement assignment expression whileStmt call ifStmt func 
+%type<ast> signature signatures array vector vector2d vectors
 %start program
 
 %{
@@ -54,11 +55,15 @@ statement:
 
 assignment: TOKEN_ID '=' expression {$$=makeAssignment($1, $3);}
           | TOKEN_ID {$$=makeAssignment($1);};
+		  | TOKEN_ID BOX_OPEN TOKEN_NUMBER BOX_CLOSE '=' expression {$$=makeVecAssignment($1, $3, $6);}
+		  | TOKEN_ID BOX_OPEN TOKEN_NUMBER BOX_CLOSE BOX_OPEN TOKEN_NUMBER BOX_CLOSE '=' expression {$$=makeVec2dAssignment($1, $3, $6, $9);}
                     
-
+/* see how to support x=a[]+b[]*/
 expression: TOKEN_ID {$$=makeExpByName($1);}
     | TOKEN_NUMBER {$$=makeExpByNum($1);}
     | expression TOKEN_OPERATOR expression {$$=makeExp($1, $3, $2);}
+	| TOKEN_ID BOX_OPEN TOKEN_NUMBER BOX_CLOSE {$$=makeVec1delement($1, $3);};
+	| TOKEN_ID BOX_OPEN TOKEN_NUMBER BOX_CLOSE BOX_OPEN TOKEN_NUMBER BOX_CLOSE {$$=makeVec2delement($1, $3, $6);};
 
 array: {$$=0;}
      | array TOKEN_COMMA expression {$$=makeArray($1,$3);}

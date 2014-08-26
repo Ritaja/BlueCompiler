@@ -252,3 +252,47 @@ struct AstElement* makeSignature(char* type,struct AstElement* assignment)
 	std::cout<<"\n makeSignature:pushed assignment: "<<result->data.signature.assignment;
 	return result;
 }
+
+/* cretes a vector1d element for element lookup  */
+struct AstElement* makeVec1delement(char* name,int elementPos)
+{
+	struct AstElement* result = new AstElement();
+	result->data.Vec1delement.name = name;
+	result->data.Vec1delement.elementPos = elementPos;
+	result->kind = AstElement::ekVec1delement;
+	return result;
+}
+
+/* cretes a vector2d element for element lookup  */
+struct AstElement* makeVec2delement(char* name, int elementPos1, int elementPos2)
+{
+	struct AstElement* result = new AstElement();
+	result->data.Vec1delement.name = name;
+	result->data.Vec1delement.elementPos = elementPos1;
+	result->data.Vec1delement.elementPos = elementPos2;
+	result->kind = AstElement::ekVec2delement;
+	return result;
+}
+
+/* cretes a structure for vector2d assignment to work with individual elements  */
+struct AstElement* makeVecAssignment(char* name, int elementPos, struct AstElement* right)
+{
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekVecAssignment;
+	result->data.VecAssignment.name = name;
+	result->data.VecAssignment.elementPos1 = elementPos;
+	result->data.VecAssignment.right = right;
+	return result;
+}
+
+/* cretes a structure for vector2d assignment to work with individual elements  */
+struct AstElement* makeVec2dAssignment(char* name, int elementPos1, int elementPos2, struct AstElement* right)
+{
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekVec2dAssignment;
+	result->data.Vec2dAssignment.name = name;
+	result->data.Vec2dAssignment.elementPos1 = elementPos1;
+	result->data.Vec2dAssignment.elementPos2 = elementPos2;
+	result->data.Vec2dAssignment.right = right;
+	return result;
+}

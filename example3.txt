@@ -1,6 +1,6 @@
 { # example of the simple language
-    you = 23;
-	xii = you - 20;
+    you = 5;
+	xii = you - 5;
     if (you>=xii) do 
 	{
 	while (you>0) do

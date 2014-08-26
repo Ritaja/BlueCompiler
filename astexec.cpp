@@ -49,6 +49,11 @@ static ExecEnviron* execArray(struct ExecEnviron* e, struct AstElement* a);
 static ExecEnviron* execVector(struct ExecEnviron* e, struct AstElement* a);
 static ExecEnviron* execVectors(struct ExecEnviron* e, struct AstElement* a);
 static ExecEnviron* execVector2d(struct ExecEnviron* e, struct AstElement* a);
+static int execVec1dEl(struct ExecEnviron* e, struct AstElement* a);
+static int execVec2dEl(struct ExecEnviron* e, struct AstElement* a);
+static void execVecAssign(struct ExecEnviron* e, struct AstElement* a);
+static void execVec2dAssign(struct ExecEnviron* e, struct AstElement* a);
+/* Obsolete function */
 static void display(std::string name,ExecEnviron* e);
 
 
@@ -68,6 +73,10 @@ static int(*valExecs[])(struct ExecEnviron* e, struct AstElement* a) =
     NULL,
 	NULL,
 	NULL,
+	NULL,
+	NULL,
+	execVec1dEl,
+	execVec2dEl,
 	NULL,
 	NULL
 };
@@ -89,7 +98,11 @@ static void(*runExecs[])(struct ExecEnviron* e, struct AstElement* a) =
 	NULL,
 	NULL,
 	NULL,
-	NULL
+	NULL,
+	NULL,
+	NULL,
+	execVecAssign,
+	execVec2dAssign
 };
 
 static ExecEnviron* (*arrExecs[])(struct ExecEnviron* e, struct AstElement* a) =
@@ -108,7 +121,11 @@ static ExecEnviron* (*arrExecs[])(struct ExecEnviron* e, struct AstElement* a) =
 	execArray,
 	execVector,
 	execVectors,
-	execVector2d
+	execVector2d,
+	NULL,
+	NULL,
+	NULL,
+	NULL
 };
 
 /* Dispatches any value expression */
@@ -529,6 +546,19 @@ static void execAssign(struct ExecEnviron* e, struct AstElement* a)
 	
 }
 
+static void execVecAssign(struct ExecEnviron* e, struct AstElement* a)
+{
+	std::string vectorname = a->data.VecAssignment.name;
+	int pos = a->data.VecAssignment.elementPos1;
+
+	e->var[(vectorname+std::to_string(pos))] = dispatchExpression(e,a->data.VecAssignment.right);
+}
+
+static void execVec2dAssign(struct ExecEnviron* e, struct AstElement* a)
+{
+	//TODO::
+}
+
 static void display(std::string name,ExecEnviron* e)
 {
 	
@@ -618,6 +648,7 @@ static void execfuncCall(struct ExecEnviron* e, struct AstElement* a)
 	//after execution of function need to free env from function variable value
 }
 
+/* block for print execution */
 static void execPrint(struct ExecEnviron* e, struct AstElement* a)
 {
 	//logic for non func call, print in our case
@@ -685,7 +716,23 @@ static void execFunc(struct ExecEnviron* e, struct AstElement* a)
 	
 }
 
+/* vector1d element lookup and return from the e->var stack. */
+static int execVec1dEl(struct ExecEnviron* e, struct AstElement* a)
+{
+	std::string vectorName = a->data.Vec1delement.name;
+	int pos = a->data.Vec1delement.elementPos;
+	return e->var[(vectorName+std::to_string(pos))];
+}
 
+/* vector2d element lookup and return the e->var at the specified position. 
+This is the execution stack. */
+static int execVec2dEl(struct ExecEnviron* e, struct AstElement* a)
+{
+	/*std::string vectorName = a->data.Vec1delement.name;
+	int pos = a->data.Vec1delement.elementPos;
+	return e->var[(vectorName+std::to_string(pos))];*/
+	return NULL;
+}
 
 void execAst(struct ExecEnviron* e, struct AstElement* a)
 {

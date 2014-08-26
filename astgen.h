@@ -6,7 +6,7 @@
 struct AstElement
 {
 	//this enum provides reference lookup for array search in astexec.cpp
-    enum {ekId, ekNumber, ekBinExpression, ekAssignment, ekWhile, ekFunc, ekSignatures, ekSignature, ekCall, ekStatements, ekIf, ekArray, ekVector, ekVectors, ekVector2d, ekLastElement} kind;
+    enum {ekId, ekNumber, ekBinExpression, ekAssignment, ekWhile, ekFunc, ekSignatures, ekSignature, ekCall, ekStatements, ekIf, ekArray, ekVector, ekVectors, ekVector2d, ekVec1delement, ekVec2delement, ekVecAssignment, ekVec2dAssignment, ekLastElement} kind;
     struct
     {
         int val; //only one value... arrays implementation as a struct refer below
@@ -83,6 +83,30 @@ struct AstElement
 			char* name;
 			struct AstElement* vectors;
 		}vector2d;
+		struct
+		{
+			char* name;
+			int elementPos;
+		}Vec1delement;
+		struct
+		{
+			char* name;
+			int elementPos1;
+			int elementPos2;
+		}Vec2delement;
+		struct
+		{
+			char* name;
+			int elementPos1;
+			struct AstElement* right;
+		}VecAssignment;
+		struct
+		{
+			char* name;
+			int elementPos1;
+			int elementPos2;
+			struct AstElement* right;
+		}Vec2dAssignment;
     } data;
 };
 
@@ -104,4 +128,8 @@ struct AstElement* makeNullVector(char* name);
 struct AstElement* makeVector2d(char* name, struct AstElement* vectors);
 struct AstElement* makeNullVectors();
 struct AstElement* makeVectors(struct AstElement* result, struct AstElement* array);
+struct AstElement* makeVec1delement(char* name,int elementPos);
+struct AstElement* makeVec2delement(char* name, int elementPos1, int elementPos2);
+struct AstElement* makeVecAssignment(char* name, int elementPos, struct AstElement* right);
+struct AstElement* makeVec2dAssignment(char* name, int elementPos1, int elementPos2, struct AstElement* right);
 #endif
