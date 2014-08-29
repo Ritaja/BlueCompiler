@@ -202,6 +202,18 @@ struct AstElement* makeIf(struct AstElement* cond, struct AstElement* ifTrue, st
 	return result;
 }
 
+struct AstElement* makeElseIf(struct AstElement* condIf, struct AstElement* ifTrue, struct AstElement* condElseIf, struct AstElement* elseIfTrue, struct AstElement* elseIfFalse)
+{
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekElseIf;
+	result->data.elseifStatement.ifcond = condIf;
+	result->data.elseifStatement.ifTrue = ifTrue;
+	result->data.elseifStatement.elseifCond = condElseIf;
+	result->data.elseifStatement.elseifCondTrue = elseIfTrue;
+	result->data.elseifStatement.elseifCondFalse = elseIfFalse;
+	return result;
+}
+
 struct AstElement* makeCall(char* name, struct AstElement* param)
 {
     //struct AstElement* result = checkAlloc(sizeof(*result));

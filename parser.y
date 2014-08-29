@@ -85,7 +85,9 @@ vectors: {$$=0;}
 
 whileStmt: TOKEN_WHILE '(' expression ')' TOKEN_DO statement{$$=makeWhile($3, $6);};
 
+/*if multiple else if support is required create a separate structure*/
 ifStmt: TOKEN_IF  '(' expression ')' TOKEN_DO statement TOKEN_ELSE TOKEN_DO statement{$$=makeIf($3, $6, $9);};
+      | TOKEN_IF  '(' expression ')' TOKEN_DO statement TOKEN_ELSE  TOKEN_IF '(' expression ')' TOKEN_DO statement TOKEN_ELSE TOKEN_DO statement{$$=makeElseIf($3, $6, $10, $13, $16);};
 
 func: TOKEN_ID TOKEN_ID '(' signatures ')' statement {$$=makeFunc($2, $4, $6);};
 

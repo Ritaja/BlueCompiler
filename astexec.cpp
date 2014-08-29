@@ -11,7 +11,7 @@
 struct ExecEnviron
 {
 	/* Obsolete structure */
-    int x; 
+    //int x; 
 
 	/*  The stack for storing Numeric values from AST execution.  */
 	std::map<std::string,int>var; 
@@ -23,11 +23,16 @@ struct ExecEnviron
 	std::vector<int>arr;
 
 	/* The stack to store arrays. */
-	std::map<std::string,std::vector<int>>vectorArr;
+	//std::map<std::string,std::vector<int>>vectorArr;
 
 	/* the FLAG signalls the presence of vector. Hence Reserved. */
-	bool isVector2d; 
+	//bool isVector2d; 
 
+	/* no of elements to be operated on. obsolete */
+	//int noOfElements;
+
+	/* reference to starting name */
+	std::string varName;
 };
 
 /* Forward declarations */
@@ -45,14 +50,18 @@ static void execfuncCall(struct ExecEnviron* e, struct AstElement* a);
 static void execPrint(struct ExecEnviron* e, struct AstElement* a);
 static int execArrSub(struct ExecEnviron* e,std::vector<int>arrLeft,std::vector<int>arrRight);
 static int execArrAdd(struct ExecEnviron* e,std::vector<int>arrLeft,std::vector<int>arrRight);
-static ExecEnviron* execArray(struct ExecEnviron* e, struct AstElement* a);
-static ExecEnviron* execVector(struct ExecEnviron* e, struct AstElement* a);
-static ExecEnviron* execVectors(struct ExecEnviron* e, struct AstElement* a);
-static ExecEnviron* execVector2d(struct ExecEnviron* e, struct AstElement* a);
+//static ExecEnviron* execArray(struct ExecEnviron* e, struct AstElement* a);
+static int execArray(struct ExecEnviron* e, struct AstElement* a);
+static int execVector(struct ExecEnviron* e, struct AstElement* a);
+static int execVectors(struct ExecEnviron* e, struct AstElement* a);
+static int execVector2d(struct ExecEnviron* e, struct AstElement* a);
 static int execVec1dEl(struct ExecEnviron* e, struct AstElement* a);
 static int execVec2dEl(struct ExecEnviron* e, struct AstElement* a);
 static void execVecAssign(struct ExecEnviron* e, struct AstElement* a);
 static void execVec2dAssign(struct ExecEnviron* e, struct AstElement* a);
+static void execElseIf(struct ExecEnviron* e, struct AstElement* a);
+static void destroyTemp(ExecEnviron* e, int length);
+static void execFuncCallAssign(struct ExecEnviron* e, struct AstElement* a, std::vector<std::string>signatures);
 /* Obsolete function */
 static void display(std::string name,ExecEnviron* e);
 
@@ -71,6 +80,7 @@ static int(*valExecs[])(struct ExecEnviron* e, struct AstElement* a) =
     NULL,
     NULL,
     NULL,
+	NULL,
 	NULL,
 	NULL,
 	NULL,
@@ -95,6 +105,7 @@ static void(*runExecs[])(struct ExecEnviron* e, struct AstElement* a) =
     execCall,
     execStmt,
 	execIf,
+	execElseIf,
 	NULL,
 	NULL,
 	NULL,
@@ -105,7 +116,7 @@ static void(*runExecs[])(struct ExecEnviron* e, struct AstElement* a) =
 	execVec2dAssign
 };
 
-static ExecEnviron* (*arrExecs[])(struct ExecEnviron* e, struct AstElement* a) =
+static int (*arrExecs[])(struct ExecEnviron* e, struct AstElement* a) =
 {
     NULL, /* ID and numbers are canonical and */
     NULL, /* don't need to be executed */
@@ -117,6 +128,7 @@ static ExecEnviron* (*arrExecs[])(struct ExecEnviron* e, struct AstElement* a) =
 	NULL,
     NULL,
     NULL,
+	NULL,
 	NULL,
 	execArray,
 	execVector,
@@ -141,17 +153,17 @@ static int dispatchExpression(struct ExecEnviron* e, struct AstElement* a)
 static void dispatchStatement(struct ExecEnviron* e, struct AstElement* a)
 {
     assert(a);
-	std::cout<< "Array Lookup no: "<<a->kind << runExecs[a->kind] << std::endl;
+	std::cout<< "dispatchStatement:: Array Lookup no: "<<a->kind << runExecs[a->kind] << std::endl;
     assert(runExecs[a->kind]);
-	std::cout<<"dispatchStatement:: "<<std::endl;
+	std::cout<<" "<<std::endl;
     runExecs[a->kind](e, a);
 }
 
 /* Dispatches any array type expression and returns execution environment (or execution stack in theory)*/
-static ExecEnviron* dispatchArray(struct ExecEnviron* e, struct AstElement* a)
+static int dispatchArray(struct ExecEnviron* e, struct AstElement* a)
 {
 	assert(a);
-	std::cout<<"dispatchArray:: "<<a->kind;
+	std::cout<<"dispatchArray:: "<<a->kind<<std::endl;
 	assert(arrExecs[a->kind]);
 	return arrExecs[a->kind](e, a);
 }
@@ -178,37 +190,54 @@ static void onlyPrint(const char* name)
     onlyName(name, "print", "function");
 }
 
-static ExecEnviron* execArray(struct ExecEnviron* e, struct AstElement* a)
+/* only called by statement when vectors are ncountered. and by print. first situ
+takes care of print operation as it only can handle one term. Next for vector creations 
+old code used temp array. Implementation is kept unchanged here in new interpreter.*/
+static int execArray(struct ExecEnviron* e, struct AstElement* a)
 {
-	//clear array before processing, if array is already filled
-	if (e->arr.size() != 0)
+	std::string varName;
+	//need lookahead at caller
+	if((a->data.array.element.size()) == 1)
 	{
-	e->arr.clear();
+		/*the return here can be only the length as the varname set on environment holds
+		and we only need to know how many places to traverse.*/
+		int length = dispatchExpression(e,a->data.array.element[0]);
+		return length;
+	}
+	else
+	{
+		for(int i=0;i<(a->data.array.element.size());i++)
+		{
+			std::cout<<"ArrayElement Size: "<<a->data.array.element.size()<<std::endl;
+			int length = dispatchExpression(e,a->data.array.element[i]);
+			varName = e->varName;
+			std::cout<<"length is: "<<length<<std::endl;
+			if(length == 1)
+			{
+				//As ingle value is returned. Could be a NUMBER or a VARIABLE returning a value. Store in temp.
+				e->arr.resize(i+1);
+				e->arr[i] = e->var[varName];
+				std::cout<<"ExecArray value at "<<varName<<" is: "<<e->arr[i] <<std::endl;
+			}
+			else if(length > 1)
+			{
+				std::cout<<"Vector as a value to a vector element is not supported!!"<<std::endl;
+			}
+			if (length == NULL)
+			{
+
+				std::cout<<"No value found for variable: "<<a->data.array.element[i]<<std::endl;
+           
+			}
+		
+		}
+		return 0;
 	}
 	
-	//fill array elements from AST
-	for(int i=0;i<(a->data.array.element.size());i++)
-	{
-		std::cout<<"Size: "<<a->data.array.element.size()<<std::endl;
-		e->arr.resize(i+1);
-		//set the vector element position to lookup (1D).
-		//e->vectorPosition1 = i;
-		int value = dispatchExpression(e,a->data.array.element[i]);
-		std::cout<<"Value is: "<<value<<std::endl;
-		//vector encountered. array is processed further down AST. Logic to check NULL is tricky.
-		if (value != NULL)
-		{
-			e->arr[i]= value;
-		std::cout<<"Value at: "<<i<<"is "<<e->arr[i]<<std::endl;
-           
-		}
-		
-	}
-	std::cout<<"isVector2d "<<e->isVector2d<<std::endl;
-	return e;
 }
 
-static ExecEnviron* execVector(struct ExecEnviron* e, struct AstElement* a)
+
+static int execVector(struct ExecEnviron* e, struct AstElement* a)
 {
 	assert(a->kind == AstElement::ekVector);
 	//store the vector in the environment map named Vector
@@ -224,10 +253,10 @@ static ExecEnviron* execVector(struct ExecEnviron* e, struct AstElement* a)
 		std::cout<<"ExecVector value at"<<vectorName<<"is: "<<e->var[vectorName] <<std::endl;
 
 	}
-	return e;
+	return NULL;
 }
 
-static ExecEnviron* execVectors(struct ExecEnviron* e, struct AstElement* a)
+static int execVectors(struct ExecEnviron* e, struct AstElement* a)
 {
 	assert(a->kind == AstElement::ekVectors);
 	for (int i=0;i<a->data.vectors.count;i++)
@@ -255,29 +284,30 @@ static ExecEnviron* execVectors(struct ExecEnviron* e, struct AstElement* a)
 	}
 	
 
-	return e;
+	return NULL;
 }
 
-static ExecEnviron* execVector2d(struct ExecEnviron* e, struct AstElement* a)
+static int execVector2d(struct ExecEnviron* e, struct AstElement* a)
 {
 	assert(a->kind == AstElement::ekVector2d);
 	a->data.vector2d.vectors->data.vectors.name = a->data.vector2d.name;
 	dispatchArray(e,a->data.vector2d.vectors);
 	
-	return e;
+	return NULL;
 }
+
 
 static int execTermExpression(struct ExecEnviron* e, struct AstElement* a)
 {
     /* This function handles two different kinds of
-     * AstElement.  */
+     * AstElement. And is used for value lookup */
     assert(a);
     if(AstElement::ekNumber == a->kind)
     {
-        
-		std::cout<<"execTermexp:: value "<<a->data.val<<std::endl;
-		e->isVector2d = false;
-		return (a->data.val);
+       		
+	    e->varName = "Value";
+		e->var[(e->varName)] = (a->data.val);
+		return 1;
     }
     else
     {
@@ -292,9 +322,10 @@ static int execTermExpression(struct ExecEnviron* e, struct AstElement* a)
 
 				//No vectors exist. returns if of type ID as value is assumed to be defined.
 				std::cout<<"execTermexp:: "<<e->var[(a->data.name)]<<"  ekID: "<<a->data.name<<std::endl;
-				int value = e->var[(a->data.name)];
-				e->isVector2d = false;
-				return value;
+				e->var[(a->data.name)];
+				
+				e->varName = a->data.name;
+				return 1;
 
 			}
 			else if(e->var.find( ((a->data.name)+std::to_string(0)+std::to_string(0)) ) == e->var.end())
@@ -305,21 +336,21 @@ static int execTermExpression(struct ExecEnviron* e, struct AstElement* a)
 				
 				do
 				{
-					e->arr.resize(i+1);
-					e->arr[i]=e->var[((a->data.name)+std::to_string(i))];
-					std::cout<<"execTermexpVector:: "<<e->arr[i]<<"  ekID: "<<a->data.name<<std::endl;
+					
+					std::cout<<"execTermexpVector:: "<<e->var[((a->data.name)+std::to_string(i))]<<"  ekID: "<<a->data.name<<std::endl;
 					i++;
 
 				}while( e->var.find( ((a->data.name)+std::to_string(i)) ) != e->var.end() );
 
-				e->isVector2d=false;
-				return NULL;
+				e->varName = a->data.name;
+				return (i);
 
 			}
 		   else
 			{
 				//vector 2D. do Operation.
 				int i=0;
+				int length = 1;
 				std::string name = a->data.name;
 				char* vectorPos2=vectorPoscalc(name,i);
 				a->data.name = vectorPos2;
@@ -329,19 +360,15 @@ static int execTermExpression(struct ExecEnviron* e, struct AstElement* a)
 				do
 				{
 
-					/*Here the value is stored in fashion: Sample1 -> (1,2,3) and Sample2 -> (4,5,6) 
+					/*Here the value is stored in fashion: Sample01 -> (2) and Sample12 -> (6) 
 					if the complete vector2d is Sample = (1,2,3),(4,5,6) So, stores named vectors of the 2D*/
-					e->vectorArr[(vectorPos2)] = e->arr; 
-					std::cout<<"execVector2D:value at "<<vectorPos2<<"is ";
-					std::vector<int>arrTemp = e->vectorArr[(vectorPos2)];
-					std::copy(arrTemp.begin(), arrTemp.end(), std::ostream_iterator<int>(std::cout, " "));
-					std::cout<<" "<<std::endl;
+					
 					i++;
 					vectorPos2 = vectorPoscalc(name,i);
 					a->data.name = vectorPos2;
 					if(e->var.find( ((a->data.name)+std::to_string(0)) ) != e->var.end())
 					{
-						execTermExpression(e,a);
+						length = execTermExpression(e,a);
 					}
 					else
 					{
@@ -352,8 +379,9 @@ static int execTermExpression(struct ExecEnviron* e, struct AstElement* a)
 				}while(true);
 				std::cout<<"Loop exit: "<<((a->data.name)+std::to_string(0))<<std::endl;
 				a->data.name = vectorPoscalc(name);
-				e->isVector2d=true;
-				return NULL;
+				e->varName = a->data.name;
+				std::cout<<"execTermExp: varName: "<<e->varName<<std::endl;
+				return (i);
 			}
         }
 		
@@ -362,6 +390,8 @@ static int execTermExpression(struct ExecEnviron* e, struct AstElement* a)
 
     //exit(1);
 }
+
+
 
 static char* vectorPoscalc(std::string name,int i)
 {
@@ -386,166 +416,305 @@ static char* vectorPoscalc(std::string name)
 static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 {
     assert(AstElement::ekBinExpression == a->kind);
+	std::cout<<"::execBinExp:: "<<std::endl;
 	/*if null is returned on either side. it has a vector variable
 	store it in temporary arrays to operate on them.*/
-	std::vector<int>arrLeft;
-	std::vector<int>arrRight;
+	std::string temp = "Temp";
     const int left = dispatchExpression(e, a->data.expression.left);
-	/*if(left == NULL && e->isVector2d)
-	{
-		std::string nameLeft = a->data.expression.left->data.name;
-	}*/
-	if (left == NULL)
-	{
-		std::cout<<"Here"<<std::endl;
-		arrLeft = e->arr;
-	}
+	std::string varNameLeft = e->varName;
+	
     const int right = dispatchExpression(e, a->data.expression.right);
-	/*if(left == NULL && e->isVector2d)
+	std::string varNameRight = e->varName;
+	
+	if(right != left)
 	{
-		std::string nameRight = a->data.expression.right->data.name;
-	}*/
-	if (left == NULL)
-	{
-		std::cout<<"Here"<<std::endl;
-		arrRight = e->arr;
+		//size not equal unsupported operation
+		std::cout<<"Size not equal on expression Terms. Unsupported operation!"<<std::endl;
 	}
-	if(left == NULL && right == NULL)
+
+	else
 	{
-		/*vector encountered. Support Operation.As with all languages 
-		vetor * and / are impossible to support out of the box.*/
-		switch(a->data.expression.op)
+		
+	switch(a->data.expression.op)
 		{
 			case '+':
-            return execArrAdd(e,arrLeft,arrRight);
+				if(right ==1 && left ==1)
+				{
+					e->var[temp] = e->var[varNameLeft] + e->var[(varNameRight)];
+					std::cout<<"Added"<<e->var[temp]<<" Left: "<<varNameLeft<<" Right: "<<varNameRight<<std::endl;
+					e->varName = temp;
+					return 1;
+				}
+				else if( e->var.find(varNameLeft+std::to_string(0)+std::to_string(0)) != e->var.end() || e->var.find(varNameRight+std::to_string(0)+std::to_string(0)) != e->var.end() )
+				{
+					//found array 2d. names with Sample01, Sample11
+					for(int i=0;i<left;i++)
+					{
+						int j=0;
+						do
+						{
+							e->var[(temp+std::to_string(i)+std::to_string(j))] = e->var[(varNameLeft+std::to_string(i)+std::to_string(j))] + e->var[(varNameRight+std::to_string(i)+std::to_string(j))];
+							j++;
+						}while(e->var.find(varNameLeft+std::to_string(i)+std::to_string(j)) != e->var.end());
+					}
+		          //calculation done set variables and return.
+				e->varName = temp;
+				return left;
+				}
+				else if( e->var.find(varNameLeft+std::to_string(0)) != e->var.end() || e->var.find(varNameRight+std::to_string(0)) != e->var.end() )
+				{
+						//found 1d array. Names with Sample0 Sample1
+						for(int i=0;i<left;i++)
+						{
+							e->var[(temp+std::to_string(i))] = e->var[(varNameLeft+std::to_string(i))] + e->var[(varNameRight+std::to_string(i))];
+						}
+					//calculation done set variables and return.
+					e->varName = temp;
+					return left;
+				}
+				else
+				{
+					std::cout<<"Unsupported operation!!Cant find stored value"<<std::endl;
+				}
 			case '-':
-			return execArrSub(e,arrLeft,arrRight);
+				if(right ==1 && left ==1)
+				{
+					e->var[temp] = e->var[varNameLeft] - e->var[(varNameRight)];
+					e->varName = temp;
+					return 1;
+				}
+				else if( e->var.find(varNameLeft+std::to_string(0)+std::to_string(0)) != e->var.end() || e->var.find(varNameRight+std::to_string(0)+std::to_string(0)) != e->var.end() )
+				{
+					//found array 2d. names with Sample01, Sample11
+					for(int i=0;i<left;i++)
+					{
+						int j=0;
+						do
+						{
+							e->var[(temp+std::to_string(i)+std::to_string(j))] = e->var[(varNameLeft+std::to_string(i)+std::to_string(j))] - e->var[(varNameRight+std::to_string(i)+std::to_string(j))];
+							j++;
+						}while(e->var.find(varNameLeft+std::to_string(i)+std::to_string(j)) != e->var.end());
+					}
+		          //calculation done set variables and return.
+				e->varName = temp;
+				return left;
+				}
+				else if( e->var.find(varNameLeft+std::to_string(0)) != e->var.end() || e->var.find(varNameRight+std::to_string(0)) != e->var.end() )
+				{
+						//found 1d array. Names with Sample0 Sample1
+						for(int i=0;i<left;i++)
+						{
+							e->var[(temp+std::to_string(i))] = e->var[(varNameLeft+std::to_string(i))] - e->var[(varNameRight+std::to_string(i))];
+						}
+					//calculation done set variables and return.
+					e->varName = temp;
+					return left;
+				}
+				else
+				{
+					std::cout<<"Unsupported operation!!Cant find stored value"<<std::endl;
+				}
+			case '*':
+				if(right ==1 && left ==1)
+				{
+					e->var[temp] = e->var[varNameLeft] * e->var[(varNameRight)];
+					e->varName = temp;
+					return 1;
+				}
+				else
+				{
+					std::cout<<"Unsupported operation for vector Type"<<std::endl;
+				}
+			case '<':
+				if(right ==1 && left ==1)
+				{
+					return e->var[varNameLeft] < e->var[(varNameRight)];
+					/*e->var[temp] = e->var[varNameLeft] < e->var[(varNameRight)];
+					e->varName = temp;
+					return 1;*/
+				}
+				else
+				{
+					std::cout<<"Unsupported operation for vector Type"<<std::endl;
+				}
+			case '>':
+				if(right ==1 && left ==1)
+				{
+					return e->var[varNameLeft] > e->var[(varNameRight)];
+					/*e->var[temp] = e->var[varNameLeft] > e->var[(varNameRight)];
+					e->varName = temp;
+					return 1;*/
+				}
+				else
+				{
+					std::cout<<"Unsupported operation for vector Type"<<std::endl;
+				}
+			case 'LE':
+				if(right ==1 && left ==1)
+				{
+					return e->var[varNameLeft] <= e->var[(varNameRight)];
+					/*e->var[temp] = e->var[varNameLeft] <= e->var[(varNameRight)];
+					e->varName = temp;
+					return 1;*/
+				}
+				else
+				{
+					std::cout<<"Unsupported operation for vector Type"<<std::endl;
+				}
+			case 'GE':
+				if(right ==1 && left ==1)
+				{
+					return e->var[varNameLeft] >= e->var[(varNameRight)];
+					/*e->var[temp] = e->var[varNameLeft] >= e->var[(varNameRight)];
+					e->varName = temp;
+					return 1;*/
+				}
+				else
+				{
+					std::cout<<"Unsupported operation for vector Type"<<std::endl;
+				}
+			case '==':
+				if(right ==1 && left ==1)
+				{
+					return e->var[varNameLeft] == e->var[(varNameRight)];
+					/*e->var[temp] = e->var[varNameLeft] == e->var[(varNameRight)];
+					e->varName = temp;
+					return 1;*/
+				}
+				else
+				{
+					std::cout<<"Unsupported operation for vector Type"<<std::endl;
+				}
+			case 'NE':
+				if(right ==1 && left ==1)
+				{
+					std::cout<<"Not Equals called"<<std::endl;
+					return e->var[varNameLeft] != e->var[(varNameRight)];
+					/*e->var[temp] = e->var[varNameLeft] != e->var[(varNameRight)];
+					e->varName = temp;
+					return 1;*/
+				}
+				else
+				{
+					std::cout<<"Unsupported operation for vector Type"<<std::endl;
+				}
 			default:
-            fprintf(stderr,  "OOPS: Unknown operator for vector:%c\n", a->data.expression.op);
-		}
-	}
-    switch(a->data.expression.op)
-    {
-        case '+':
-            return left + right;
-        case '-':
-            return left - right;
-        case '*':
-            return left * right;
-        case '<':
-            return left < right;
-        case '>':
-            return left > right;
-		case '<=':
-			return left <= right;
-		case '>=':
-			return left >= right;
-		case '==':
-			return left == right;
-		case '!=':
-			return left != right;
-        default:
-            fprintf(stderr,  "OOPS: Unknown operator:%c\n", a->data.expression.op);
+				fprintf(stderr,  "OOPS: Unknown operator:%c\n", a->data.expression.op);
             //exit(1);
-    }
-    /* no return here, since every switch case returns some value (or bails out) */
+		}
+	
+	}
+	
+	
+	
 	
 }
 
-static int execArrAdd(struct ExecEnviron* e,std::vector<int>arrLeft,std::vector<int>arrRight)
-{
-	if(arrLeft.size() == arrRight.size())
-	{
-		for(int i=0;i<arrLeft.size();i++)
-		{
-			e->arr[i] = arrLeft[i] + arrRight[i];
-		}
-	}
-	else
-		fprintf(stderr,  "Size of vectors to be added are not identical!:%d\t%d\n",arrLeft.size(),arrRight.size());
-
-	return NULL;
-}
-
-static int execArrSub(struct ExecEnviron* e,std::vector<int>arrLeft,std::vector<int>arrRight)
-{
-	if(arrLeft.size() == arrRight.size())
-	{
-		for(int i=0;i<arrLeft.size();i++)
-		{
-			e->arr[i] = arrLeft[i] - arrRight[i];
-		}
-	}
-	else
-     fprintf(stderr,  "Size of vectors to be added are not identical!");
-
-	return NULL;
-}
 
 static void execAssign(struct ExecEnviron* e, struct AstElement* a)
 {
     assert(a);
     assert(AstElement::ekAssignment == a->kind);
-    onlyX(a->data.assignment.name);
+    //onlyX(a->data.assignment.name);
     assert(e);
-    struct AstElement* r = a->data.assignment.right;
-    //this line fucked me!
-	int value = dispatchExpression(e, r);
-	if (value != NULL)
-	{
-		//Not a vector assignment. do a normal one. 
-		e->var[(a->data.assignment.name)] = dispatchExpression(e, r); 
-	}
-	else if (e->isVector2d)
-	{
-		//vector 2D assignment. Do operation.
-		std::string vectorName=(a->data.assignment.name);
-		/*get the TOKEN_ID that is passed for assignment. right has expression and 
-		for TOKEN_ID expression stores name is data.name.Ref: makeExpByName()*/
-		std::string refName=(a->data.assignment.right->data.name);
+	struct AstElement* r = a->data.assignment.right;
+	int length = dispatchExpression(e, r);
+	std::string varName = e->varName;
+	std::string assgnName = (a->data.assignment.name);
 
-		int i=0;
-		//store unique names in var by appending positions onto it
-		std::string vectorNameVar = vectorName+std::to_string(i);
-		std::string refNameVar = refName+std::to_string(i);
-		
-		do
+
+	if(length==1)
+	{
+		e->var[(assgnName)] = e->var[varName];
+		std::cout<<"ExecAssign: "<<assgnName<<"Value: "<<e->var[(assgnName)];
+		destroyTemp(e,1);
+	}
+
+
+	else if( e->var.find(varName+std::to_string(0)+std::to_string(0)) != e->var.end() )
+	{
+		//found array 2d. names with Sample01, Sample11
+		for(int i=0;i<length;i++)
 		{
-			std::vector<int>arrTemp = e->vectorArr[refNameVar];
-			
-			//create the array in base structure e->var for future ref (Need to create underlying arrays)
-			for(int j=0;j<arrTemp.size();j++)
+			int j=0;
+			do
 			{
-				e->var[(vectorNameVar+std::to_string(j))] = arrTemp[j];
-			}
-
-			e->vectorArr[vectorNameVar] = arrTemp;
-			
-			i++;
-			//update both
-			vectorNameVar = vectorName+std::to_string(i);
-			refNameVar = refName+std::to_string(i);
-			
-		}while(e->vectorArr.find(refNameVar) != e->vectorArr.end());
-		
+				e->var[(assgnName+std::to_string(i)+std::to_string(j))] = e->var[(varName+std::to_string(i)+std::to_string(j))];
+			j++;
+			}while(e->var.find(varName+std::to_string(i)+std::to_string(j)) != e->var.end());
+		}
+		 //assignment to environment stack done. Assign doesenot return anything. destroy temp in memory.
+		destroyTemp(e,length);
 	}
-
+	else if( e->var.find(varName+std::to_string(0)) != e->var.end() )
+	{
+		//found 1d array. Names with Sample0 Sample1
+		for(int i=0;i<length;i++)
+		{
+		     e->var[(assgnName+std::to_string(i))] = e->var[(varName+std::to_string(i))];
+		}
+		//assignment to environment stack done. Assign doesenot return anything.destroy temp in memory.
+		destroyTemp(e,length);
+	}
 	else
 	{
-		//vector 1D assignment. Do operation.
-		std::string vectorName;
-		
-		for(int i=0;i<(e->arr.size());i++)
-		{
-			//store unique names in var by appending positions onto it
-			vectorName = (a->data.assignment.name)+std::to_string(i);
-			e->var[vectorName] = e->arr[i];
+		std::cout<<"ExecAssign: Unsupported operation!!Cant find stored value"<<std::endl;
+	}	
+	
+//end of assignment
+}
 
-		}
+static void destroyTemp(ExecEnviron* e, int length)
+{
+	std::string varName = "Temp";
+	std::string valName = "Value";
+
+	if( e->var.find(varName) != e->var.end() && length == 1)
+	{
+		e->var.erase(varName);
+		
 	}
+
+
+	else if( e->var.find(varName+std::to_string(0)+std::to_string(0)) != e->var.end() )
+	{
+		//found array 2d. names with Sample01, Sample11
+		for(int i=0;i<length;i++)
+		{
+			int j=0;
+			do
+			{
+			   e->var.erase(varName+std::to_string(i)+std::to_string(j));
+			j++;
+			}while(e->var.find(varName+std::to_string(i)+std::to_string(j)) != e->var.end());
+		}
+		 //assignment to environment stack done. Assign doesenot return anything
+		
+	}
+	else if( e->var.find(varName+std::to_string(0)) != e->var.end() )
+	{
+		//found 1d array. Names with Sample0 Sample1
+		for(int i=0;i<length;i++)
+		{
+		     e->var.erase(varName+std::to_string(i));
+		}
+		//assignment to environment stack done. Assign doesenot return anything
+		
+	}
+	//else destroy value
+	else if(e->var.find(valName) != e->var.end() && length == 1)
+	{
+		e->var.erase(valName);
+	}
+	else
+	{
+		std::cout<<"ExecAssign: Unsupported operation!!Can't find temp or value"<<std::endl;
+	}	
 	
 }
 
+
+//a[i] = expr
 static void execVecAssign(struct ExecEnviron* e, struct AstElement* a)
 {
 	std::string vectorname = a->data.VecAssignment.name;
@@ -557,21 +726,6 @@ static void execVecAssign(struct ExecEnviron* e, struct AstElement* a)
 static void execVec2dAssign(struct ExecEnviron* e, struct AstElement* a)
 {
 	//TODO::
-}
-
-static void display(std::string name,ExecEnviron* e)
-{
-	
-	int i = 0;
-	char* vectorPos = vectorPoscalc(name,i);
-	do
-		{
-			std::vector<int>arrTemp = e->vectorArr[(vectorPos)];
-			std::copy(arrTemp.begin(), arrTemp.end(), std::ostream_iterator<int>(std::cout, " "));
-			std::cout<<" "<<std::endl;
-			i++;
-			vectorPos = vectorPoscalc(name,i);
-		}while( e->vectorArr.find(vectorPos) != e->vectorArr.end());
 }
 
 static void execWhile(struct ExecEnviron* e, struct AstElement* a)
@@ -596,6 +750,8 @@ static void execIf(struct ExecEnviron* e, struct AstElement* a)
 	struct AstElement* const c = a->data.ifStatement.cond;
 	struct AstElement* const t = a->data.ifStatement.ifTrue;
 	struct AstElement* const f = a->data.ifStatement.ifFalse;
+
+	//current code returns 1 or 0 for comparison operators. As these are not defined for the vector types.
 	if(dispatchExpression(e, c))
 	{
 		dispatchStatement(e, t);
@@ -606,7 +762,32 @@ static void execIf(struct ExecEnviron* e, struct AstElement* a)
 	}
 }
 
-//Need to refactor print handler to update new capabilities.
+//support for the else if statement
+static void execElseIf(struct ExecEnviron* e, struct AstElement* a)
+{
+	assert(a);
+	assert(AstElement::ekElseIf == a->kind);
+	struct AstElement* const ic = a->data.elseifStatement.ifcond;
+	struct AstElement* const it = a->data.elseifStatement.ifTrue;
+	struct AstElement* const ec = a->data.elseifStatement.elseifCond;
+	struct AstElement* const ect = a->data.elseifStatement.elseifCondTrue;
+	struct AstElement* const ecf = a->data.elseifStatement.elseifCondFalse;
+
+	//current code returns 1 or 0 for comparison operators. As these are not defined for the vector types.
+	if(dispatchExpression(e, ic))
+	{
+		dispatchStatement(e, it);
+	}
+	else if(dispatchExpression(e, ec))
+	{
+		dispatchStatement(e, ect);
+	}
+	else
+	{
+		dispatchStatement(e, ecf);
+	}
+}
+
 static void execCall(struct ExecEnviron* e, struct AstElement* a)
 {
     assert(a);
@@ -628,24 +809,81 @@ static void execCall(struct ExecEnviron* e, struct AstElement* a)
 	}
 }
 
+
 static void execfuncCall(struct ExecEnviron* e, struct AstElement* a)
 {
-	std::cout<<"execfuncCall:: function called by name: "<< a->data.call.name << std::endl;
 	AstElement* funcExec = e->func[a->data.call.name];
-	std::cout<<"execfuncCall:: param passed: "<< a->data.call.param << " Number: " << a->data.call.param->kind << std::endl;
-	ExecEnviron* eTmp = dispatchArray(e, a->data.call.param);
-	for (int i=0;i<(funcExec->data.func.signatures->data.signatures.signature.size());i++) //check here for access violation
+	std::vector <std::string> signatures ;
+
+//loop through all the signatures one by one
+for (int i=0;i<(funcExec->data.func.signatures->data.signatures.signature.size());i++) 
 	{
-		//most complicated line written. Take deep breath and break down in parts to understand. // check implementation
-		//problem with scope resolution.. check
-		std::cout<<"execfuncCall:: signature size: "<< i << std::endl;
-		std::cout<<"execfuncCall:: assigned to variable: "<< funcExec->data.func.signatures->data.signatures.signature[i]->data.signature.assignment->data.assignment.name << std::endl;
+		signatures.resize(i+1);
+		//set asignment name and variable name to lookup from.
+		std::string varName = e->varName;
 		
-		e->var[(funcExec->data.func.signatures->data.signatures.signature[i]->data.signature.assignment->data.assignment.name)] = eTmp->arr[(funcExec->data.func.signatures->data.signatures.signature.size())-(i+1)];
-		std::cout<<"execfuncCall:: assigned: "<< e->var[(funcExec->data.func.signatures->data.signatures.signature[i]->data.signature.assignment->data.assignment.name)] << " to signature:: " << (funcExec->data.func.signatures->data.signatures.signature[i]->data.signature.assignment->data.assignment.name) << std::endl;
-	}
-	dispatchStatement(e,funcExec->data.func.statements);
-	//after execution of function need to free env from function variable value
+		 signatures[i] = (funcExec->data.func.signatures->data.signatures.signature[i]->data.signature.assignment->data.assignment.name);
+		 std::cout<<"Signature:: "<<signatures[i]<<std::endl;
+	
+	//end of assignment
+    }
+execFuncCallAssign(e,a->data.call.param,signatures);
+dispatchStatement(e,funcExec->data.func.statements);
+
+}
+
+
+static void execFuncCallAssign(struct ExecEnviron* e, struct AstElement* a, std::vector<std::string>signatures)
+{
+	std::string varName;
+	std::string assgnName;
+	  
+		for(int i=0;i<(a->data.array.element.size());i++)
+		{
+			std::cout<<"Signature Size: "<<a->data.array.element.size()<<std::endl;
+			int length = dispatchExpression(e,a->data.array.element[i]);
+			varName = e->varName;
+			assgnName = signatures[(signatures.size()-(i+1))];
+			std::cout<<"execfuncCallAssign: length is: "<<length<<std::endl;
+			if(length==1)
+			{
+				e->var[(assgnName)] = e->var[varName];
+				std::cout<<"ExecFuncCall: "<<assgnName<<" Value: "<<e->var[(assgnName)]<<std::endl;
+				destroyTemp(e,1);
+			}
+
+
+			else if( e->var.find(varName+std::to_string(0)+std::to_string(0)) != e->var.end() )
+			{
+				//found array 2d. names with Sample01, Sample11
+				for(int i=0;i<length;i++)
+				{
+					int j=0;
+					do
+					{
+						e->var[(assgnName+std::to_string(i)+std::to_string(j))] = e->var[(varName+std::to_string(i)+std::to_string(j))];
+					j++;
+					}while(e->var.find(varName+std::to_string(i)+std::to_string(j)) != e->var.end());
+				}
+				//assignment to environment stack done. Assign doesenot return anything. destroy temp in memory.
+				destroyTemp(e,length);
+			}
+			else if( e->var.find(varName+std::to_string(0)) != e->var.end() )
+			{
+				//found 1d array. Names with Sample0 Sample1
+				for(int i=0;i<length;i++)
+				{
+					e->var[(assgnName+std::to_string(i))] = e->var[(varName+std::to_string(i))];
+				}
+				//assignment to environment stack done. Assign doesenot return anything.destroy temp in memory.
+				destroyTemp(e,length);
+			}
+			else
+			{
+				std::cout<<"ExecAssign: Unsupported operation!!Cant find stored value"<<std::endl;
+			}	
+		}
+	
 }
 
 /* block for print execution */
@@ -653,32 +891,54 @@ static void execPrint(struct ExecEnviron* e, struct AstElement* a)
 {
 	//logic for non func call, print in our case
 	std::cout<<"execPrint:: param for the print statement: "<< a->data.call.param << std::endl;
-	std::string name = a->data.call.param->data.array.element[0]->data.name;
-	//std::cout<<dispatchArray(e, a->data.call.param)->arr<<std::endl; 
-	// only pulling array is passed as param... so doesenot understand type vector or anything else
-	ExecEnviron* eTmp = dispatchArray(e, a->data.call.param);
-	if(e->isVector2d)
+	
+	//ExecEnviron* eTmp = dispatchArray(e, a->data.call.param);
+	int length = dispatchArray(e, a->data.call.param);
+	std::string varName = e->varName;
+	std::cout<<"execPrint:: length: "<< length << "varName" << varName<< std::endl;
+	
+
+
+	if(length==1)
 	{
-		int i=0;
-		char* vectorPos = vectorPoscalc(name,i);
-		std::cout<<"name "<<name<<"vectorpos: "<<vectorPos<<std::endl;
-		do
+		std::cout<<e->var[varName]<<std::endl;
+	}
+
+	else if( e->var.find(varName+std::to_string(0)+std::to_string(0)) != e->var.end() )
+	{
+		//found array 2d. names with Sample01, Sample11
+		for(int i=0;i<length;i++)
 		{
-			std::vector<int>arrTemp = e->vectorArr[(vectorPos)];
-			std::copy(arrTemp.begin(), arrTemp.end(), std::ostream_iterator<int>(std::cout, " "));
-			std::cout<<" "<<std::endl;
-			i++;
-			vectorPos = vectorPoscalc(name,i);
-		}while( e->vectorArr.find(vectorPos) != e->vectorArr.end());
+			int j=0;
+			do
+			{
+				std::cout<<e->var[(varName+std::to_string(i)+std::to_string(j))]<<" ";
+			j++;
+			}while(e->var.find(varName+std::to_string(i)+std::to_string(j)) != e->var.end());
+			std::cout<<std::endl;
+		}
+		 //assignment to environment stack done. Assign doesenot return anything
+		
+	}
+	else if( e->var.find(varName+std::to_string(0)) != e->var.end() )
+	{
+		//found 1d array. Names with Sample0 Sample1
+		for(int i=0;i<length;i++)
+		{
+		    std::cout<<e->var[(varName+std::to_string(i))]<<" ";
+		}
+		std::cout<<std::endl;
+		//assignment to environment stack done. Assign doesenot return anything
+		
 	}
 	else
 	{
-		std::copy(eTmp->arr.begin(), eTmp->arr.end(), std::ostream_iterator<int>(std::cout, " "));
-		std::cout<<" "<<std::endl;
+		std::cout<<"Unsupported operation!!Cant find stored value"<<std::endl;
 	}
 	
 }
 
+//not req chng
 static void execStmt(struct ExecEnviron* e, struct AstElement* a)
 {
     assert(a);
@@ -701,6 +961,7 @@ static void execStmt(struct ExecEnviron* e, struct AstElement* a)
     }
 }
 
+//not req chng
 //responsible for storing the function address in the map.. execution should be done in a separate map
 static void execFunc(struct ExecEnviron* e, struct AstElement* a)
 {

@@ -6,7 +6,7 @@
 struct AstElement
 {
 	//this enum provides reference lookup for array search in astexec.cpp
-    enum {ekId, ekNumber, ekBinExpression, ekAssignment, ekWhile, ekFunc, ekSignatures, ekSignature, ekCall, ekStatements, ekIf, ekArray, ekVector, ekVectors, ekVector2d, ekVec1delement, ekVec2delement, ekVecAssignment, ekVec2dAssignment, ekLastElement} kind;
+    enum {ekId, ekNumber, ekBinExpression, ekAssignment, ekWhile, ekFunc, ekSignatures, ekSignature, ekCall, ekStatements, ekIf, ekElseIf, ekArray, ekVector, ekVectors, ekVector2d, ekVec1delement, ekVec2delement, ekVecAssignment, ekVec2dAssignment, ekLastElement} kind;
     struct
     {
         int val; //only one value... arrays implementation as a struct refer below
@@ -39,6 +39,14 @@ struct AstElement
 			struct AstElement* ifTrue;
 			struct AstElement* ifFalse;
 		}ifStatement;
+		struct 
+		{
+			struct AstElement* ifcond;
+			struct AstElement* ifTrue;
+			struct AstElement* elseifCond;
+			struct AstElement* elseifCondTrue;
+			struct AstElement* elseifCondFalse;
+		}elseifStatement;
         struct
         {
             char* name;
@@ -119,6 +127,7 @@ struct AstElement* makeStatement(struct AstElement* dest, struct AstElement* toA
 struct AstElement* makeWhile(struct AstElement* cond, struct AstElement* exec);
 struct AstElement* makeCall(char* name, struct AstElement* param);
 struct AstElement* makeIf(struct AstElement* cond, struct AstElement* ifTrue, struct AstElement* ifFalse);
+struct AstElement* makeElseIf(struct AstElement* condIf, struct AstElement* ifTrue, struct AstElement* condElseIf, struct AstElement* elseIfTrue, struct AstElement* elseIfFalse);
 struct AstElement* makeFunc(char* name, struct AstElement* signature, struct AstElement* statement);
 struct AstElement* makeSignatures(struct AstElement* result,struct AstElement* signature);
 struct AstElement* makeSignature(char* type,struct AstElement* assignment);
