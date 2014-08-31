@@ -330,12 +330,3 @@ struct AstElement* makeReturnByExp(struct AstElement* exp)
 	result->data.returnData.exp = exp;
 	return result;
 }
-
-struct AstElement* makeReturnByName(char* name)
-{
-	std::cout<<"\n makeReturnByName:pushed type: "<<std::endl;
-	struct AstElement* result = new AstElement();
-	result->kind = AstElement::ekRtrnByName;
-	result->data.returnData.name = name;
-	return result;
-}

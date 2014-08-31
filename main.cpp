@@ -2,13 +2,18 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <algorithm>
 #include "astgen.h"
 #include "astexec.h"
 #include "parser.tab.h"
 
+
 extern int yyparse();
 extern FILE *yyin;
 extern AstElement* astDest;
+void printPair(const std::pair<std::string, double > &p);
+
+
 
 int main()
 {
@@ -23,42 +28,28 @@ int main()
 	}
 	yyin=fp;
     yyparse();
-    /* Q&D WARNING: in production code this assert must be replaced by
-     * real error handling. */
+    
     assert(a);
     struct ExecEnviron* e = createEnv();
+	setPropertySet(e,"lerp",3.4);
+	setPropertySet(e,"strt_radius",34.6);
+	setPropertySet(e,"endradius_",21.8);
+	setPropertySet(e,"endradius_",21.8); 
+	setPropertySet(e,"start",21.8,22.6);
     execAst(e, astDest);
-    freeEnv(e);
-	/*int x = 23;
-	while(x>0)
-	{
-	
-		std::cout<<"program output:: "<<x*x<<std::endl;
-		x=x-1;
-	}*/
-
-	//std::map<char,int> mymap;
- //   std::map<char,int>::iterator it;
-
- // // insert some values:
- // mymap['a']=10;
- // mymap['b']=20;
- // mymap['c']=30;
- // mymap['d']=40;
- // mymap['e']=50;
- // mymap['f']=60;
-
- // it=mymap.find('b');
- // mymap.erase (it);                   // erasing by iterator
-
- // mymap.erase ('c');                  // erasing by key
-
- // if(mymap.find('e') != mymap.end())
- // {
-	//  std::cout<<"Found"<<mymap['e']<<std::endl;
- // }
-	
+    
+	std::map<std::string,double> propertySet = getPropertySet(e);
+	std::cout<<std::endl;
+	std::cout<<"################## Property Set: ##################"<<std::endl;
+	std::for_each(propertySet.begin(), propertySet.end(), printPair);
+	freeEnv(e);
 	int z;
 	std::cin>>z;
     /* TODO: destroy the AST */
 }
+
+void printPair(const std::pair<std::string, double > &p)
+	{
+		std::cout << "Name: " << p.first << "\t";
+		std::cout<<"Value: "<<p.second<<std::endl;
+	}

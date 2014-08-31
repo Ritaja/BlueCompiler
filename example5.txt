@@ -5,7 +5,7 @@
 	#vector C = A + B + A;
 	#print (C);
 
-	vector2d E = [(1.1,2.0),(1.2,2.2,3.2),(1.3,1.3,1.3,1.3)];
+	vector2d E = [(strt_radius,2.0),(1.2,lerp,3.2),(1.3,endradius_,1.3,1.3)];
 	#vector2d D = [(1.1,2.0),(1.2,2.2,3.2),(1.3,1.3,1.3,1.3)];
 	#vector2d F = E + D + D;
 	#print (F);
@@ -16,10 +16,10 @@
 	 print(temp);
 	 #print(temp);
 	 #print(tar);
-	 return temp + E;
+	 return temp;
 	};
 
-    y = funcA(5,E,4);
+    y = funcA(5,start,4);
 	#a = -0.1;
 	#b = 2;
 	#c = 0.2;
