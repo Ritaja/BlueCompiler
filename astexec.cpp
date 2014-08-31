@@ -1132,6 +1132,15 @@ void setPropertySet(struct ExecEnviron* e,char* varName, double val)
 	e->propertySet[varName] = val;
 }
 
+void setPropertySet(struct ExecEnviron* e,char* varName, double val0, double val1)
+{
+	e->var[varName+std::to_string(0)] = val0;
+	e->propertySet[varName+std::to_string(0)] = val0;
+
+	e->var[varName+std::to_string(1)] = val1;
+	e->propertySet[varName+std::to_string(1)] = val1;
+}
+
 double getPropertySet(struct ExecEnviron* e, char* varName)
 {
 	return e->var[varName];

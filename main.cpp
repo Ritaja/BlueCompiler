@@ -34,7 +34,8 @@ int main()
 	setPropertySet(e,"lerp",3.4);
 	setPropertySet(e,"strt_radius",34.6);
 	setPropertySet(e,"endradius_",21.8);
-	
+	setPropertySet(e,"endradius_",21.8); 
+	setPropertySet(e,"start",21.8,22.6);
     execAst(e, astDest);
     
 	std::map<std::string,double> propertySet = getPropertySet(e);

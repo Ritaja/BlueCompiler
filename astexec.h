@@ -25,4 +25,7 @@ double getPropertySet(struct ExecEnviron* e, char* varName);
 /*returns the entire map of the propertySet element in the exec env.*/
 std::map<std::string,double> getPropertySet(struct ExecEnviron* e);
 
+/*Sets the propertySet for the created environment by the name and double value. For vector2d type.*/
+void setPropertySet(struct ExecEnviron* e,char* varName, double val0, double val1);
+
 #endif
