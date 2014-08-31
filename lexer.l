@@ -20,6 +20,13 @@
 "vector" return TOKEN_VECTOR;
 "vector2d" return TOKEN_VECTOR2d;
 "return" return TOKEN_RETURN;
+"pow"	return TOKEN_POW;
+"factorial" return TOKEN_FACTORIAL;
+"acos" return TOKEN_ACOS;
+"sqrt" return TOKEN_SQRT;
+"rotatez" return TOKEN_ROTATEZ;
+"magnitude_squared" return TOKEN_MAGNITUDESQR;
+"transform" return TOKEN_TRANSFORM;
 ","    return TOKEN_COMMA;
 "=="    {yylval.op = *yytext; return TOKEN_OPERATOR;}
 "NE"    {yylval.op = *yytext; return TOKEN_OPERATOR;}

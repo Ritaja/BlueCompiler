@@ -54,7 +54,13 @@ static void execRtrnByExp(struct ExecEnviron* e, struct AstElement* a);
 static void destroyTemp(ExecEnviron* e, int length);
 static void execFuncCallAssign(struct ExecEnviron* e, struct AstElement* a, std::vector<std::string>signatures);
 static void execFuncAssign(struct ExecEnviron* e, struct AstElement* a);
-
+static int execPow(struct ExecEnviron* e, struct AstElement* a);
+static int execFact(struct ExecEnviron* e, struct AstElement* a);
+static int execAcos(struct ExecEnviron* e, struct AstElement* a);
+static int execSqrt(struct ExecEnviron* e, struct AstElement* a);
+static int execRotatez(struct ExecEnviron* e, struct AstElement* a);
+static int execMagnitudesqr(struct ExecEnviron* e, struct AstElement* a);
+static int execTransform(struct ExecEnviron* e, struct AstElement* a);
 
 
 /* Lookup Array for AST elements which yields values */
@@ -81,7 +87,14 @@ static int(*valExecs[])(struct ExecEnviron* e, struct AstElement* a) =
 	NULL,
 	NULL,
 	NULL,
-	NULL
+	NULL,
+	execPow, 
+	execFact, 
+	execAcos, 
+	execSqrt, 
+	execRotatez, 
+	execMagnitudesqr,
+	execTransform,
 };
 
 /* lookup array for non-value AST elements */
@@ -108,7 +121,14 @@ static void(*runExecs[])(struct ExecEnviron* e, struct AstElement* a) =
 	execVecAssign,
 	execVec2dAssign,
 	execRtrnByExp,
-	execFuncAssign
+	execFuncAssign,
+	NULL, 
+	NULL, 
+	NULL, 
+	NULL, 
+	NULL, 
+	NULL,
+	NULL
 };
 
 static int (*arrExecs[])(struct ExecEnviron* e, struct AstElement* a) =
@@ -133,6 +153,13 @@ static int (*arrExecs[])(struct ExecEnviron* e, struct AstElement* a) =
 	NULL,
 	NULL,
 	NULL,
+	NULL,
+	NULL,
+	NULL, 
+	NULL, 
+	NULL, 
+	NULL, 
+	NULL, 
 	NULL,
 	NULL
 };
@@ -1115,7 +1142,34 @@ static void execRtrnByExp(struct ExecEnviron* e, struct AstElement* a)
 }
 
 
-
+static int execPow(struct ExecEnviron* e, struct AstElement* a)
+{
+	return NULL;
+}
+static int execFact(struct ExecEnviron* e, struct AstElement* a)
+{
+	return NULL;
+}
+static int execAcos(struct ExecEnviron* e, struct AstElement* a)
+{
+	return NULL;
+}
+static int execSqrt(struct ExecEnviron* e, struct AstElement* a)
+{
+	return NULL;
+}
+static int execRotatez(struct ExecEnviron* e, struct AstElement* a)
+{
+	return NULL;
+}
+static int execMagnitudesqr(struct ExecEnviron* e, struct AstElement* a)
+{
+	return NULL;
+}
+static int execTransform(struct ExecEnviron* e, struct AstElement* a)
+{
+	return NULL;
+}
 
 
 void execAst(struct ExecEnviron* e, struct AstElement* a)

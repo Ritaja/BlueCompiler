@@ -330,3 +330,67 @@ struct AstElement* makeReturnByExp(struct AstElement* exp)
 	result->data.returnData.exp = exp;
 	return result;
 }
+
+struct AstElement* makePow( struct AstElement* right, struct AstElement* left)
+{
+	std::cout<<"\n makePow "<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekPow;
+	result->data.pow.right = right;
+	result->data.pow.left = left;
+	return result;
+}
+
+struct AstElement* makeFact( struct AstElement* expr)
+{
+	std::cout<<"\n makefact "<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekFact;
+	result->data.fact.expr = expr;
+	return result;
+}
+
+struct AstElement* makeAcos( struct AstElement* expr)
+{
+	std::cout<<"\n makeAcos "<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekAcos;
+	result->data.Acos.expr = expr;
+	return result;
+}
+
+struct AstElement* makeSqrt( struct AstElement* expr)
+{
+	std::cout<<"\n makeSqrt "<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekSqrt;
+	result->data.Sqrt.expr = expr;
+	return result;
+}
+
+struct AstElement* makeRotatez( struct AstElement* expr)
+{
+	std::cout<<"\n makeRotatez "<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekRotatez;
+	result->data.rotatez.expr = expr;
+	return result;
+}
+
+struct AstElement* makeMagnitudesqr( struct AstElement* expr)
+{
+	std::cout<<"\n makeRotatez "<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekMagnitudesqr;
+	result->data.rotatez.expr = expr;
+	return result;
+}
+
+struct AstElement* makeTransform( struct AstElement* expr)
+{
+	std::cout<<"\n makeTransform "<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekTransform;
+	result->data.transform.expr = expr;
+	return result;
+}

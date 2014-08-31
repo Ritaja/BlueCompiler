@@ -57,10 +57,17 @@ extern int yydebug;
      TOKEN_COMMA = 266,
      TOKEN_VECTOR = 267,
      TOKEN_RETURN = 268,
-     TOKEN_VECTOR2d = 269,
-     TOKEN_ID = 270,
-     TOKEN_NUMBER = 271,
-     TOKEN_OPERATOR = 272
+     TOKEN_POW = 269,
+     TOKEN_FACTORIAL = 270,
+     TOKEN_ACOS = 271,
+     TOKEN_SQRT = 272,
+     TOKEN_ROTATEZ = 273,
+     TOKEN_MAGNITUDESQR = 274,
+     TOKEN_TRANSFORM = 275,
+     TOKEN_VECTOR2d = 276,
+     TOKEN_ID = 277,
+     TOKEN_NUMBER = 278,
+     TOKEN_OPERATOR = 279
    };
 #endif
 
@@ -78,7 +85,7 @@ typedef union YYSTYPE
 
 
 /* Line 2058 of yacc.c  */
-#line 82 "parser.tab.h"
+#line 89 "parser.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

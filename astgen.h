@@ -6,7 +6,7 @@
 struct AstElement
 {
 	//this enum provides reference lookup for array search in astexec.cpp
-    enum {ekId, ekNumber, ekBinExpression, ekAssignment, ekWhile, ekFunc, ekSignatures, ekSignature, ekCall, ekStatements, ekIf, ekElseIf, ekArray, ekVector, ekVectors, ekVector2d, ekVec1delement, ekVec2delement, ekVecAssignment, ekVec2dAssignment, ekRtrnByExp, ekFuncAssign, ekLastElement} kind;
+    enum {ekId, ekNumber, ekBinExpression, ekAssignment, ekWhile, ekFunc, ekSignatures, ekSignature, ekCall, ekStatements, ekIf, ekElseIf, ekArray, ekVector, ekVectors, ekVector2d, ekVec1delement, ekVec2delement, ekVecAssignment, ekVec2dAssignment, ekRtrnByExp, ekFuncAssign, ekPow, ekFact, ekAcos, ekSqrt, ekRotatez, ekMagnitudesqr, ekTransform, ekLastElement} kind;
     struct
     {
         double val; //only one value... arrays implementation as a struct refer below
@@ -120,6 +120,35 @@ struct AstElement
 			char* name;
 			struct AstElement* exp;
 		}returnData;
+		struct
+		{
+			struct AstElement* right;
+			struct AstElement* left;
+		}pow;
+		struct
+		{
+			struct AstElement* expr;
+		}fact;
+		struct
+		{
+			struct AstElement* expr;
+		}Acos;
+		struct
+		{
+			struct AstElement* expr;
+		}Sqrt;
+		struct
+		{
+			struct AstElement* expr;
+		}rotatez;
+		struct
+		{
+			struct AstElement* expr;
+		}magnitudeSqr;
+		struct
+		{
+			struct AstElement* expr;
+		}transform;
     } data;
 };
 
@@ -148,4 +177,11 @@ struct AstElement* makeVecAssignment(char* name, int elementPos, struct AstEleme
 struct AstElement* makeVec2dAssignment(char* name, int elementPos1, int elementPos2, struct AstElement* right);
 struct AstElement* makeReturnByExp(struct AstElement* exp);
 struct AstElement* makeFuncAssignment( char*name, struct AstElement* val);
+struct AstElement* makePow( struct AstElement* right, struct AstElement* left);
+struct AstElement* makeFact( struct AstElement* expr);
+struct AstElement* makeAcos( struct AstElement* expr);
+struct AstElement* makeSqrt( struct AstElement* expr);
+struct AstElement* makeRotatez( struct AstElement* expr);
+struct AstElement* makeMagnitudesqr( struct AstElement* expr);
+struct AstElement* makeTransform( struct AstElement* expr);
 #endif

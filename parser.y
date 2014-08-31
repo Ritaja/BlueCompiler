@@ -18,6 +18,8 @@ extern int yylex();
 
 %token TOKEN_BEGIN TOKEN_END TOKEN_WHILE TOKEN_DO BOX_OPEN BOX_CLOSE
 %token TOKEN_IF TOKEN_ELSE TOKEN_COMMA TOKEN_VECTOR TOKEN_RETURN
+%token TOKEN_POW TOKEN_FACTORIAL TOKEN_ACOS TOKEN_SQRT 
+%token TOKEN_ROTATEZ TOKEN_MAGNITUDESQR TOKEN_TRANSFORM
 %token TOKEN_VECTOR2d
 %token<name> TOKEN_ID
 %token<val> TOKEN_NUMBER
@@ -66,6 +68,13 @@ expression: TOKEN_ID {$$=makeExpByName($1);}
     | expression TOKEN_OPERATOR expression {$$=makeExp($1, $3, $2);}
 	| TOKEN_ID BOX_OPEN TOKEN_NUMBER BOX_CLOSE {$$=makeVec1delement($1, $3);};
 	| TOKEN_ID BOX_OPEN TOKEN_NUMBER BOX_CLOSE BOX_OPEN TOKEN_NUMBER BOX_CLOSE {$$=makeVec2delement($1, $3, $6);};
+	| TOKEN_POW '(' expression TOKEN_COMMA expression ')'{$$=makePow($3, $5);};
+	| TOKEN_FACTORIAL '(' expression ')'{$$=makeFact($3);};
+	| TOKEN_ACOS '(' expression ')'{$$=makeAcos($3);};
+	| TOKEN_SQRT '(' expression ')'{$$=makeSqrt($3);};
+	| TOKEN_ROTATEZ '(' expression ')'{$$=makeRotatez($3);};
+	| TOKEN_MAGNITUDESQR '(' expression ')'{$$=makeMagnitudesqr($3);};
+	| TOKEN_TRANSFORM '(' expression ')'{$$=makeTransform($3);};
 
 array: {$$=0;}
      | array TOKEN_COMMA expression {$$=makeArray($1,$3);}
