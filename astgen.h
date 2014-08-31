@@ -6,10 +6,10 @@
 struct AstElement
 {
 	//this enum provides reference lookup for array search in astexec.cpp
-    enum {ekId, ekNumber, ekBinExpression, ekAssignment, ekWhile, ekFunc, ekSignatures, ekSignature, ekCall, ekStatements, ekIf, ekArray, ekVector, ekVectors, ekVector2d, ekVec1delement, ekVec2delement, ekVecAssignment, ekVec2dAssignment, ekLastElement} kind;
+    enum {ekId, ekNumber, ekBinExpression, ekAssignment, ekWhile, ekFunc, ekSignatures, ekSignature, ekCall, ekStatements, ekIf, ekElseIf, ekArray, ekVector, ekVectors, ekVector2d, ekVec1delement, ekVec2delement, ekVecAssignment, ekVec2dAssignment, ekRtrnByName, ekRtrnByExp, ekFuncAssign, ekLastElement} kind;
     struct
     {
-        int val; //only one value... arrays implementation as a struct refer below
+        double val; //only one value... arrays implementation as a struct refer below
         char* name; 
         struct
         {
@@ -39,6 +39,14 @@ struct AstElement
 			struct AstElement* ifTrue;
 			struct AstElement* ifFalse;
 		}ifStatement;
+		struct 
+		{
+			struct AstElement* ifcond;
+			struct AstElement* ifTrue;
+			struct AstElement* elseifCond;
+			struct AstElement* elseifCondTrue;
+			struct AstElement* elseifCondFalse;
+		}elseifStatement;
         struct
         {
             char* name;
@@ -107,18 +115,24 @@ struct AstElement
 			int elementPos2;
 			struct AstElement* right;
 		}Vec2dAssignment;
+		struct
+		{
+			char* name;
+			struct AstElement* exp;
+		}returnData;
     } data;
 };
 
 struct AstElement* makeAssignment(char*name, struct AstElement* val);
 struct AstElement* makeAssignment(char*name);
-struct AstElement* makeExpByNum(int val);
+struct AstElement* makeExpByNum(double val);
 struct AstElement* makeExpByName(char*name);
 struct AstElement* makeExp(struct AstElement* left, struct AstElement* right, char op);
 struct AstElement* makeStatement(struct AstElement* dest, struct AstElement* toAppend);
 struct AstElement* makeWhile(struct AstElement* cond, struct AstElement* exec);
 struct AstElement* makeCall(char* name, struct AstElement* param);
 struct AstElement* makeIf(struct AstElement* cond, struct AstElement* ifTrue, struct AstElement* ifFalse);
+struct AstElement* makeElseIf(struct AstElement* condIf, struct AstElement* ifTrue, struct AstElement* condElseIf, struct AstElement* elseIfTrue, struct AstElement* elseIfFalse);
 struct AstElement* makeFunc(char* name, struct AstElement* signature, struct AstElement* statement);
 struct AstElement* makeSignatures(struct AstElement* result,struct AstElement* signature);
 struct AstElement* makeSignature(char* type,struct AstElement* assignment);
@@ -132,4 +146,7 @@ struct AstElement* makeVec1delement(char* name,int elementPos);
 struct AstElement* makeVec2delement(char* name, int elementPos1, int elementPos2);
 struct AstElement* makeVecAssignment(char* name, int elementPos, struct AstElement* right);
 struct AstElement* makeVec2dAssignment(char* name, int elementPos1, int elementPos2, struct AstElement* right);
+struct AstElement* makeReturnByExp(struct AstElement* exp);
+struct AstElement* makeReturnByName(char* name);
+struct AstElement* makeFuncAssignment( char*name, struct AstElement* val);
 #endif
