@@ -10,20 +10,20 @@ extern int yylex();
 %}
 
 %union {
-    int val;
+    double val;
     char op;
     char* name;
     struct AstElement* ast; /* this is the new member to store AST elements */
 }
 
 %token TOKEN_BEGIN TOKEN_END TOKEN_WHILE TOKEN_DO BOX_OPEN BOX_CLOSE
-%token TOKEN_IF TOKEN_ELSE TOKEN_COMMA TOKEN_VECTOR
+%token TOKEN_IF TOKEN_ELSE TOKEN_COMMA TOKEN_VECTOR TOKEN_RETURN
 %token TOKEN_VECTOR2d
 %token<name> TOKEN_ID
 %token<val> TOKEN_NUMBER
 %token<op> TOKEN_OPERATOR
 %type<ast> program block statements statement assignment expression whileStmt call ifStmt func 
-%type<ast> signature signatures array vector vector2d vectors
+%type<ast> signature signatures array vector vector2d vectors return
 %start program
 
 %{
@@ -52,11 +52,13 @@ statement:
 	| func {$$=$1;}
 	| vector {$$=$1;}
 	| vector2d {$$=$1;}
+	| return {$$=$1;}
 
 assignment: TOKEN_ID '=' expression {$$=makeAssignment($1, $3);}
           | TOKEN_ID {$$=makeAssignment($1);};
 		  | TOKEN_ID BOX_OPEN TOKEN_NUMBER BOX_CLOSE '=' expression {$$=makeVecAssignment($1, $3, $6);}
 		  | TOKEN_ID BOX_OPEN TOKEN_NUMBER BOX_CLOSE BOX_OPEN TOKEN_NUMBER BOX_CLOSE '=' expression {$$=makeVec2dAssignment($1, $3, $6, $9);}
+		  | TOKEN_ID '=' call{$$=makeFuncAssignment($1, $3);}
                     
 /* see how to support x=a[]+b[]*/
 expression: TOKEN_ID {$$=makeExpByName($1);}
@@ -85,7 +87,9 @@ vectors: {$$=0;}
 
 whileStmt: TOKEN_WHILE '(' expression ')' TOKEN_DO statement{$$=makeWhile($3, $6);};
 
+/*if multiple else if support is required create a separate structure*/
 ifStmt: TOKEN_IF  '(' expression ')' TOKEN_DO statement TOKEN_ELSE TOKEN_DO statement{$$=makeIf($3, $6, $9);};
+      | TOKEN_IF  '(' expression ')' TOKEN_DO statement TOKEN_ELSE  TOKEN_IF '(' expression ')' TOKEN_DO statement TOKEN_ELSE TOKEN_DO statement{$$=makeElseIf($3, $6, $10, $13, $16);};
 
 func: TOKEN_ID TOKEN_ID '(' signatures ')' statement {$$=makeFunc($2, $4, $6);};
 
@@ -99,6 +103,8 @@ signature:
 
 
 call: TOKEN_ID '(' array ')' {$$=makeCall($1, $3);};
+
+return: TOKEN_RETURN expression{$$=makeReturnByExp($2);} 
 
 
 %%
