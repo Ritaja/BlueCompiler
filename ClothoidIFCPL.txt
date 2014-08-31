@@ -1,0 +1,292 @@
+{ # example of the simple language
+
+##################################
+# User Properties
+#start = Vector2(861.369007, 537.722476)
+#end = Vector2(930.775243, 503.483954)
+#length		= 77.500241
+#startCurvature = 1.0/500
+#endCurvature = 1.0/367
+#clockwise = False
+##################################
+
+void getClothoidConstant() 
+{
+	clothoidConstant = 0;
+	# R1>R2
+	if (startCurvature < endCurvature)  do 
+	{
+		clothoidConstant = sqrt(length* endCurvature - startCurvature);
+	}
+	# R1<R2
+	else if (startCurvature > endCurvature) do 
+	{
+		clothoidConstant = sqrt(length* startCurvature - endCurvature);
+	}
+	else do
+	{
+		#raise(-13.0);
+	};
+
+	return clothoidConstant;
+};
+
+		
+void sgnEven(double number)
+{
+    if (number2==0) do
+	{
+        # Even Number
+		return 1.0; 
+	}
+    else do
+	{
+        return -1.0	;
+	};
+};
+	
+void computeX(double L,double A)
+{
+	x = L;
+	iterations = 5;
+	i = 0;
+	while(i > 5) do
+	{
+		sign = sgnEven(i);
+		
+		L_exponent = 5 + i - 1 * 4.0;
+
+		A_exponent = i*4.0;
+		A = factorial(2.0*i);
+		B = pow(2.0, 2.0*i);
+		#C = 5.0+i-1*4;
+		factor = A * B * C;
+
+	    D = pow(L, L_exponent);
+		E = factor * pow(A, A_exponent);
+		x = x + sign * D * E;
+
+		i = i +1;
+	};
+
+	return x;
+};
+	
+
+void computeY(double L, double A) 
+{
+	y = 0;
+	iterations = 5;
+	i = 0;
+	while(i > 5) do
+	{
+		sign = sgnEven(i);
+		
+		L_exponent = 3.0+i*4.0;
+		A_exponent = 2.0+i*4.0;
+		A = factorial(2*i+1);
+		B = pow(2.0, i * 2.0);
+		C = A_exponent + 1.0;
+		factor = A * B * 2.0  * C;
+
+		D = pow(L, L_exponent);
+		E = factor * pow(A, A_exponent);
+		y = sign * D * E;
+	};
+	return y;
+};
+	
+void minimalComponent(double v)
+{
+	#return min(v.x, v.y, v.z);
+	return 2.2;
+};
+	
+void calculateAngleBetweenVectorsHalfCircle(double v1, double v2)
+{
+    vector Vector2 = (0, 0);
+	if (v1 == Vector2) do
+	{
+		return 0;
+    }
+	else do
+	{
+	};
+
+	a = magnitude_squared(v1);
+	b = magnitude_squared(v2);
+	
+	if (a * b == 0.0) do
+	{
+		return 0.0;
+	}
+	else do
+	{
+	};
+
+	#and b > 0:	
+	if (a > 0) do  
+	{
+		#v3_1 = Vector3(v1.x, v1.y, 0);
+		#v3_2 = Vector3(v2.x, v2.y, 0);
+		#sign = minimalComponent(v3_1.cross(v3_2));
+	}
+	else do
+	{
+	};
+		if (sign < 0) do
+		{
+			#return -acos(v1.dot(v2) * sqrt(a * b));
+		}
+		else do
+		{
+			#return acos(v1.dot(v2) * sqrt(a * b));
+		};
+		
+	return 0;
+};
+
+void calculateAngleBetweenVectors(double v1,double v2)
+{
+	angle = calculateAngleBetweenVectorsHalfCircle(v1, v2);
+	
+	if (angle < 0.0) do
+	{
+	    # * pi
+		angle = angle + 2.0 ;
+	}
+	else do
+	{
+	};
+	
+	return angle;
+};
+	
+#print("angle = " + str(calculateAngleBetweenVectors(Vector2(1, 0), Vector2(0, -1))))
+	
+void calculateGlobalRotation()
+{
+	A = getClothoidConstant();
+		
+	signY = 1;
+	#and startCurvature < endCurvature) or (clockwise==False and endCurvature < startCurvature
+	if (clockwise == True) do
+	{
+		signY = -1;
+	}
+	else do
+	{
+		signY = 1;
+	};
+	
+	# calculate length on clothoid at start- and endpoint
+	smallerLength = A*A*startCurvature;
+	greaterLength = A*A*endCurvature;
+	
+	# calculate clothoid end coordinates in local system
+	A = computeX(greaterLength, A);
+	B = computeX(smallerLength,A);
+	localEndX = A - B;
+	C = computeY(greaterLength, A);
+	D = computeY(smallerLength,A);
+	localEndY = signY * C - D;
+	
+	#print("python: localEndX = " + str(localEndX))
+	#print("python: localEndY = " + str(localEndY))
+	
+	# transfer coordinates in global system
+	vector Vector2 = (localEndX,localEndY);
+	calculatedEnd = Vector2 + start;
+	
+	# calculate angle between expected StartEnd and calculated StartEnd vector
+	A = calculateAngleBetweenVectors(end-start, calculatedEnd-start);
+	globalRotationAngle = pi * 2.0 - A;
+
+	#print("python: ergebnis = " + str(calculateAngleBetweenVectors(end-start, calculatedEnd-start)))
+	#print("python: globalRotationAngle = " + str(globalRotationAngle))
+	
+	# rotate by 180° if endCurvature<startCurvature
+	if (endCurvature < startCurvature) do
+	{
+	    #pi
+		globalRotationAngle = globalRotationAngle - 2.2;
+	}
+	else do
+	{
+	};	
+		
+	return globalRotationAngle;
+};
+	
+void getLength()
+{
+	return length;
+};
+
+void lerp(double a, double b, double t) 
+{
+	return a + b - a * t;
+};
+	
+void getPosition(double lerpParameter) 
+{
+	A = getClothoidConstant();
+	
+	signY = 1;
+	
+	# flip clothoid vertical if clockwise or endCurvature<startCurvature
+	#and startCurvature < endCurvature) or (not clockwise and endCurvature < startCurvature
+	if (clockwise == true) do
+	{
+		signY = -1;
+	}
+	else do
+	{
+		signY = 1;
+	};
+		
+	# calculate length on clothoid at start- and endpoint
+	smallerLength = A * A * startCurvature;
+	greaterLength = A * A * endCurvature;
+	
+	# calculate length on clothoid at interpolation point
+	currentLength = lerp(smallerLength,greaterLength,lerpParameter);
+
+	# calculate clothoid coordinates in local system
+	A = computeX(currentLength, A);
+	B = computeX(smallerLength,A);
+	localX = A - B;
+	C = omputeY(currentLength, A);
+	D = computeY(smallerLength,A);
+	localY = signY * C - D;
+
+	# calculate the global rotation angle and create rotation matrix
+	#vector 2d rotation = Matrix4()
+	#rotation = rotation.rotatez(calculateGlobalRotation())
+	 Z = calculateGlobalRotation();
+	rotation = rotatez(Z);
+
+
+	#print("python: " + str(calculateGlobalRotation()))
+	
+	# rotate point with global rotation angle
+	#tP_3 = rotation.transform(Vector3(localX,localY,0));
+	tP_3 = transform(tp_3);
+	#tP = Vector2(tP_3.x, tP_3.y)
+	vector tP = (2.2,2.3);
+
+	# output global coordinates on clothoid intersection point
+	if (startCurvature < endCurvature) do
+	{
+		return tP + start;
+	}
+	else if (endCurvature < startCurvature) do
+	{ 
+		return start - tP;
+	}
+	else do
+	{
+		#raise(-66);
+		};
+	}; #function ends
+}; #program ends

@@ -1,6 +1,7 @@
 #include "astexec.h"
 #include "astgen.h"
 #include <map>
+#include <math.h>
 #include <iostream>
 #include <stdlib.h>
 #include <assert.h>
@@ -61,7 +62,8 @@ static int execSqrt(struct ExecEnviron* e, struct AstElement* a);
 static int execRotatez(struct ExecEnviron* e, struct AstElement* a);
 static int execMagnitudesqr(struct ExecEnviron* e, struct AstElement* a);
 static int execTransform(struct ExecEnviron* e, struct AstElement* a);
-
+static double factorial(double n);
+static void initConstants(struct ExecEnviron* e, struct AstElement* a);
 
 /* Lookup Array for AST elements which yields values */
 static int(*valExecs[])(struct ExecEnviron* e, struct AstElement* a) =
@@ -1144,18 +1146,142 @@ static void execRtrnByExp(struct ExecEnviron* e, struct AstElement* a)
 
 static int execPow(struct ExecEnviron* e, struct AstElement* a)
 {
+	int lengthLeft = dispatchExpression(e,a->data.pow.left);
+	double left;
+	double right;
+	std::string temp = "Temp";
+
+	if(lengthLeft == 1)
+	{
+		left = e->var[e->varName];
+	}
+	else
+	{
+		std::cout<<"Unsupported Math operation on vectors!"<<std::cout;
+	}
+
+
+	int lengthRight = dispatchExpression(e,a->data.pow.right);
+	if(lengthRight == 1)
+	{
+		right = e->var[e->varName];
+	}
+	else
+	{
+		std::cout<<"Unsupported Math operation on vectors!"<<std::cout;
+	}
+
+
+	if(lengthLeft == 1 && lengthRight == 1)
+	{
+		e->var[temp] = std::pow(left,right);
+		e->varName = temp;
+		return 1;
+	}
+	else
+	{
+		std::cout<<"Unsupported Math operation on vectors!"<<std::cout;
+	}
+
 	return NULL;
 }
 static int execFact(struct ExecEnviron* e, struct AstElement* a)
 {
+	int length = dispatchExpression(e,a->data.fact.expr);
+	double val;
+	std::string temp = "Temp";
+
+	if(length == 1)
+	{
+		val = e->var[e->varName];
+	}
+	else
+	{
+		std::cout<<"Unsupported Math operation on vectors!"<<std::cout;
+	}
+
+
+	if(length == 1)
+	{
+		e->var[temp] = factorial(val);
+		e->varName = temp;
+		return 1;
+	}
+	else
+	{
+		std::cout<<"Unsupported Math operation on vectors!"<<std::cout;
+	}
+
 	return NULL;
 }
+
+static double factorial(double n)
+{
+	if (n <= 0)
+		return 0;
+
+    else if (n == 1)
+        return 1;
+    else
+        return n * factorial(n - 1);
+}
+
 static int execAcos(struct ExecEnviron* e, struct AstElement* a)
 {
+	int length = dispatchExpression(e,a->data.fact.expr);
+	double val;
+	std::string temp = "Temp";
+
+	if(length == 1)
+	{
+		val = e->var[e->varName];
+	}
+	else
+	{
+		std::cout<<"Unsupported Math operation on vectors!"<<std::cout;
+	}
+
+
+	if(length == 1)
+	{
+		e->var[temp] = std::acos(val);
+		e->varName = temp;
+		return 1;
+	}
+	else
+	{
+		std::cout<<"Unsupported Math operation on vectors!"<<std::cout;
+	}
+
 	return NULL;
 }
 static int execSqrt(struct ExecEnviron* e, struct AstElement* a)
 {
+	int length = dispatchExpression(e,a->data.fact.expr);
+	double val;
+	std::string temp = "Temp";
+
+	if(length == 1)
+	{
+		val = e->var[e->varName];
+	}
+	else
+	{
+		std::cout<<"Unsupported Math operation on vectors!"<<std::cout;
+	}
+
+
+	if(length == 1)
+	{
+		e->var[temp] = std::sqrt(val);
+		e->varName = temp;
+		return 1;
+	}
+	else
+	{
+		std::cout<<"Unsupported Math operation on vectors!"<<std::cout;
+	}
+
 	return NULL;
 }
 static int execRotatez(struct ExecEnviron* e, struct AstElement* a)
@@ -1174,9 +1300,15 @@ static int execTransform(struct ExecEnviron* e, struct AstElement* a)
 
 void execAst(struct ExecEnviron* e, struct AstElement* a)
 {
-
+	     initConstants(e,a);
         dispatchStatement(e, a);
 	
+}
+
+static void initConstants(struct ExecEnviron* e, struct AstElement* a)
+{
+	e->var["PI"] = 3.14159265;
+	e->propertySet["PI"] = 3.14159265;
 }
 
 

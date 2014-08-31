@@ -16,10 +16,11 @@
 	 print(temp);
 	 #print(temp);
 	 #print(tar);
-	 return temp;
+	 return pow(2.2,2);
 	};
 
     y = funcA(5,start,4);
+	y = y + 1;
 	#a = -0.1;
 	#b = 2;
 	#c = 0.2;

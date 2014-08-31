@@ -241,6 +241,7 @@ struct AstElement* makeCall(char* name, struct AstElement* param)
 
 struct AstElement* makeFunc(char* name, struct AstElement* signature, struct AstElement* statement)
 {
+	std::cout<<"\n ########         makeFunction:: creating "<<name<<std::endl;
 	struct AstElement* result = new AstElement();
 	result->kind = AstElement::ekFunc;
 	result->data.func.name = name;
@@ -331,7 +332,7 @@ struct AstElement* makeReturnByExp(struct AstElement* exp)
 	return result;
 }
 
-struct AstElement* makePow( struct AstElement* right, struct AstElement* left)
+struct AstElement* makePow( struct AstElement* left, struct AstElement* right)
 {
 	std::cout<<"\n makePow "<<std::endl;
 	struct AstElement* result = new AstElement();
@@ -379,7 +380,7 @@ struct AstElement* makeRotatez( struct AstElement* expr)
 
 struct AstElement* makeMagnitudesqr( struct AstElement* expr)
 {
-	std::cout<<"\n makeRotatez "<<std::endl;
+	std::cout<<"\n makeMagnitudesqr "<<std::endl;
 	struct AstElement* result = new AstElement();
 	result->kind = AstElement::ekMagnitudesqr;
 	result->data.rotatez.expr = expr;

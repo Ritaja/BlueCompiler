@@ -177,7 +177,7 @@ struct AstElement* makeVecAssignment(char* name, int elementPos, struct AstEleme
 struct AstElement* makeVec2dAssignment(char* name, int elementPos1, int elementPos2, struct AstElement* right);
 struct AstElement* makeReturnByExp(struct AstElement* exp);
 struct AstElement* makeFuncAssignment( char*name, struct AstElement* val);
-struct AstElement* makePow( struct AstElement* right, struct AstElement* left);
+struct AstElement* makePow( struct AstElement* left, struct AstElement* right);
 struct AstElement* makeFact( struct AstElement* expr);
 struct AstElement* makeAcos( struct AstElement* expr);
 struct AstElement* makeSqrt( struct AstElement* expr);
