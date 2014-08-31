@@ -10,9 +10,6 @@
 
 struct ExecEnviron
 {
-	/* Obsolete structure */
-    //int x; 
-
 	/*  The stack for storing Numeric values from AST execution.  */
 	std::map<std::string,double>var; 
 
@@ -21,15 +18,6 @@ struct ExecEnviron
 
 	/* The stack for storing numeric arrays.reused as multi signature pass in function calls and dynamic print */
 	std::vector<double>arr;
-
-	/* The stack to store arrays. */
-	//std::map<std::string,std::vector<int>>vectorArr;
-
-	/* the FLAG signalls the presence of vector. Hence Reserved. */
-	//bool isVector2d; 
-
-	/* no of elements to be operated on. obsolete */
-	//int noOfElements;
 
 	/* reference to starting name */
 	std::string varName;
@@ -50,7 +38,6 @@ static void execfuncCall(struct ExecEnviron* e, struct AstElement* a);
 static void execPrint(struct ExecEnviron* e, struct AstElement* a);
 static int execArrSub(struct ExecEnviron* e,std::vector<int>arrLeft,std::vector<int>arrRight);
 static int execArrAdd(struct ExecEnviron* e,std::vector<int>arrLeft,std::vector<int>arrRight);
-//static ExecEnviron* execArray(struct ExecEnviron* e, struct AstElement* a);
 static int execArray(struct ExecEnviron* e, struct AstElement* a);
 static int execVector(struct ExecEnviron* e, struct AstElement* a);
 static int execVectors(struct ExecEnviron* e, struct AstElement* a);
@@ -61,12 +48,10 @@ static void execVecAssign(struct ExecEnviron* e, struct AstElement* a);
 static void execVec2dAssign(struct ExecEnviron* e, struct AstElement* a);
 static void execElseIf(struct ExecEnviron* e, struct AstElement* a);
 static void execRtrnByExp(struct ExecEnviron* e, struct AstElement* a);
-static void execRtrnByName(struct ExecEnviron* e, struct AstElement* a);
 static void destroyTemp(ExecEnviron* e, int length);
 static void execFuncCallAssign(struct ExecEnviron* e, struct AstElement* a, std::vector<std::string>signatures);
 static void execFuncAssign(struct ExecEnviron* e, struct AstElement* a);
-/* Obsolete function */
-static void display(std::string name,ExecEnviron* e);
+
 
 
 /* Lookup Array for AST elements which yields values */
@@ -120,7 +105,7 @@ static void(*runExecs[])(struct ExecEnviron* e, struct AstElement* a) =
 	NULL,
 	execVecAssign,
 	execVec2dAssign,
-	execRtrnByName,
+	NULL,
 	execRtrnByExp,
 	execFuncAssign
 };
@@ -719,6 +704,10 @@ static void execAssign(struct ExecEnviron* e, struct AstElement* a)
 //end of assignment
 }
 
+/*This function is used to assign the values from a function return statement
+into a variable. The variable does not need to be initialized with a data type.
+The data type is selected automatically as per the return statement. The value 
+for the variable is stored in the execution environment value lookup stack e->var*/
 static void execFuncAssign(struct ExecEnviron* e, struct AstElement* a)
 {
     assert(a);
@@ -734,6 +723,7 @@ static void execFuncAssign(struct ExecEnviron* e, struct AstElement* a)
 
 	if(e->var.find(varName) != e->var.end())
 	{
+		//found expression of type number or token_id
 		e->var[(assgnName)] = e->var[varName];
 		std::cout<<"ExecFuncAssign: "<<assgnName<<"Value: "<<e->var[(assgnName)];
 		destroyTemp(e,1);
@@ -779,6 +769,10 @@ static void execFuncAssign(struct ExecEnviron* e, struct AstElement* a)
 //end of assignment
 }
 
+
+/*This function does the clean up of values stored as 'Temp' or 'Value'
+in memory. Free up memory space. Should be called after each assignment
+operation*/
 static void destroyTemp(ExecEnviron* e, int length)
 {
 	std::string varName = "Temp";
@@ -1121,12 +1115,7 @@ static void execRtrnByExp(struct ExecEnviron* e, struct AstElement* a)
 }
 
 
-static void execRtrnByName(struct ExecEnviron* e, struct AstElement* a)
-{
-	/*e->varName = a->data.returnData.name;
-	std::cout<<"wexecRtrnByName"<<std::endl;
-	return NULL;*/
-}
+
 
 
 void execAst(struct ExecEnviron* e, struct AstElement* a)

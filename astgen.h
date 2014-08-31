@@ -147,6 +147,5 @@ struct AstElement* makeVec2delement(char* name, int elementPos1, int elementPos2
 struct AstElement* makeVecAssignment(char* name, int elementPos, struct AstElement* right);
 struct AstElement* makeVec2dAssignment(char* name, int elementPos1, int elementPos2, struct AstElement* right);
 struct AstElement* makeReturnByExp(struct AstElement* exp);
-struct AstElement* makeReturnByName(char* name);
 struct AstElement* makeFuncAssignment( char*name, struct AstElement* val);
 #endif
