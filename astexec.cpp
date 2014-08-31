@@ -21,6 +21,9 @@ struct ExecEnviron
 
 	/* reference to starting name */
 	std::string varName;
+
+	/* Simple map to store PropertySet mapings to provide as check to interface above. */
+	std::map<std::string,double>propertySet; 
 };
 
 /* Forward declarations */
@@ -1123,6 +1126,24 @@ void execAst(struct ExecEnviron* e, struct AstElement* a)
 
         dispatchStatement(e, a);
 	
+}
+
+
+void setPropertySet(struct ExecEnviron* e,char* varName, double val)
+{
+	e->var[varName] = val;
+	e->propertySet[varName] = val;
+}
+
+double getPropertySet(struct ExecEnviron* e, char* varName)
+{
+	return e->var[varName];
+}
+
+
+std::map<std::string,double> getPropertySet(struct ExecEnviron* e)
+{
+	return e->propertySet;
 }
 
 struct ExecEnviron* createEnv()

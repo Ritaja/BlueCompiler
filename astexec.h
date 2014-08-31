@@ -1,3 +1,4 @@
+#include <map>
 #ifndef ASTEXEC_H
 #define ASTEXEC_H
 
@@ -12,5 +13,16 @@ void freeEnv(struct ExecEnviron* e);
 
 /* executes an AST */
 void execAst(struct ExecEnviron* e, struct AstElement* a);
+
+/*Sets the propertySet for the created environment by the name and double value.*/
+void setPropertySet(struct ExecEnviron* e,char* varName, double val);
+
+
+/*returns the value set for a particular propertySet element in the exec env.*/
+double getPropertySet(struct ExecEnviron* e, char* varName);
+
+
+/*returns the entire map of the propertySet element in the exec env.*/
+std::map<std::string,double> getPropertySet(struct ExecEnviron* e);
 
 #endif
