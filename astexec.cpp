@@ -14,13 +14,13 @@ struct ExecEnviron
     //int x; 
 
 	/*  The stack for storing Numeric values from AST execution.  */
-	std::map<std::string,int>var; 
+	std::map<std::string,double>var; 
 
 	/* The stack for storing function mappings for calls later. */
 	std::map<std::string,AstElement*>func;
 
 	/* The stack for storing numeric arrays.reused as multi signature pass in function calls and dynamic print */
-	std::vector<int>arr;
+	std::vector<double>arr;
 
 	/* The stack to store arrays. */
 	//std::map<std::string,std::vector<int>>vectorArr;
@@ -60,8 +60,11 @@ static int execVec2dEl(struct ExecEnviron* e, struct AstElement* a);
 static void execVecAssign(struct ExecEnviron* e, struct AstElement* a);
 static void execVec2dAssign(struct ExecEnviron* e, struct AstElement* a);
 static void execElseIf(struct ExecEnviron* e, struct AstElement* a);
+static void execRtrnByExp(struct ExecEnviron* e, struct AstElement* a);
+static void execRtrnByName(struct ExecEnviron* e, struct AstElement* a);
 static void destroyTemp(ExecEnviron* e, int length);
 static void execFuncCallAssign(struct ExecEnviron* e, struct AstElement* a, std::vector<std::string>signatures);
+static void execFuncAssign(struct ExecEnviron* e, struct AstElement* a);
 /* Obsolete function */
 static void display(std::string name,ExecEnviron* e);
 
@@ -88,6 +91,9 @@ static int(*valExecs[])(struct ExecEnviron* e, struct AstElement* a) =
 	execVec1dEl,
 	execVec2dEl,
 	NULL,
+	NULL,
+	NULL,
+	NULL,
 	NULL
 };
 
@@ -113,7 +119,10 @@ static void(*runExecs[])(struct ExecEnviron* e, struct AstElement* a) =
 	NULL,
 	NULL,
 	execVecAssign,
-	execVec2dAssign
+	execVec2dAssign,
+	execRtrnByName,
+	execRtrnByExp,
+	execFuncAssign
 };
 
 static int (*arrExecs[])(struct ExecEnviron* e, struct AstElement* a) =
@@ -134,6 +143,9 @@ static int (*arrExecs[])(struct ExecEnviron* e, struct AstElement* a) =
 	execVector,
 	execVectors,
 	execVector2d,
+	NULL,
+	NULL,
+	NULL,
 	NULL,
 	NULL,
 	NULL,
@@ -306,7 +318,7 @@ static int execTermExpression(struct ExecEnviron* e, struct AstElement* a)
     {
        		
 	    e->varName = "Value";
-		e->var[(e->varName)] = (a->data.val);
+		e->var["Value"] = (a->data.val);
 		return 1;
     }
     else
@@ -420,11 +432,22 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 	/*if null is returned on either side. it has a vector variable
 	store it in temporary arrays to operate on them.*/
 	std::string temp = "Temp";
+	const int right = dispatchExpression(e, a->data.expression.right);
+	std::string varNameRight = e->varName;
+	double varRight;
+	double placeHolder;
+	if(varNameRight.compare("Value") == 0)
+	{
+		varRight = e->var[varNameRight];
+	}
     const int left = dispatchExpression(e, a->data.expression.left);
 	std::string varNameLeft = e->varName;
+	/*Special case arises when we have 2+3 or two value comparisons
+	evidently the execution environment stack for Value gets overiiten. 
+	So, push of value is done for this scenario */ 
 	
-    const int right = dispatchExpression(e, a->data.expression.right);
-	std::string varNameRight = e->varName;
+	
+    
 	
 	if(right != left)
 	{
@@ -440,9 +463,19 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 			case '+':
 				if(right ==1 && left ==1)
 				{
-					e->var[temp] = e->var[varNameLeft] + e->var[(varNameRight)];
-					std::cout<<"Added"<<e->var[temp]<<" Left: "<<varNameLeft<<" Right: "<<varNameRight<<std::endl;
-					e->varName = temp;
+					if(varNameLeft.compare("Value") == 0 && varNameRight.compare("Value") == 0)
+					{
+						e->var[temp] = varRight + e->var[(varNameLeft)];
+						e->varName = temp;
+						std::cout<<"AddedDouble "<<e->var[temp]<<" Left: "<<varNameLeft<<" Right: "<<varNameRight<<std::endl;
+					}
+					else
+					{
+						placeHolder = e->var[varNameLeft] + e->var[varNameRight];
+						e->var[temp] = placeHolder;
+						std::cout<<"Added "<<e->var[temp]<<" Left: "<<varNameLeft<<" "<<e->var[varNameLeft]<<" Right: "<<varNameRight<<" "<<e->var[varNameRight]<<" PlaceHolder: "<<placeHolder<<std::endl;
+						e->varName = temp;
+					}
 					return 1;
 				}
 				else if( e->var.find(varNameLeft+std::to_string(0)+std::to_string(0)) != e->var.end() || e->var.find(varNameRight+std::to_string(0)+std::to_string(0)) != e->var.end() )
@@ -479,8 +512,19 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 			case '-':
 				if(right ==1 && left ==1)
 				{
-					e->var[temp] = e->var[varNameLeft] - e->var[(varNameRight)];
-					e->varName = temp;
+					if(varNameLeft.compare("Value") == 0 && varNameRight.compare("Value") == 0)
+					{
+						e->var[temp] =  e->var[(varNameLeft)] - varRight ;
+						e->varName = temp;
+						std::cout<<"AddedDouble "<<e->var[temp]<<" Left: "<<varNameLeft<<" "<<e->var[varNameLeft]<<" Right: "<<varRight<<std::endl;
+					}
+					else
+					{
+						placeHolder = e->var[varNameLeft] - e->var[varNameRight];
+						e->var[temp] = placeHolder;
+						std::cout<<"Added "<<e->var[temp]<<" Left: "<<varNameLeft<<" "<<e->var[varNameLeft]<<" Right: "<<varNameRight<<" "<<e->var[varNameRight]<<" PlaceHolder: "<<placeHolder<<std::endl;
+						e->varName = temp;
+					}
 					return 1;
 				}
 				else if( e->var.find(varNameLeft+std::to_string(0)+std::to_string(0)) != e->var.end() || e->var.find(varNameRight+std::to_string(0)+std::to_string(0)) != e->var.end() )
@@ -517,8 +561,19 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 			case '*':
 				if(right ==1 && left ==1)
 				{
-					e->var[temp] = e->var[varNameLeft] * e->var[(varNameRight)];
-					e->varName = temp;
+					if(varNameLeft.compare("Value") == 0 && varNameRight.compare("Value") == 0)
+					{
+						e->var[temp] = varRight * e->var[(varNameLeft)];
+						e->varName = temp;
+						std::cout<<"AddedDouble "<<e->var[temp]<<" Left: "<<varNameLeft<<" Right: "<<varNameRight<<std::endl;
+					}
+					else
+					{
+						placeHolder = e->var[varNameLeft] * e->var[varNameRight];
+						e->var[temp] = placeHolder;
+						std::cout<<"Added "<<e->var[temp]<<" Left: "<<varNameLeft<<" "<<e->var[varNameLeft]<<" Right: "<<varNameRight<<" "<<e->var[varNameRight]<<" PlaceHolder: "<<placeHolder<<std::endl;
+						e->varName = temp;
+					}
 					return 1;
 				}
 				else
@@ -659,6 +714,66 @@ static void execAssign(struct ExecEnviron* e, struct AstElement* a)
 	else
 	{
 		std::cout<<"ExecAssign: Unsupported operation!!Cant find stored value"<<std::endl;
+	}	
+	
+//end of assignment
+}
+
+static void execFuncAssign(struct ExecEnviron* e, struct AstElement* a)
+{
+    assert(a);
+	assert(AstElement::ekFuncAssign == a->kind);
+    //onlyX(a->data.assignment.name);
+	
+    assert(e);
+	struct AstElement* r = a->data.assignment.right;
+	execfuncCall(e, r);
+	std::string varName = e->varName;
+	std::string assgnName = (a->data.assignment.name);
+	std::cout<<"execFuncAssign: varName: "<<varName<<std::endl;
+
+	if(e->var.find(varName) != e->var.end())
+	{
+		e->var[(assgnName)] = e->var[varName];
+		std::cout<<"ExecFuncAssign: "<<assgnName<<"Value: "<<e->var[(assgnName)];
+		destroyTemp(e,1);
+	}
+
+
+	else if( e->var.find(varName+std::to_string(0)+std::to_string(0)) != e->var.end() )
+	{
+		//found array 2d. names with Sample01, Sample11
+		int i = 0;
+
+		while ( e->var.find(varName+std::to_string(i)+std::to_string(0)) != e->var.end() )
+		{
+			int j=0;
+			do
+			{
+				e->var[(assgnName+std::to_string(i)+std::to_string(j))] = e->var[(varName+std::to_string(i)+std::to_string(j))];
+			j++;
+			}while(e->var.find(varName+std::to_string(i)+std::to_string(j)) != e->var.end());
+
+			i++;
+		}
+		 //assignment to environment stack done. Assign doesenot return anything. destroy temp in memory.
+		destroyTemp(e,i);
+	}
+	else if( e->var.find(varName+std::to_string(0)) != e->var.end() )
+	{
+		//found 1d array. Names with Sample0 Sample1
+		int i = 0;
+		while( e->var.find(varName+std::to_string(i)) != e->var.end() )
+		{
+		     e->var[(assgnName+std::to_string(i))] = e->var[(varName+std::to_string(i))];
+			 i++;
+		}
+		//assignment to environment stack done. Assign doesenot return anything.destroy temp in memory.
+		destroyTemp(e,i);
+	}
+	else
+	{
+		std::cout<<"ExecFuncAssign: Unsupported operation!!Cant find stored value"<<std::endl;
 	}	
 	
 //end of assignment
@@ -848,7 +963,7 @@ static void execFuncCallAssign(struct ExecEnviron* e, struct AstElement* a, std:
 			if(length==1)
 			{
 				e->var[(assgnName)] = e->var[varName];
-				std::cout<<"ExecFuncCall: "<<assgnName<<" Value: "<<e->var[(assgnName)]<<std::endl;
+				std::cout<<"ExecFuncCallAssign: "<<assgnName<<" Value: "<<e->var[(assgnName)]<<std::endl;
 				destroyTemp(e,1);
 			}
 
@@ -957,6 +1072,7 @@ static void execStmt(struct ExecEnviron* e, struct AstElement* a)
 		else
 		{
 			dispatchStatement(e, a->data.statements.statements[i]);
+			std::cout<<"execStmnt:KindNext "<<a->data.statements.statements[i]->kind<<std::endl;
 		}
     }
 }
@@ -994,6 +1110,24 @@ static int execVec2dEl(struct ExecEnviron* e, struct AstElement* a)
 	return e->var[(vectorName+std::to_string(pos))];*/
 	return NULL;
 }
+
+
+static void execRtrnByExp(struct ExecEnviron* e, struct AstElement* a)
+{
+	dispatchExpression(e,a->data.returnData.exp);
+	/*int length = dispatchExpression(e,a->data.returnData.exp);
+	std::cout<<"wexecRtrnByValue"<<std::endl;
+	return length;*/
+}
+
+
+static void execRtrnByName(struct ExecEnviron* e, struct AstElement* a)
+{
+	/*e->varName = a->data.returnData.name;
+	std::cout<<"wexecRtrnByName"<<std::endl;
+	return NULL;*/
+}
+
 
 void execAst(struct ExecEnviron* e, struct AstElement* a)
 {

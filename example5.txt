@@ -1,22 +1,31 @@
 { # example of the simple language
 
-	vector A = (1,2,3);
-	#vector B = (1,1,1);
-	#vector C = A ;
+	vector A = (1.0,2.1,3.1);
+	#vector B = (1.1,1.1,1.1);
+	#vector C = A + B + A;
 	#print (C);
 
-	vector2d E = [(1,2),(1,2,3),(1,1,1,1)];
-	vector2d D = [(1,2),(1,2,3),(1,1,1,1)];
-	vector2d F = E + D;
+	vector2d E = [(1.1,2.0),(1.2,2.2,3.2),(1.3,1.3,1.3,1.3)];
+	#vector2d D = [(1.1,2.0),(1.2,2.2,3.2),(1.3,1.3,1.3,1.3)];
+	#vector2d F = E + D + D;
 	#print (F);
 
 	void funcA(int test,int temp,int tar)
 	{
 	 x=8;
-	 print(test);
 	 print(temp);
-	 print(tar);
+	 #print(temp);
+	 #print(tar);
+	 return temp + E;
 	};
 
-	funcA(5,A[1],4);
+    y = funcA(5,E,4);
+	#a = -0.1;
+	#b = 2;
+	#c = 0.2;
+	#d = 1.1;
+	#e = 0.3; 
+	#x = 4.4 - 2 - 0.2 - 1.1 - 0.3;
+	#x = 5 + 4.4 - 0.2 * 2;
+	print (y);
 };

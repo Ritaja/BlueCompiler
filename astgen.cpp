@@ -30,6 +30,19 @@ struct AstElement* makeAssignment( char*name, struct AstElement* val)
     return result;
 }
 
+struct AstElement* makeFuncAssignment( char*name, struct AstElement* val)
+{
+    //struct AstElement* result = checkAlloc(sizeof(*result));
+	struct AstElement* result = new AstElement();
+    result->kind = AstElement::ekFuncAssign;
+    result->data.assignment.name = name;
+    result->data.assignment.right = val;
+	std::cout<<"makeFuncAssign:: pushed: "<<std::endl;
+	std::cout<<"makeFuncAssign:: pushed var: "<<result->data.assignment.name<<std::endl;
+	std::cout<<"makeFuncAssign:: pushed val: "<<result->data.assignment.right<<std::endl;
+    return result;
+}
+
 //used as function parameter (value-passing) initialised with null later on value would be assigned
 struct AstElement* makeAssignment( char*name)
 {
@@ -44,13 +57,13 @@ struct AstElement* makeAssignment( char*name)
     return result;
 }
 
-struct AstElement* makeExpByNum(int val)
+struct AstElement* makeExpByNum(double val)
 {
     //struct AstElement* result = checkAlloc(sizeof(*result));
 	struct AstElement* result = new AstElement();
     result->kind = AstElement::ekNumber;
     result->data.val = val;
-	std::cout<<"makeExpByNum:: pushed val: "<<result->data.val<<std::endl;
+	std::cout<<"makeExpByNum:: pushed val: "<<val<<std::endl;
     return result;
 }
 
@@ -306,5 +319,23 @@ struct AstElement* makeVec2dAssignment(char* name, int elementPos1, int elementP
 	result->data.Vec2dAssignment.elementPos1 = elementPos1;
 	result->data.Vec2dAssignment.elementPos2 = elementPos2;
 	result->data.Vec2dAssignment.right = right;
+	return result;
+}
+
+struct AstElement* makeReturnByExp(struct AstElement* exp)
+{
+	std::cout<<"\n makeReturnByExp:pushed type: "<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekRtrnByExp;
+	result->data.returnData.exp = exp;
+	return result;
+}
+
+struct AstElement* makeReturnByName(char* name)
+{
+	std::cout<<"\n makeReturnByName:pushed type: "<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekRtrnByName;
+	result->data.returnData.name = name;
 	return result;
 }

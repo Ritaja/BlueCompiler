@@ -56,10 +56,11 @@ extern int yydebug;
      TOKEN_ELSE = 265,
      TOKEN_COMMA = 266,
      TOKEN_VECTOR = 267,
-     TOKEN_VECTOR2d = 268,
-     TOKEN_ID = 269,
-     TOKEN_NUMBER = 270,
-     TOKEN_OPERATOR = 271
+     TOKEN_RETURN = 268,
+     TOKEN_VECTOR2d = 269,
+     TOKEN_ID = 270,
+     TOKEN_NUMBER = 271,
+     TOKEN_OPERATOR = 272
    };
 #endif
 
@@ -70,14 +71,14 @@ typedef union YYSTYPE
 /* Line 2058 of yacc.c  */
 #line 12 "parser.y"
 
-    int val;
+    double val;
     char op;
     char* name;
     struct AstElement* ast; /* this is the new member to store AST elements */
 
 
 /* Line 2058 of yacc.c  */
-#line 81 "parser.tab.h"
+#line 82 "parser.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

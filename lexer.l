@@ -19,13 +19,14 @@
 "else" return TOKEN_ELSE;
 "vector" return TOKEN_VECTOR;
 "vector2d" return TOKEN_VECTOR2d;
+"return" return TOKEN_RETURN;
 ","    return TOKEN_COMMA;
 "=="    {yylval.op = *yytext; return TOKEN_OPERATOR;}
 "NE"    {yylval.op = *yytext; return TOKEN_OPERATOR;}
 "LE"    {yylval.op = *yytext; return TOKEN_OPERATOR;}
 "GE"    {yylval.op = *yytext; return TOKEN_OPERATOR;}
 [a-zA-Z_][a-zA-Z0-9_]* {yylval.name = _strdup(yytext); return TOKEN_ID;}
-[-]?[0-9]*[.]?[0-9]+    {yylval.val = atoi(yytext); return TOKEN_NUMBER;}
+[-]?[0-9]*[.]?[0-9]+    {yylval.val = atof(yytext); return TOKEN_NUMBER;}
 [()=;]  {return *yytext;}
 [*/+-<>] {yylval.op = *yytext; return TOKEN_OPERATOR;}
 [ \t\n] {/* suppress the output of the whitespaces from the input file to stdout */}
