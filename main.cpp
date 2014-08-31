@@ -39,7 +39,7 @@ int main()
     
 	std::map<std::string,double> propertySet = getPropertySet(e);
 	std::cout<<std::endl;
-	std::cout<<"##################Property Set: ##################"<<std::endl;
+	std::cout<<"################## Property Set: ##################"<<std::endl;
 	std::for_each(propertySet.begin(), propertySet.end(), printPair);
 	freeEnv(e);
 	int z;

@@ -81,7 +81,6 @@ static int(*valExecs[])(struct ExecEnviron* e, struct AstElement* a) =
 	NULL,
 	NULL,
 	NULL,
-	NULL,
 	NULL
 };
 
@@ -108,7 +107,6 @@ static void(*runExecs[])(struct ExecEnviron* e, struct AstElement* a) =
 	NULL,
 	execVecAssign,
 	execVec2dAssign,
-	NULL,
 	execRtrnByExp,
 	execFuncAssign
 };
@@ -131,7 +129,6 @@ static int (*arrExecs[])(struct ExecEnviron* e, struct AstElement* a) =
 	execVector,
 	execVectors,
 	execVector2d,
-	NULL,
 	NULL,
 	NULL,
 	NULL,

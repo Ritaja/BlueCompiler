@@ -6,7 +6,7 @@
 struct AstElement
 {
 	//this enum provides reference lookup for array search in astexec.cpp
-    enum {ekId, ekNumber, ekBinExpression, ekAssignment, ekWhile, ekFunc, ekSignatures, ekSignature, ekCall, ekStatements, ekIf, ekElseIf, ekArray, ekVector, ekVectors, ekVector2d, ekVec1delement, ekVec2delement, ekVecAssignment, ekVec2dAssignment, ekRtrnByName, ekRtrnByExp, ekFuncAssign, ekLastElement} kind;
+    enum {ekId, ekNumber, ekBinExpression, ekAssignment, ekWhile, ekFunc, ekSignatures, ekSignature, ekCall, ekStatements, ekIf, ekElseIf, ekArray, ekVector, ekVectors, ekVector2d, ekVec1delement, ekVec2delement, ekVecAssignment, ekVec2dAssignment, ekRtrnByExp, ekFuncAssign, ekLastElement} kind;
     struct
     {
         double val; //only one value... arrays implementation as a struct refer below
