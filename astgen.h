@@ -14,7 +14,7 @@ struct AstElement
         struct
         {
             struct AstElement *left, *right;
-            char op;
+            char* op;
         }expression;
 		//create a left node here to hold data type as int or double
         struct
@@ -156,7 +156,7 @@ struct AstElement* makeAssignment(char*name, struct AstElement* val);
 struct AstElement* makeAssignment(char*name);
 struct AstElement* makeExpByNum(double val);
 struct AstElement* makeExpByName(char*name);
-struct AstElement* makeExp(struct AstElement* left, struct AstElement* right, char op);
+struct AstElement* makeExp(struct AstElement* left, struct AstElement* right, char* op);
 struct AstElement* makeStatement(struct AstElement* dest, struct AstElement* toAppend);
 struct AstElement* makeWhile(struct AstElement* cond, struct AstElement* exec);
 struct AstElement* makeCall(char* name, struct AstElement* param);

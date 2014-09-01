@@ -79,7 +79,7 @@ typedef union YYSTYPE
 #line 12 "parser.y"
 
     double val;
-    char op;
+    char* op;
     char* name;
     struct AstElement* ast; /* this is the new member to store AST elements */
 

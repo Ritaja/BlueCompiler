@@ -11,7 +11,7 @@ extern int yylex();
 
 %union {
     double val;
-    char op;
+    char* op;
     char* name;
     struct AstElement* ast; /* this is the new member to store AST elements */
 }

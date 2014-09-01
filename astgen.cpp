@@ -156,7 +156,7 @@ struct AstElement* makeExpByName(char*name)
 
 
 
-struct AstElement* makeExp(struct AstElement* left, struct AstElement* right, char op)
+struct AstElement* makeExp(struct AstElement* left, struct AstElement* right, char* op)
 {
     //struct AstElement* result = checkAlloc(sizeof(*result));
 	struct AstElement* result = new AstElement();

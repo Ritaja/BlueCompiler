@@ -471,10 +471,13 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 
 	else
 	{
-		
-	switch(a->data.expression.op)
+		std::cout<<"OPerator: "<<(a->data.expression.op)<<std::endl;
+	
+		std::string op = a->data.expression.op;
+
+			//case '+':
+		if(op.compare("+") == 0)
 		{
-			case '+':
 				if(right ==1 && left ==1)
 				{
 					if(varNameLeft.compare("Value") == 0 && varNameRight.compare("Value") == 0)
@@ -523,7 +526,10 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 				{
 					std::cout<<"Unsupported operation!!Cant find stored value"<<std::endl;
 				}
-			case '-':
+		}
+			//case '-':
+		else if(op.compare("-") == 0)
+		{
 				if(right ==1 && left ==1)
 				{
 					if(varNameLeft.compare("Value") == 0 && varNameRight.compare("Value") == 0)
@@ -572,7 +578,10 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 				{
 					std::cout<<"Unsupported operation!!Cant find stored value"<<std::endl;
 				}
-			case '*':
+		}
+			//case '*':
+		else if(op.compare("*") == 0)
+		{
 				if(right ==1 && left ==1)
 				{
 					if(varNameLeft.compare("Value") == 0 && varNameRight.compare("Value") == 0)
@@ -594,7 +603,10 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 				{
 					std::cout<<"Unsupported operation for vector Type"<<std::endl;
 				}
-			case '<':
+		}
+			//case '<':
+		else if(op.compare("<") == 0)
+		{
 				if(right ==1 && left ==1)
 				{
 					return e->var[varNameLeft] < e->var[(varNameRight)];
@@ -606,7 +618,10 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 				{
 					std::cout<<"Unsupported operation for vector Type"<<std::endl;
 				}
-			case '>':
+		}
+			//case '>':
+		else if(op.compare(">") == 0)
+		{
 				if(right ==1 && left ==1)
 				{
 					return e->var[varNameLeft] > e->var[(varNameRight)];
@@ -618,7 +633,10 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 				{
 					std::cout<<"Unsupported operation for vector Type"<<std::endl;
 				}
-			case 'LE':
+		}
+			//case 'LE':
+		else if(op.compare("<=") == 0)
+		{
 				if(right ==1 && left ==1)
 				{
 					return e->var[varNameLeft] <= e->var[(varNameRight)];
@@ -630,7 +648,10 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 				{
 					std::cout<<"Unsupported operation for vector Type"<<std::endl;
 				}
-			case 'GE':
+		}
+			//case 'GE':
+		else if(op.compare(">=") == 0)
+		{
 				if(right ==1 && left ==1)
 				{
 					return e->var[varNameLeft] >= e->var[(varNameRight)];
@@ -642,7 +663,10 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 				{
 					std::cout<<"Unsupported operation for vector Type"<<std::endl;
 				}
-			case '==':
+		}
+			//case '==':
+		else if(op.compare("==") == 0)
+		{
 				if(right ==1 && left ==1)
 				{
 					return e->var[varNameLeft] == e->var[(varNameRight)];
@@ -654,10 +678,12 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 				{
 					std::cout<<"Unsupported operation for vector Type"<<std::endl;
 				}
-			case 'NE':
+		}
+			//case 'NE':
+		else if(op.compare("!=") == 0)
+		{
 				if(right ==1 && left ==1)
 				{
-					std::cout<<"Not Equals called"<<std::endl;
 					return e->var[varNameLeft] != e->var[(varNameRight)];
 					/*e->var[temp] = e->var[varNameLeft] != e->var[(varNameRight)];
 					e->varName = temp;
@@ -667,10 +693,42 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 				{
 					std::cout<<"Unsupported operation for vector Type"<<std::endl;
 				}
-			default:
+		}
+		else if(op.compare("&&") == 0)
+		{
+				if(right ==1 && left ==1)
+				{
+					return e->var[varNameLeft] && e->var[(varNameRight)];
+					/*e->var[temp] = e->var[varNameLeft] != e->var[(varNameRight)];
+					e->varName = temp;
+					return 1;*/
+				}
+				else
+				{
+					std::cout<<"Unsupported operation for vector Type"<<std::endl;
+				}
+		}
+		else if(op.compare("||") == 0)
+		{
+				if(right ==1 && left ==1)
+				{
+					return e->var[varNameLeft] && e->var[(varNameRight)];
+					/*e->var[temp] = e->var[varNameLeft] != e->var[(varNameRight)];
+					e->varName = temp;
+					return 1;*/
+				}
+				else
+				{
+					std::cout<<"Unsupported operation for vector Type"<<std::endl;
+				}
+		}
+			//default:
+		else
+		{
 				fprintf(stderr,  "OOPS: Unknown operator:%c\n", a->data.expression.op);
             //exit(1);
 		}
+		
 	
 	}
 	
