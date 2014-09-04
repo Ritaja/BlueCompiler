@@ -75,6 +75,7 @@ expression: TOKEN_ID {$$=makeExpByName($1);}
 	| TOKEN_ROTATEZ '(' expression ')'{$$=makeRotatez($3);};
 	| TOKEN_MAGNITUDESQR '(' expression ')'{$$=makeMagnitudesqr($3);};
 	| TOKEN_TRANSFORM '(' expression ')'{$$=makeTransform($3);};
+	| '(' expression TOKEN_OPERATOR expression ')' {$$=makeExp($2, $4, $3);}
 
 array: {$$=0;}
      | array TOKEN_COMMA expression {$$=makeArray($1,$3);}

@@ -446,16 +446,18 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 	/*if null is returned on either side. it has a vector variable
 	store it in temporary arrays to operate on them.*/
 	std::string temp = "Temp";
+	const int left = dispatchExpression(e, a->data.expression.left);
+	std::string varNameLeft = e->varName;
+	double varLeft;
+	double placeHolder;
+	if(varNameLeft.compare("Value") == 0)
+	{
+		varLeft = e->var[varNameLeft];
+	}
 	const int right = dispatchExpression(e, a->data.expression.right);
 	std::string varNameRight = e->varName;
-	double varRight;
-	double placeHolder;
-	if(varNameRight.compare("Value") == 0)
-	{
-		varRight = e->var[varNameRight];
-	}
-    const int left = dispatchExpression(e, a->data.expression.left);
-	std::string varNameLeft = e->varName;
+	
+    
 	/*Special case arises when we have 2+3 or two value comparisons
 	evidently the execution environment stack for Value gets overiiten. 
 	So, push of value is done for this scenario */ 
@@ -466,6 +468,7 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 	if(right != left)
 	{
 		//size not equal unsupported operation
+		std::cout<<"Size Left "<<left<<" Size Right "<<right<<std::endl;
 		std::cout<<"Size not equal on expression Terms. Unsupported operation!"<<std::endl;
 	}
 
@@ -482,7 +485,7 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 				{
 					if(varNameLeft.compare("Value") == 0 && varNameRight.compare("Value") == 0)
 					{
-						e->var[temp] = varRight + e->var[(varNameLeft)];
+						e->var[temp] = varLeft + e->var[(varNameRight)];
 						e->varName = temp;
 						std::cout<<"AddedDouble "<<e->var[temp]<<" Left: "<<varNameLeft<<" Right: "<<varNameRight<<std::endl;
 					}
@@ -534,15 +537,16 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 				{
 					if(varNameLeft.compare("Value") == 0 && varNameRight.compare("Value") == 0)
 					{
-						e->var[temp] =  e->var[(varNameLeft)] - varRight ;
+						e->var[temp] =  varLeft - e->var[(varNameRight)];
 						e->varName = temp;
-						std::cout<<"AddedDouble "<<e->var[temp]<<" Left: "<<varNameLeft<<" "<<e->var[varNameLeft]<<" Right: "<<varRight<<std::endl;
+						std::cout<<"SubtractedDouble "<<e->var[temp]<<" Left: "<<varNameLeft<<" "<<e->var[varNameLeft]<<" Right: "<<varLeft<<std::endl;
 					}
 					else
 					{
+						std::cout<<"Before "<<e->var[temp]<<" Left: "<<varNameLeft<<" "<<e->var[varNameLeft]<<" Right: "<<varNameRight<<" "<<e->var[varNameRight]<<std::endl;
 						placeHolder = e->var[varNameLeft] - e->var[varNameRight];
 						e->var[temp] = placeHolder;
-						std::cout<<"Added "<<e->var[temp]<<" Left: "<<varNameLeft<<" "<<e->var[varNameLeft]<<" Right: "<<varNameRight<<" "<<e->var[varNameRight]<<" PlaceHolder: "<<placeHolder<<std::endl;
+						std::cout<<"Subtracted "<<e->var[temp]<<" Left: "<<varNameLeft<<" "<<e->var[varNameLeft]<<" Right: "<<varNameRight<<" "<<e->var[varNameRight]<<" PlaceHolder: "<<placeHolder<<std::endl;
 						e->varName = temp;
 					}
 					return 1;
@@ -586,15 +590,40 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 				{
 					if(varNameLeft.compare("Value") == 0 && varNameRight.compare("Value") == 0)
 					{
-						e->var[temp] = varRight * e->var[(varNameLeft)];
+						e->var[temp] = varLeft * e->var[(varNameRight)];
 						e->varName = temp;
-						std::cout<<"AddedDouble "<<e->var[temp]<<" Left: "<<varNameLeft<<" Right: "<<varNameRight<<std::endl;
+						std::cout<<"DivideDouble "<<e->var[temp]<<" Left: "<<varNameLeft<<" Right: "<<varNameRight<<std::endl;
 					}
 					else
 					{
 						placeHolder = e->var[varNameLeft] * e->var[varNameRight];
 						e->var[temp] = placeHolder;
-						std::cout<<"Added "<<e->var[temp]<<" Left: "<<varNameLeft<<" "<<e->var[varNameLeft]<<" Right: "<<varNameRight<<" "<<e->var[varNameRight]<<" PlaceHolder: "<<placeHolder<<std::endl;
+						std::cout<<"Divided "<<e->var[temp]<<" Left: "<<varNameLeft<<" "<<e->var[varNameLeft]<<" Right: "<<varNameRight<<" "<<e->var[varNameRight]<<" PlaceHolder: "<<placeHolder<<std::endl;
+						e->varName = temp;
+					}
+					return 1;
+				}
+				else
+				{
+					std::cout<<"Unsupported operation for vector Type"<<std::endl;
+				}
+		}
+		//case '/':
+		else if(op.compare("/") == 0)
+		{
+				if(right ==1 && left ==1)
+				{
+					if(varNameLeft.compare("Value") == 0 && varNameRight.compare("Value") == 0)
+					{
+						e->var[temp] =  varLeft / e->var[(varNameRight)] ;
+						e->varName = temp;
+						std::cout<<"MultiplyDouble "<<e->var[temp]<<" Left: "<<varNameLeft<<" Right: "<<varNameRight<<std::endl;
+					}
+					else
+					{
+						placeHolder = e->var[varNameLeft] / e->var[varNameRight];
+						e->var[temp] = placeHolder;
+						std::cout<<"Multiplied "<<e->var[temp]<<" Left: "<<varNameLeft<<" "<<e->var[varNameLeft]<<" Right: "<<varNameRight<<" "<<e->var[varNameRight]<<" PlaceHolder: "<<placeHolder<<std::endl;
 						e->varName = temp;
 					}
 					return 1;
@@ -609,10 +638,10 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 		{
 				if(right ==1 && left ==1)
 				{
-					return e->var[varNameLeft] < e->var[(varNameRight)];
-					/*e->var[temp] = e->var[varNameLeft] < e->var[(varNameRight)];
+					//return e->var[varNameLeft] < e->var[(varNameRight)];
+					e->var[temp] = e->var[varNameLeft] < e->var[(varNameRight)];
 					e->varName = temp;
-					return 1;*/
+					return 1;
 				}
 				else
 				{
@@ -624,10 +653,10 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 		{
 				if(right ==1 && left ==1)
 				{
-					return e->var[varNameLeft] > e->var[(varNameRight)];
-					/*e->var[temp] = e->var[varNameLeft] > e->var[(varNameRight)];
+					//return e->var[varNameLeft] > e->var[(varNameRight)];
+					e->var[temp] = e->var[varNameLeft] > e->var[(varNameRight)];
 					e->varName = temp;
-					return 1;*/
+					return 1;
 				}
 				else
 				{
@@ -639,10 +668,10 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 		{
 				if(right ==1 && left ==1)
 				{
-					return e->var[varNameLeft] <= e->var[(varNameRight)];
-					/*e->var[temp] = e->var[varNameLeft] <= e->var[(varNameRight)];
+					//return e->var[varNameLeft] <= e->var[(varNameRight)];
+					e->var[temp] = e->var[varNameLeft] <= e->var[(varNameRight)];
 					e->varName = temp;
-					return 1;*/
+					return 1;
 				}
 				else
 				{
@@ -654,10 +683,10 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 		{
 				if(right ==1 && left ==1)
 				{
-					return e->var[varNameLeft] >= e->var[(varNameRight)];
-					/*e->var[temp] = e->var[varNameLeft] >= e->var[(varNameRight)];
+					//return e->var[varNameLeft] >= e->var[(varNameRight)];
+					e->var[temp] = e->var[varNameLeft] >= e->var[(varNameRight)];
 					e->varName = temp;
-					return 1;*/
+					return 1;
 				}
 				else
 				{
@@ -669,10 +698,10 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 		{
 				if(right ==1 && left ==1)
 				{
-					return e->var[varNameLeft] == e->var[(varNameRight)];
-					/*e->var[temp] = e->var[varNameLeft] == e->var[(varNameRight)];
+					//return e->var[varNameLeft] == e->var[(varNameRight)];
+					e->var[temp] = e->var[varNameLeft] == e->var[(varNameRight)];
 					e->varName = temp;
-					return 1;*/
+					return 1;
 				}
 				else
 				{
@@ -684,10 +713,10 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 		{
 				if(right ==1 && left ==1)
 				{
-					return e->var[varNameLeft] != e->var[(varNameRight)];
-					/*e->var[temp] = e->var[varNameLeft] != e->var[(varNameRight)];
+					//return e->var[varNameLeft] != e->var[(varNameRight)];
+					e->var[temp] = e->var[varNameLeft] != e->var[(varNameRight)];
 					e->varName = temp;
-					return 1;*/
+					return 1;
 				}
 				else
 				{
@@ -712,10 +741,11 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 		{
 				if(right ==1 && left ==1)
 				{
-					return e->var[varNameLeft] && e->var[(varNameRight)];
-					/*e->var[temp] = e->var[varNameLeft] != e->var[(varNameRight)];
+					std::cout<<"Compared (OR) "<<" Left: "<<e->var[varNameLeft] <<" Right: "<<e->var[(varNameRight)]<<std::endl;
+					//return e->var[varNameLeft] && e->var[(varNameRight)];
+					e->var[temp] = e->var[varNameLeft] || e->var[(varNameRight)];
 					e->varName = temp;
-					return 1;*/
+					return 1;
 				}
 				else
 				{
@@ -932,9 +962,16 @@ static void execWhile(struct ExecEnviron* e, struct AstElement* a)
     struct AstElement* const s = a->data.whileStmt.statements;
     assert(c);
     assert(s);
-    while(dispatchExpression(e, c))
+	int length = dispatchExpression(e, c);
+	if (length != 1)
+	{
+		std::cout<<"Unsupported Operation for while comparison!"<<std::endl;
+	}
+	
+	while(e->var[e->varName])
     {
         dispatchStatement(e, s);
+		dispatchExpression(e, c);
     }
 }
 
@@ -947,8 +984,12 @@ static void execIf(struct ExecEnviron* e, struct AstElement* a)
 	struct AstElement* const t = a->data.ifStatement.ifTrue;
 	struct AstElement* const f = a->data.ifStatement.ifFalse;
 
-	//current code returns 1 or 0 for comparison operators. As these are not defined for the vector types.
-	if(dispatchExpression(e, c))
+	int length = dispatchExpression(e, c);
+	if (length != 1)
+	{
+		std::cout<<"Unsupported Operation for if else comparison!"<<std::endl;
+	}
+	if(e->var[e->varName])
 	{
 		dispatchStatement(e, t);
 	}
@@ -969,12 +1010,21 @@ static void execElseIf(struct ExecEnviron* e, struct AstElement* a)
 	struct AstElement* const ect = a->data.elseifStatement.elseifCondTrue;
 	struct AstElement* const ecf = a->data.elseifStatement.elseifCondFalse;
 
-	//current code returns 1 or 0 for comparison operators. As these are not defined for the vector types.
-	if(dispatchExpression(e, ic))
+	int length = dispatchExpression(e, ic);
+	/*if (length != 1)
+	{
+		std::cout<<"Unsupported Operation for if else comparison!"<<std::endl;
+	}*/
+	int ifCondition = e->var[e->varName];
+	std::cout<<"ifcondition: "<<ifCondition<<std::endl;
+	dispatchExpression(e, ec);
+	int elseCondition = e->var[e->varName];
+	std::cout<<"elsecondition: "<<elseCondition<<std::endl;
+	if(ifCondition)
 	{
 		dispatchStatement(e, it);
 	}
-	else if(dispatchExpression(e, ec))
+	else if(elseCondition)
 	{
 		dispatchStatement(e, ect);
 	}

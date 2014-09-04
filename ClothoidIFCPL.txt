@@ -289,4 +289,7 @@ void getPosition(double lerpParameter)
 		#raise(-66);
 		};
 	}; #function ends
+
+	x = getPosition(0.5);
+	print (x);
 }; #program ends
