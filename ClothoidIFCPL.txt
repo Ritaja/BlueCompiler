@@ -16,7 +16,7 @@ void getClothoidConstant()
 	# R1>R2
 	if (startCurvature < endCurvature)  do 
 	{
-		clothoidConstant = sqrt(length* endCurvature - startCurvature);
+		clothoidConstant = sqrt((length / endCurvature) - startCurvature);
 	}
 	# R1<R2
 	else if (startCurvature > endCurvature) do 

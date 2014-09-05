@@ -24,7 +24,7 @@ extern int yylex();
 %token<name> TOKEN_ID
 %token<val> TOKEN_NUMBER
 %token<op> TOKEN_OPERATOR
-%type<ast> program block statements statement assignment expression whileStmt call ifStmt func 
+%type<ast> program block statements statement assignment expression arrExpression whileStmt call ifStmt func 
 %type<ast> signature signatures array vector vector2d vectors return
 %start program
 
@@ -46,8 +46,7 @@ statements: {$$=0;}
     | statements block';' {$$=makeStatement($1, $2);};
 
 statement: 
-      assignment {$$=$1;}
-    | whileStmt {$$=$1;}
+      whileStmt {$$=$1;}
 	| ifStmt{$$=$1;}
     | block {$$=$1;}
     | call {$$=$1;}
@@ -55,6 +54,7 @@ statement:
 	| vector {$$=$1;}
 	| vector2d {$$=$1;}
 	| return {$$=$1;}
+	| assignment {$$=$1;}
 
 assignment: TOKEN_ID '=' expression {$$=makeAssignment($1, $3);}
           | TOKEN_ID {$$=makeAssignment($1);};
@@ -77,16 +77,20 @@ expression: TOKEN_ID {$$=makeExpByName($1);}
 	| TOKEN_TRANSFORM '(' expression ')'{$$=makeTransform($3);};
 	| '(' expression TOKEN_OPERATOR expression ')' {$$=makeExp($2, $4, $3);}
 
+arrExpression: TOKEN_ID {$$=makeExpByName($1);}
+    | TOKEN_NUMBER {$$=makeExpByNum($1);}
+    | arrExpression TOKEN_OPERATOR arrExpression {$$=makeExp($1, $3, $2);}
+
 array: {$$=0;}
-     | array TOKEN_COMMA expression {$$=makeArray($1,$3);}
-	 | array expression  {$$=makeArray($1,$2);}
+     | array TOKEN_COMMA arrExpression {$$=makeArray($1,$3);}
+	 | array arrExpression  {$$=makeArray($1,$2);}
 
 vector: TOKEN_VECTOR TOKEN_ID '=' '(' array ')' {$$=makeVector($2,$5);}
       | TOKEN_VECTOR TOKEN_ID '=' '(' ')' {$$=makeNullVector($2);}
-	  | TOKEN_VECTOR TOKEN_ID '=' expression {$$=makeAssignment($2, $4);}
+	  | TOKEN_VECTOR TOKEN_ID '=' arrExpression {$$=makeAssignment($2, $4);}
 
 vector2d: TOKEN_VECTOR2d TOKEN_ID '=' BOX_OPEN vectors BOX_CLOSE {$$=makeVector2d($2,$5);}
-        | TOKEN_VECTOR2d TOKEN_ID '=' expression {$$=makeAssignment($2, $4);}
+        | TOKEN_VECTOR2d TOKEN_ID '=' arrExpression {$$=makeAssignment($2, $4);}
 
 /*check null vectors creation*/
 vectors: {$$=0;}
