@@ -26,6 +26,7 @@ void getClothoidConstant()
 	else do
 	{
 		#raise(-13.0);
+		return -13.0;
 	};
 
 	return clothoidConstant;
@@ -54,7 +55,7 @@ void computeX(double L,double A)
 	{
 		sign = sgnEven(i);
 		
-		L_exponent = 5 + i - 1 * 4.0;
+		L_exponent = 5 + (i - 1) * 4.0;
 
 		A_exponent = i*4.0;
 		A = factorial(2.0*i);
@@ -108,10 +109,8 @@ void calculateAngleBetweenVectorsHalfCircle(double v1, double v2)
 	if (v1 == Vector2) do
 	{
 		return 0;
-    }
-	else do
-	{
-	};
+    };
+	
 
 	a = magnitude_squared(v1);
 	b = magnitude_squared(v2);
@@ -119,10 +118,8 @@ void calculateAngleBetweenVectorsHalfCircle(double v1, double v2)
 	if (a * b == 0.0) do
 	{
 		return 0.0;
-	}
-	else do
-	{
 	};
+	
 
 	#and b > 0:	
 	if (a > 0) do  
@@ -130,17 +127,18 @@ void calculateAngleBetweenVectorsHalfCircle(double v1, double v2)
 		#v3_1 = Vector3(v1.x, v1.y, 0);
 		#v3_2 = Vector3(v2.x, v2.y, 0);
 		#sign = minimalComponent(v3_1.cross(v3_2));
-	}
-	else do
-	{
+		sign = 4.4;
 	};
+	
 		if (sign < 0) do
 		{
 			#return -acos(v1.dot(v2) * sqrt(a * b));
+			return 0.4;
 		}
 		else do
 		{
 			#return acos(v1.dot(v2) * sqrt(a * b));
+			return 0.7;
 		};
 		
 	return 0;
@@ -154,10 +152,8 @@ void calculateAngleBetweenVectors(double v1,double v2)
 	{
 	    # * pi
 		angle = angle + 2.0 ;
-	}
-	else do
-	{
 	};
+	
 	
 	return angle;
 };
@@ -230,6 +226,7 @@ void lerp(double a, double b, double t)
 	
 void getPosition(double lerpParameter) 
 {
+    
 	A = getClothoidConstant();
 	
 	signY = 1;
@@ -256,7 +253,7 @@ void getPosition(double lerpParameter)
 	A = computeX(currentLength, A);
 	B = computeX(smallerLength,A);
 	localX = A - B;
-	C = omputeY(currentLength, A);
+	C = computeY(currentLength, A);
 	D = computeY(smallerLength,A);
 	localY = signY * C - D;
 
@@ -287,9 +284,11 @@ void getPosition(double lerpParameter)
 	else do
 	{
 		#raise(-66);
-		};
-	}; #function ends
+		return -0.6;
+	};
+
+}; #function ends
 
 	x = getPosition(0.5);
-	print (x);
+	print (lerpParameter);
 }; #program ends

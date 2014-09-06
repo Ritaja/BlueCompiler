@@ -179,7 +179,7 @@ static int dispatchExpression(struct ExecEnviron* e, struct AstElement* a)
 static void dispatchStatement(struct ExecEnviron* e, struct AstElement* a)
 {
     assert(a);
-	std::cout<< "dispatchStatement:: Array Lookup no: "<<a->kind << runExecs[a->kind] << std::endl;
+	std::cout<< "dispatchStatement:: Array Lookup no: "<<a->kind << std::endl;
     assert(runExecs[a->kind]);
 	std::cout<<" "<<std::endl;
     runExecs[a->kind](e, a);
@@ -833,7 +833,9 @@ static void execFuncAssign(struct ExecEnviron* e, struct AstElement* a)
 	
     assert(e);
 	struct AstElement* r = a->data.assignment.right;
+	
 	execfuncCall(e, r);
+
 	std::string varName = e->varName;
 	std::string assgnName = (a->data.assignment.name);
 	std::cout<<"execFuncAssign: varName: "<<varName<<std::endl;
@@ -983,7 +985,7 @@ static void execIf(struct ExecEnviron* e, struct AstElement* a)
 	struct AstElement* const c = a->data.ifStatement.cond;
 	struct AstElement* const t = a->data.ifStatement.ifTrue;
 	struct AstElement* const f = a->data.ifStatement.ifFalse;
-
+	std::cout<<"ifFalse has: "<<f<<std::endl;
 	int length = dispatchExpression(e, c);
 	if (length != 1)
 	{
@@ -993,7 +995,7 @@ static void execIf(struct ExecEnviron* e, struct AstElement* a)
 	{
 		dispatchStatement(e, t);
 	}
-	else
+	else if (f)
 	{
 		dispatchStatement(e, f);
 	}
@@ -1058,22 +1060,30 @@ static void execCall(struct ExecEnviron* e, struct AstElement* a)
 
 static void execfuncCall(struct ExecEnviron* e, struct AstElement* a)
 {
+	
 	AstElement* funcExec = e->func[a->data.call.name];
+	std::cout<<"Here! "<<funcExec->data.func.count<<std::endl;
 	std::vector <std::string> signatures ;
 
-//loop through all the signatures one by one
-for (int i=0;i<(funcExec->data.func.signatures->data.signatures.signature.size());i++) 
+	if(funcExec->data.func.count != 0)
 	{
-		signatures.resize(i+1);
-		//set asignment name and variable name to lookup from.
-		std::string varName = e->varName;
+		std::cout<<"Here! "<<std::endl;
+	//loop through all the signatures one by one
+	for (int i=0;i<(funcExec->data.func.signatures->data.signatures.signature.size());i++) 
+		{
+			signatures.resize(i+1);
+			//set asignment name and variable name to lookup from.
+			std::string varName = e->varName;
 		
-		 signatures[i] = (funcExec->data.func.signatures->data.signatures.signature[i]->data.signature.assignment->data.assignment.name);
-		 std::cout<<"Signature:: "<<signatures[i]<<std::endl;
+			signatures[i] = (funcExec->data.func.signatures->data.signatures.signature[i]->data.signature.assignment->data.assignment.name);
+			std::cout<<"Signature:: "<<signatures[i]<<std::endl;
 	
-	//end of assignment
-    }
-execFuncCallAssign(e,a->data.call.param,signatures);
+		//end of assignment
+	 }
+	//call for assignment of values to signatures.
+	execFuncCallAssign(e,a->data.call.param,signatures);
+	}
+
 dispatchStatement(e,funcExec->data.func.statements);
 
 }

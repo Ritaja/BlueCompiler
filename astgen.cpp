@@ -215,6 +215,17 @@ struct AstElement* makeIf(struct AstElement* cond, struct AstElement* ifTrue, st
 	return result;
 }
 
+struct AstElement* makeIf(struct AstElement* cond, struct AstElement* ifTrue)
+{
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekIf;
+	result->data.ifStatement.cond = cond;
+	result->data.ifStatement.ifTrue = ifTrue;
+	result->data.ifStatement.ifFalse = NULL;
+	std::cout<<"makeIf:: pushed: "<<std::endl;
+	return result;
+}
+
 struct AstElement* makeElseIf(struct AstElement* condIf, struct AstElement* ifTrue, struct AstElement* condElseIf, struct AstElement* elseIfTrue, struct AstElement* elseIfFalse)
 {
 	struct AstElement* result = new AstElement();
@@ -250,6 +261,20 @@ struct AstElement* makeFunc(char* name, struct AstElement* signature, struct Ast
 	std::cout<<"makeFunc:: pushed: "<<std::endl;
 	return result;
 }
+
+struct AstElement* makeFunc(char* name, struct AstElement* statement)
+{
+	std::cout<<"\n ########         makeFunction:: creating "<<name<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekFunc;
+	result->data.func.name = name;
+	result->data.func.signatures = NULL;
+	result->data.func.statements= statement;
+	result->data.func.count=0;
+	std::cout<<"makeFunc:: pushed: "<<std::endl;
+	return result;
+}
+
 //check implementation
 struct AstElement* makeSignatures(struct AstElement* result,struct AstElement* signature)
 {
@@ -267,6 +292,20 @@ struct AstElement* makeSignatures(struct AstElement* result,struct AstElement* s
 	std::cout<<"\n Signature: pushed signature: "<<result->data.signatures.signature[result->data.signatures.count-1];	
 	return result;
 }
+
+
+struct AstElement* makeSignatures()
+{
+	//blank signature with count 0
+	std::cout<<"\n makeSignatures:: creating result";
+    AstElement* result = new AstElement();
+	result->kind = AstElement::ekSignatures;
+	result->data.signatures.count = 0;
+	result->data.signatures.signature[0] = NULL;
+		
+	return result;
+}
+
 
 struct AstElement* makeSignature(char* type,struct AstElement* assignment)
 {
