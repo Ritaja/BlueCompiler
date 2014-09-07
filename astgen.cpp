@@ -371,6 +371,7 @@ struct AstElement* makeReturnByExp(struct AstElement* exp)
 	return result;
 }
 
+
 struct AstElement* makePow( struct AstElement* left, struct AstElement* right)
 {
 	std::cout<<"\n makePow "<<std::endl;
@@ -378,6 +379,17 @@ struct AstElement* makePow( struct AstElement* left, struct AstElement* right)
 	result->kind = AstElement::ekPow;
 	result->data.pow.right = right;
 	result->data.pow.left = left;
+	return result;
+}
+
+struct AstElement* makeMin( struct AstElement* first, struct AstElement* second,struct AstElement* third)
+{
+	std::cout<<"\n makeMin "<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekMin;
+	result->data.min.first = first;
+	result->data.min.second = second;
+	result->data.min.third = third;
 	return result;
 }
 
@@ -422,7 +434,7 @@ struct AstElement* makeMagnitudesqr( struct AstElement* expr)
 	std::cout<<"\n makeMagnitudesqr "<<std::endl;
 	struct AstElement* result = new AstElement();
 	result->kind = AstElement::ekMagnitudesqr;
-	result->data.rotatez.expr = expr;
+	result->data.magnitudeSqr.expr = expr;
 	return result;
 }
 
@@ -432,5 +444,25 @@ struct AstElement* makeTransform( struct AstElement* expr)
 	struct AstElement* result = new AstElement();
 	result->kind = AstElement::ekTransform;
 	result->data.transform.expr = expr;
+	return result;
+}
+
+struct AstElement* makeDot( struct AstElement* left,struct AstElement* right)
+{
+	std::cout<<"\n makeDot "<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekDot;
+	result->data.dot.left = left;
+	result->data.dot.right = right;
+	return result;
+}
+
+struct AstElement* makeCross( struct AstElement* first,struct AstElement* second)
+{
+	std::cout<<"\n makeCross "<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekCross;
+	result->data.cross.first = first;
+	result->data.cross.second = second;
 	return result;
 }

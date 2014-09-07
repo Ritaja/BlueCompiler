@@ -2,6 +2,7 @@
 
 %{
 #include "parser.tab.h"
+#include "atodCustom.h"
 #include <stdlib.h>
 %}
 
@@ -32,12 +33,15 @@
 "rotatez" return TOKEN_ROTATEZ;
 "magnitude_squared" return TOKEN_MAGNITUDESQR;
 "transform" return TOKEN_TRANSFORM;
+"min" return TOKEN_MIN;
+"dot" return TOKEN_DOT;
+"cross" return TOKEN_CROSS;
 ","    return TOKEN_COMMA;
 "=="    {yylval.op = _strdup(yytext); return TOKEN_OPERATOR;}
 [a-zA-Z_][a-zA-Z0-9_]* {yylval.name = _strdup(yytext); return TOKEN_ID;}
 [-]?[0-9]*[.]?[0-9]+    {yylval.val = atof(yytext); return TOKEN_NUMBER;}
 [()=;]  {return *yytext;}
-[*/+-<>] {yylval.op = _strdup(yytext); return TOKEN_OPERATOR;}
+[*/+-<>%] {yylval.op = _strdup(yytext); return TOKEN_OPERATOR;}
 [ \t\n] {/* suppress the output of the whitespaces from the input file to stdout */}
 #.* {/* one-line comment */}
 

@@ -6,7 +6,7 @@
 struct AstElement
 {
 	//this enum provides reference lookup for array search in astexec.cpp
-    enum {ekId, ekNumber, ekBinExpression, ekAssignment, ekWhile, ekFunc, ekSignatures, ekSignature, ekCall, ekStatements, ekIf, ekElseIf, ekArray, ekVector, ekVectors, ekVector2d, ekVec1delement, ekVec2delement, ekVecAssignment, ekVec2dAssignment, ekRtrnByExp, ekFuncAssign, ekPow, ekFact, ekAcos, ekSqrt, ekRotatez, ekMagnitudesqr, ekTransform, ekLastElement} kind;
+    enum {ekId, ekNumber, ekBinExpression, ekAssignment, ekWhile, ekFunc, ekSignatures, ekSignature, ekCall, ekStatements, ekIf, ekElseIf, ekArray, ekVector, ekVectors, ekVector2d, ekVec1delement, ekVec2delement, ekVecAssignment, ekVec2dAssignment, ekRtrnByExp, ekFuncAssign, ekPow, ekFact, ekAcos, ekSqrt, ekRotatez, ekMagnitudesqr, ekTransform, ekMin, ekDot, ekCross, ekLastElement} kind;
     struct
     {
         double val; //only one value... arrays implementation as a struct refer below
@@ -118,7 +118,7 @@ struct AstElement
 		}Vec2dAssignment;
 		struct
 		{
-			char* name;
+			char* op;
 			struct AstElement* exp;
 		}returnData;
 		struct
@@ -150,6 +150,22 @@ struct AstElement
 		{
 			struct AstElement* expr;
 		}transform;
+		struct
+		{
+			struct AstElement* first;
+			struct AstElement* second;
+			struct AstElement* third;
+		}min;
+		struct
+		{
+			struct AstElement* left;
+			struct AstElement* right;
+		}dot;
+		struct
+		{
+			struct AstElement* first;
+			struct AstElement* second;
+		}cross;
     } data;
 };
 
@@ -182,10 +198,13 @@ struct AstElement* makeVec2dAssignment(char* name, int elementPos1, int elementP
 struct AstElement* makeReturnByExp(struct AstElement* exp);
 struct AstElement* makeFuncAssignment( char*name, struct AstElement* val);
 struct AstElement* makePow( struct AstElement* left, struct AstElement* right);
+struct AstElement* makeMin( struct AstElement* first, struct AstElement* second,struct AstElement* third);
 struct AstElement* makeFact( struct AstElement* expr);
 struct AstElement* makeAcos( struct AstElement* expr);
 struct AstElement* makeSqrt( struct AstElement* expr);
 struct AstElement* makeRotatez( struct AstElement* expr);
 struct AstElement* makeMagnitudesqr( struct AstElement* expr);
 struct AstElement* makeTransform( struct AstElement* expr);
+struct AstElement* makeDot( struct AstElement* left,struct AstElement* right);
+struct AstElement* makeCross( struct AstElement* first,struct AstElement* second);
 #endif

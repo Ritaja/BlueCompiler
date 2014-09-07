@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sstream>
+#include <numeric>
 
 struct ExecEnviron
 {
@@ -62,6 +63,9 @@ static int execSqrt(struct ExecEnviron* e, struct AstElement* a);
 static int execRotatez(struct ExecEnviron* e, struct AstElement* a);
 static int execMagnitudesqr(struct ExecEnviron* e, struct AstElement* a);
 static int execTransform(struct ExecEnviron* e, struct AstElement* a);
+static int execMin(struct ExecEnviron* e, struct AstElement* a);
+static int execDot(struct ExecEnviron* e, struct AstElement* a);
+static int execCross(struct ExecEnviron* e, struct AstElement* a);
 static double factorial(double n);
 static void initConstants(struct ExecEnviron* e, struct AstElement* a);
 
@@ -97,6 +101,9 @@ static int(*valExecs[])(struct ExecEnviron* e, struct AstElement* a) =
 	execRotatez, 
 	execMagnitudesqr,
 	execTransform,
+	execMin,
+	execDot,
+	execCross
 };
 
 /* lookup array for non-value AST elements */
@@ -129,6 +136,9 @@ static void(*runExecs[])(struct ExecEnviron* e, struct AstElement* a) =
 	NULL, 
 	NULL, 
 	NULL, 
+	NULL,
+	NULL,
+	NULL,
 	NULL,
 	NULL
 };
@@ -163,6 +173,9 @@ static int (*arrExecs[])(struct ExecEnviron* e, struct AstElement* a) =
 	NULL, 
 	NULL, 
 	NULL,
+	NULL,
+	NULL,
+	NULL,
 	NULL
 };
 
@@ -170,8 +183,8 @@ static int (*arrExecs[])(struct ExecEnviron* e, struct AstElement* a) =
 static int dispatchExpression(struct ExecEnviron* e, struct AstElement* a)
 {
     assert(a);
-    assert(valExecs[a->kind]);
 	std::cout<<"dispatchExpression:: Array Lookup no: "<< a->kind<<std::endl;
+    assert(valExecs[a->kind]);
     return valExecs[a->kind](e, a);
 }
 
@@ -443,14 +456,30 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 {
     assert(AstElement::ekBinExpression == a->kind);
 	std::cout<<"::execBinExp:: "<<std::endl;
-	/*if null is returned on either side. it has a vector variable
-	store it in temporary arrays to operate on them.*/
-	std::string temp = "Temp";
-	const int left = dispatchExpression(e, a->data.expression.left);
-	std::string varNameLeft = e->varName;
 	double varLeft;
 	double placeHolder;
-	if(varNameLeft.compare("Value") == 0)
+    int left;
+	std::string varNameLeft;
+	std::string temp = "Temp";
+	//if left is NULL. it is set for expr of type -a;
+	if(a->data.expression.left == NULL)
+	{
+		std::cout<<"I should not be here"<<std::endl;
+		varLeft = 0;
+		left = 1;
+	}
+	else
+	{
+		
+	left = dispatchExpression(e, a->data.expression.left);
+	varNameLeft = e->varName;
+	std::cout<<"I should be here "<<e->var[varNameLeft]<<std::endl;
+	}
+
+	/*varNameLeft.compare("Value") == 0 && left == 1 should be the condition
+	but now we only support named array addition like A + B and not the 
+	(1,2) + A kind*/
+	if(left == 1)
 	{
 		varLeft = e->var[varNameLeft];
 	}
@@ -483,19 +512,19 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 		{
 				if(right ==1 && left ==1)
 				{
-					if(varNameLeft.compare("Value") == 0 && varNameRight.compare("Value") == 0)
-					{
+					//if(varNameLeft.compare("Value") == 0 && varNameRight.compare("Value") == 0)
+					//{
 						e->var[temp] = varLeft + e->var[(varNameRight)];
 						e->varName = temp;
 						std::cout<<"AddedDouble "<<e->var[temp]<<" Left: "<<varNameLeft<<" Right: "<<varNameRight<<std::endl;
-					}
-					else
+					//}
+					/*else
 					{
 						placeHolder = e->var[varNameLeft] + e->var[varNameRight];
 						e->var[temp] = placeHolder;
 						std::cout<<"Added "<<e->var[temp]<<" Left: "<<varNameLeft<<" "<<e->var[varNameLeft]<<" Right: "<<varNameRight<<" "<<e->var[varNameRight]<<" PlaceHolder: "<<placeHolder<<std::endl;
 						e->varName = temp;
-					}
+					}*/
 					return 1;
 				}
 				else if( e->var.find(varNameLeft+std::to_string(0)+std::to_string(0)) != e->var.end() || e->var.find(varNameRight+std::to_string(0)+std::to_string(0)) != e->var.end() )
@@ -535,20 +564,20 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 		{
 				if(right ==1 && left ==1)
 				{
-					if(varNameLeft.compare("Value") == 0 && varNameRight.compare("Value") == 0)
-					{
+					//if(varNameLeft.compare("Value") == 0 && varNameRight.compare("Value") == 0)
+					//{
 						e->var[temp] =  varLeft - e->var[(varNameRight)];
 						e->varName = temp;
-						std::cout<<"SubtractedDouble "<<e->var[temp]<<" Left: "<<varNameLeft<<" "<<e->var[varNameLeft]<<" Right: "<<varLeft<<std::endl;
-					}
-					else
+						std::cout<<"SubtractedDouble "<<e->var[temp]<<" Left: "<<varNameLeft<<" "<<varLeft<<" Right: "<<e->var[(varNameRight)]<<std::endl;
+					//}
+					/*else
 					{
 						std::cout<<"Before "<<e->var[temp]<<" Left: "<<varNameLeft<<" "<<e->var[varNameLeft]<<" Right: "<<varNameRight<<" "<<e->var[varNameRight]<<std::endl;
 						placeHolder = e->var[varNameLeft] - e->var[varNameRight];
 						e->var[temp] = placeHolder;
 						std::cout<<"Subtracted "<<e->var[temp]<<" Left: "<<varNameLeft<<" "<<e->var[varNameLeft]<<" Right: "<<varNameRight<<" "<<e->var[varNameRight]<<" PlaceHolder: "<<placeHolder<<std::endl;
 						e->varName = temp;
-					}
+					}*/
 					return 1;
 				}
 				else if( e->var.find(varNameLeft+std::to_string(0)+std::to_string(0)) != e->var.end() || e->var.find(varNameRight+std::to_string(0)+std::to_string(0)) != e->var.end() )
@@ -588,19 +617,19 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 		{
 				if(right ==1 && left ==1)
 				{
-					if(varNameLeft.compare("Value") == 0 && varNameRight.compare("Value") == 0)
-					{
+					//if(varNameLeft.compare("Value") == 0 && varNameRight.compare("Value") == 0)
+					//{
 						e->var[temp] = varLeft * e->var[(varNameRight)];
 						e->varName = temp;
 						std::cout<<"DivideDouble "<<e->var[temp]<<" Left: "<<varNameLeft<<" Right: "<<varNameRight<<std::endl;
-					}
-					else
+					//}
+					/*else
 					{
 						placeHolder = e->var[varNameLeft] * e->var[varNameRight];
 						e->var[temp] = placeHolder;
 						std::cout<<"Divided "<<e->var[temp]<<" Left: "<<varNameLeft<<" "<<e->var[varNameLeft]<<" Right: "<<varNameRight<<" "<<e->var[varNameRight]<<" PlaceHolder: "<<placeHolder<<std::endl;
 						e->varName = temp;
-					}
+					}*/
 					return 1;
 				}
 				else
@@ -613,19 +642,48 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 		{
 				if(right ==1 && left ==1)
 				{
-					if(varNameLeft.compare("Value") == 0 && varNameRight.compare("Value") == 0)
-					{
+					//if(varNameLeft.compare("Value") == 0 && varNameRight.compare("Value") == 0)
+					//{
 						e->var[temp] =  varLeft / e->var[(varNameRight)] ;
 						e->varName = temp;
 						std::cout<<"MultiplyDouble "<<e->var[temp]<<" Left: "<<varNameLeft<<" Right: "<<varNameRight<<std::endl;
-					}
-					else
+					//}
+					/*else
 					{
 						placeHolder = e->var[varNameLeft] / e->var[varNameRight];
 						e->var[temp] = placeHolder;
 						std::cout<<"Multiplied "<<e->var[temp]<<" Left: "<<varNameLeft<<" "<<e->var[varNameLeft]<<" Right: "<<varNameRight<<" "<<e->var[varNameRight]<<" PlaceHolder: "<<placeHolder<<std::endl;
 						e->varName = temp;
-					}
+					}*/
+					return 1;
+				}
+				else
+				{
+					std::cout<<"Unsupported operation for vector Type"<<std::endl;
+				}
+		}
+		//case '%':
+		else if(op.compare("%") == 0)
+		{
+				if(right ==1 && left ==1)
+				{
+					//if(varNameLeft.compare("Value") == 0 && varNameRight.compare("Value") == 0)
+					//{
+						int tempLeft = varLeft;
+						int tempRight = e->var[(varNameRight)];
+						e->var[temp] =  tempLeft % tempRight ;
+						e->varName = temp;
+						std::cout<<"MultiplyDouble "<<e->var[temp]<<" Left: "<<varNameLeft<<" Right: "<<varNameRight<<std::endl;
+					//}
+					/*else
+					{
+						int tempLeft = e->var[varNameLeft];
+						int tempRight = e->var[(varNameRight)];
+						placeHolder = tempLeft % tempRight;
+						e->var[temp] = placeHolder;
+						std::cout<<"Multiplied "<<e->var[temp]<<" Left: "<<varNameLeft<<" "<<e->var[varNameLeft]<<" Right: "<<varNameRight<<" "<<e->var[varNameRight]<<" PlaceHolder: "<<placeHolder<<std::endl;
+						e->varName = temp;
+					}*/
 					return 1;
 				}
 				else
@@ -639,7 +697,7 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 				if(right ==1 && left ==1)
 				{
 					//return e->var[varNameLeft] < e->var[(varNameRight)];
-					e->var[temp] = e->var[varNameLeft] < e->var[(varNameRight)];
+					e->var[temp] = varLeft < e->var[(varNameRight)];
 					e->varName = temp;
 					return 1;
 				}
@@ -654,7 +712,7 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 				if(right ==1 && left ==1)
 				{
 					//return e->var[varNameLeft] > e->var[(varNameRight)];
-					e->var[temp] = e->var[varNameLeft] > e->var[(varNameRight)];
+					e->var[temp] = varLeft > e->var[(varNameRight)];
 					e->varName = temp;
 					return 1;
 				}
@@ -669,7 +727,7 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 				if(right ==1 && left ==1)
 				{
 					//return e->var[varNameLeft] <= e->var[(varNameRight)];
-					e->var[temp] = e->var[varNameLeft] <= e->var[(varNameRight)];
+					e->var[temp] = varLeft <= e->var[(varNameRight)];
 					e->varName = temp;
 					return 1;
 				}
@@ -684,7 +742,7 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 				if(right ==1 && left ==1)
 				{
 					//return e->var[varNameLeft] >= e->var[(varNameRight)];
-					e->var[temp] = e->var[varNameLeft] >= e->var[(varNameRight)];
+					e->var[temp] = varLeft >= e->var[(varNameRight)];
 					e->varName = temp;
 					return 1;
 				}
@@ -699,7 +757,7 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 				if(right ==1 && left ==1)
 				{
 					//return e->var[varNameLeft] == e->var[(varNameRight)];
-					e->var[temp] = e->var[varNameLeft] == e->var[(varNameRight)];
+					e->var[temp] = varLeft == e->var[(varNameRight)];
 					e->varName = temp;
 					return 1;
 				}
@@ -714,7 +772,7 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 				if(right ==1 && left ==1)
 				{
 					//return e->var[varNameLeft] != e->var[(varNameRight)];
-					e->var[temp] = e->var[varNameLeft] != e->var[(varNameRight)];
+					e->var[temp] = varLeft != e->var[(varNameRight)];
 					e->varName = temp;
 					return 1;
 				}
@@ -727,7 +785,10 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 		{
 				if(right ==1 && left ==1)
 				{
-					return e->var[varNameLeft] && e->var[(varNameRight)];
+					std::cout<<"Compared (AND) "<<" Left: "<<e->var[varNameLeft] <<" Right: "<<e->var[(varNameRight)]<<std::endl;
+					e->var[temp] = varLeft && e->var[(varNameRight)];
+					e->varName = temp;
+					return 1;
 					/*e->var[temp] = e->var[varNameLeft] != e->var[(varNameRight)];
 					e->varName = temp;
 					return 1;*/
@@ -743,7 +804,7 @@ static int execBinExp(struct ExecEnviron* e, struct AstElement* a)
 				{
 					std::cout<<"Compared (OR) "<<" Left: "<<e->var[varNameLeft] <<" Right: "<<e->var[(varNameRight)]<<std::endl;
 					//return e->var[varNameLeft] && e->var[(varNameRight)];
-					e->var[temp] = e->var[varNameLeft] || e->var[(varNameRight)];
+					e->var[temp] = varLeft || e->var[(varNameRight)];
 					e->varName = temp;
 					return 1;
 				}
@@ -989,7 +1050,7 @@ static void execIf(struct ExecEnviron* e, struct AstElement* a)
 	int length = dispatchExpression(e, c);
 	if (length != 1)
 	{
-		std::cout<<"Unsupported Operation for if else comparison!"<<std::endl;
+		std::cout<<"Unsupported Operation for if else comparison! "<<e->var[e->varName]<<std::endl;
 	}
 	if(e->var[e->varName])
 	{
@@ -1062,7 +1123,7 @@ static void execfuncCall(struct ExecEnviron* e, struct AstElement* a)
 {
 	
 	AstElement* funcExec = e->func[a->data.call.name];
-	std::cout<<"Here! "<<funcExec->data.func.count<<std::endl;
+	std::cout<<"++++++++++Executing:FunctionCall! "<<a->data.call.name<<std::endl;
 	std::vector <std::string> signatures ;
 
 	if(funcExec->data.func.count != 0)
@@ -1303,6 +1364,7 @@ static int execPow(struct ExecEnviron* e, struct AstElement* a)
 
 	return NULL;
 }
+
 static int execFact(struct ExecEnviron* e, struct AstElement* a)
 {
 	int length = dispatchExpression(e,a->data.fact.expr);
@@ -1346,7 +1408,7 @@ static double factorial(double n)
 
 static int execAcos(struct ExecEnviron* e, struct AstElement* a)
 {
-	int length = dispatchExpression(e,a->data.fact.expr);
+	int length = dispatchExpression(e,a->data.Acos.expr);
 	double val;
 	std::string temp = "Temp";
 
@@ -1373,9 +1435,10 @@ static int execAcos(struct ExecEnviron* e, struct AstElement* a)
 
 	return NULL;
 }
+
 static int execSqrt(struct ExecEnviron* e, struct AstElement* a)
 {
-	int length = dispatchExpression(e,a->data.fact.expr);
+	int length = dispatchExpression(e,a->data.Sqrt.expr);
 	double val;
 	std::string temp = "Temp";
 
@@ -1402,17 +1465,169 @@ static int execSqrt(struct ExecEnviron* e, struct AstElement* a)
 
 	return NULL;
 }
+
 static int execRotatez(struct ExecEnviron* e, struct AstElement* a)
 {
-	return NULL;
+	return 2.2;
 }
+
 static int execMagnitudesqr(struct ExecEnviron* e, struct AstElement* a)
 {
+	
+	int length = dispatchExpression(e,a->data.magnitudeSqr.expr);
+	std::string varName = e->varName;
+	std::string temp = "Temp";
+	if(length==1)
+	{
+		std::cout<<"Magnitude square operation undefined for non array type elements"<<std::endl;
+	}
+	else if( e->var.find(varName+std::to_string(0)) != e->var.end() )
+	{
+		//found 1d array. Names with Sample0 Sample1
+		for(int i=0;i<length;i++)
+		{
+			e->var[(temp+std::to_string(i))] = std::pow( (e->var[(varName+std::to_string(i))]),2 ) ;
+		}
+		//calculation done set variables and return.
+		e->varName = temp;
+		return length;
+	}
+	else
+	{
+		std::cout<<"Magnitude square operation undefined for 2D array type elements"<<std::endl;
+	}
 	return NULL;
 }
+
+static int execDot(struct ExecEnviron* e, struct AstElement* a)
+{
+	
+	int lengthRight = dispatchExpression(e,a->data.dot.right);
+	double b[2];
+	double c[2];
+	std::string varNameRight = e->varName;
+	int lengthLeft = dispatchExpression(e,a->data.dot.left);
+	std::string varNameLeft = e->varName;
+
+	std::string temp = "Temp";
+	if(lengthRight==1 && lengthLeft==1)
+	{
+		std::cout<<"Dot product operation undefined for non array type elements"<<std::endl;
+	}
+	else if( e->var.find(varNameRight+std::to_string(0)) != e->var.end() )
+	{
+		//found 1d array. Names with Sample0 Sample1. Copy array to temp array
+		for(int i=0;i<lengthRight;i++)
+		{
+			b[i] = e->var[(varNameRight+std::to_string(i))]  ;
+			c[i] = e->var[(varNameLeft+std::to_string(i))]  ;
+		}
+
+		e->var[temp] = std::inner_product(b, b + sizeof(b) / sizeof(b[0]), c, 0);
+		e->varName = temp;
+		return 1;
+	}
+	else
+	{
+		std::cout<<"Dot product operation undefined for 2D array type elements"<<std::endl;
+	}
+	return NULL;
+}
+
+static int execCross(struct ExecEnviron* e, struct AstElement* a)
+{
+	
+	int lengthRight = dispatchExpression(e,a->data.cross.first);
+	double b[3];
+	double c[3];
+	std::string varNameRight = e->varName;
+	int lengthLeft = dispatchExpression(e,a->data.cross.second);
+	std::string varNameLeft = e->varName;
+	
+	std::string temp = "Temp";
+	if(lengthRight==1 && lengthLeft==1)
+	{
+		std::cout<<"Cross product operation undefined for non array type elements"<<std::endl;
+	}
+	else if( e->var.find(varNameRight+std::to_string(0)) != e->var.end() )
+	{
+		
+		//found 1d array. Names with Sample0 Sample1. Copy array to temp array
+		for(int i=0;i<lengthRight;i++)
+		{
+			b[i] = e->var[(varNameRight+std::to_string(i))]  ;
+			c[i] = e->var[(varNameLeft+std::to_string(i))]  ;
+		}
+		/*Calculating cross produc on x,y,z using: 
+		vector.x = (Ay*Bz)-(By*Az);
+		vector.y = -(Ax*Bz)+(Bx*Az);
+		 vector.z = (Ax*By)-(Ay*Bx);*/
+		e->var[(temp+std::to_string(0))] = (b[1]*c[2])-(c[1]*b[2]);
+		std::cout<<"X: "<<e->var[(temp+std::to_string(0))]<<std::endl;
+		e->var[(temp+std::to_string(1))] = -(b[0]*c[2])+(c[0]*b[2]);
+		std::cout<<"Y: "<<e->var[(temp+std::to_string(1))]<<std::endl;
+		e->var[(temp+std::to_string(2))] = (b[0]*c[1])-(c[0]*b[1]);
+		std::cout<<"Z: "<<e->var[(temp+std::to_string(2))]<<std::endl;
+		e->varName = temp;
+		return 3;
+	}
+	else
+	{
+		std::cout<<"Cross product operation undefined for 2D array type elements"<<std::endl;
+	}
+	return NULL;
+}
+
+
 static int execTransform(struct ExecEnviron* e, struct AstElement* a)
 {
-	return NULL;
+	return 2.2;
+}
+
+
+static int execMin(struct ExecEnviron* e, struct AstElement* a)
+{
+	int length = dispatchExpression(e,a->data.min.first);
+	double first;
+	std::string temp = "Temp";
+
+	if(length == 1)
+	{
+		first = e->var[e->varName];
+	}
+	else
+	{
+		std::cout<<"Unsupported Math operation on vectors!"<<std::cout;
+	}
+
+	length = dispatchExpression(e,a->data.min.second);
+	double second;
+
+	if(length == 1)
+	{
+		second = e->var[e->varName];
+	}
+	else
+	{
+		std::cout<<"Unsupported Math operation on vectors!"<<std::cout;
+	}
+
+	length = dispatchExpression(e,a->data.min.third);
+	double third;
+
+	if(length == 1)
+	{
+		third = e->var[e->varName];
+		e->var[temp] = std::min(first,std::min(second,third));
+		e->varName = temp;
+		return 1;
+	}
+	else
+	{
+		std::cout<<"Unsupported Math operation on vectors!"<<std::cout;
+	}
+
+
 }
 
 

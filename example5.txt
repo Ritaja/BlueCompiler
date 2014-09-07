@@ -12,11 +12,13 @@
 
 	#void funcA(int test,int temp,int tar)
 	#{
-	 #x=8;
+	a=4;
+	b=4;
+	 x=sqrt(a*b);
 	 #print(temp);
 	 #print(temp);
 	 #print(tar);
-	 #return pow(2.2,2);
+	 #return -x;
 	#};
 
     #y = funcA(5,start,4);
@@ -29,19 +31,22 @@
 	#x = (4.4 * 2) - 0.2;
 	#x = (5 / 2) / 2;
 	#print (x);
-	#x = 5 + 4.4 - 0.2 * 2;
-	x = 10;
-	y = 5;
-	if ( (x >= 20) || (x <= 10) ) do
-	{
-	print (y);
-	};
+	#y = 5;
+	#x = (y + (4.4 - 0.2)) * 2;
+	#x = 10;
+	#vector y = (2.0,3.0,0);
+	#vector x = (3.0,4.0,0);
+	#z = cross(y,x);
+	#if ( (x >= 20) || (x <= 10) ) do
+	#{
+	#print (x);
+	#};
 	#else if (x == 10) do
 	#{
 	 #print (2);
 	#}
 	#else do
 	#{
-	 #print(x);
+	 print(x);
 	#};
 };
