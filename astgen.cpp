@@ -156,7 +156,7 @@ struct AstElement* makeExpByName(char*name)
 
 
 
-struct AstElement* makeExp(struct AstElement* left, struct AstElement* right, char op)
+struct AstElement* makeExp(struct AstElement* left, struct AstElement* right, char* op)
 {
     //struct AstElement* result = checkAlloc(sizeof(*result));
 	struct AstElement* result = new AstElement();
@@ -215,6 +215,17 @@ struct AstElement* makeIf(struct AstElement* cond, struct AstElement* ifTrue, st
 	return result;
 }
 
+struct AstElement* makeIf(struct AstElement* cond, struct AstElement* ifTrue)
+{
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekIf;
+	result->data.ifStatement.cond = cond;
+	result->data.ifStatement.ifTrue = ifTrue;
+	result->data.ifStatement.ifFalse = NULL;
+	std::cout<<"makeIf:: pushed: "<<std::endl;
+	return result;
+}
+
 struct AstElement* makeElseIf(struct AstElement* condIf, struct AstElement* ifTrue, struct AstElement* condElseIf, struct AstElement* elseIfTrue, struct AstElement* elseIfFalse)
 {
 	struct AstElement* result = new AstElement();
@@ -241,6 +252,7 @@ struct AstElement* makeCall(char* name, struct AstElement* param)
 
 struct AstElement* makeFunc(char* name, struct AstElement* signature, struct AstElement* statement)
 {
+	std::cout<<"\n ########         makeFunction:: creating "<<name<<std::endl;
 	struct AstElement* result = new AstElement();
 	result->kind = AstElement::ekFunc;
 	result->data.func.name = name;
@@ -249,6 +261,20 @@ struct AstElement* makeFunc(char* name, struct AstElement* signature, struct Ast
 	std::cout<<"makeFunc:: pushed: "<<std::endl;
 	return result;
 }
+
+struct AstElement* makeFunc(char* name, struct AstElement* statement)
+{
+	std::cout<<"\n ########         makeFunction:: creating "<<name<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekFunc;
+	result->data.func.name = name;
+	result->data.func.signatures = NULL;
+	result->data.func.statements= statement;
+	result->data.func.count=0;
+	std::cout<<"makeFunc:: pushed: "<<std::endl;
+	return result;
+}
+
 //check implementation
 struct AstElement* makeSignatures(struct AstElement* result,struct AstElement* signature)
 {
@@ -266,6 +292,20 @@ struct AstElement* makeSignatures(struct AstElement* result,struct AstElement* s
 	std::cout<<"\n Signature: pushed signature: "<<result->data.signatures.signature[result->data.signatures.count-1];	
 	return result;
 }
+
+
+struct AstElement* makeSignatures()
+{
+	//blank signature with count 0
+	std::cout<<"\n makeSignatures:: creating result";
+    AstElement* result = new AstElement();
+	result->kind = AstElement::ekSignatures;
+	result->data.signatures.count = 0;
+	result->data.signatures.signature[0] = NULL;
+		
+	return result;
+}
+
 
 struct AstElement* makeSignature(char* type,struct AstElement* assignment)
 {
@@ -328,5 +368,101 @@ struct AstElement* makeReturnByExp(struct AstElement* exp)
 	struct AstElement* result = new AstElement();
 	result->kind = AstElement::ekRtrnByExp;
 	result->data.returnData.exp = exp;
+	return result;
+}
+
+
+struct AstElement* makePow( struct AstElement* left, struct AstElement* right)
+{
+	std::cout<<"\n makePow "<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekPow;
+	result->data.pow.right = right;
+	result->data.pow.left = left;
+	return result;
+}
+
+struct AstElement* makeMin( struct AstElement* first, struct AstElement* second,struct AstElement* third)
+{
+	std::cout<<"\n makeMin "<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekMin;
+	result->data.min.first = first;
+	result->data.min.second = second;
+	result->data.min.third = third;
+	return result;
+}
+
+struct AstElement* makeFact( struct AstElement* expr)
+{
+	std::cout<<"\n makefact "<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekFact;
+	result->data.fact.expr = expr;
+	return result;
+}
+
+struct AstElement* makeAcos( struct AstElement* expr)
+{
+	std::cout<<"\n makeAcos "<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekAcos;
+	result->data.Acos.expr = expr;
+	return result;
+}
+
+struct AstElement* makeSqrt( struct AstElement* expr)
+{
+	std::cout<<"\n makeSqrt "<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekSqrt;
+	result->data.Sqrt.expr = expr;
+	return result;
+}
+
+struct AstElement* makeRotatez( struct AstElement* expr)
+{
+	std::cout<<"\n makeRotatez "<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekRotatez;
+	result->data.rotatez.expr = expr;
+	return result;
+}
+
+struct AstElement* makeMagnitudesqr( struct AstElement* expr)
+{
+	std::cout<<"\n makeMagnitudesqr "<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekMagnitudesqr;
+	result->data.magnitudeSqr.expr = expr;
+	return result;
+}
+
+struct AstElement* makeTransform( struct AstElement* expr)
+{
+	std::cout<<"\n makeTransform "<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekTransform;
+	result->data.transform.expr = expr;
+	return result;
+}
+
+struct AstElement* makeDot( struct AstElement* left,struct AstElement* right)
+{
+	std::cout<<"\n makeDot "<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekDot;
+	result->data.dot.left = left;
+	result->data.dot.right = right;
+	return result;
+}
+
+struct AstElement* makeCross( struct AstElement* first,struct AstElement* second)
+{
+	std::cout<<"\n makeCross "<<std::endl;
+	struct AstElement* result = new AstElement();
+	result->kind = AstElement::ekCross;
+	result->data.cross.first = first;
+	result->data.cross.second = second;
 	return result;
 }

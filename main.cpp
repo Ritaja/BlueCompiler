@@ -20,7 +20,9 @@ int main()
     //yydebug = 0;
 	struct AstElement *a = new AstElement;
 	FILE *fp ;
-	fopen_s(&fp,"example5.txt","r");
+    //fopen_s(&fp,"example5.txt","r");
+	fopen_s(&fp,"ClothoidIFCPL.txt","r");
+	//fopen_s(&fp,"ClothoidTest.txt","r");
 	//std::cout<<fp;
 	if (fp==NULL)
 	{
@@ -31,11 +33,15 @@ int main()
     
     assert(a);
     struct ExecEnviron* e = createEnv();
-	setPropertySet(e,"lerp",3.4);
+	//setPropertySet(e,"lerp",3.4);
 	setPropertySet(e,"strt_radius",34.6);
 	setPropertySet(e,"endradius_",21.8);
 	setPropertySet(e,"endradius_",21.8); 
 	setPropertySet(e,"start",21.8,22.6);
+	setPropertySet(e,"clockwise",1);
+	setPropertySet(e,"startCurvature",1.0/5000);
+	setPropertySet(e,"endCurvature",1.0/367);
+	setPropertySet(e,"end",930.775243, 503.483954);
     execAst(e, astDest);
     
 	std::map<std::string,double> propertySet = getPropertySet(e);

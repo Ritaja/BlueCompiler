@@ -6,7 +6,7 @@
 struct AstElement
 {
 	//this enum provides reference lookup for array search in astexec.cpp
-    enum {ekId, ekNumber, ekBinExpression, ekAssignment, ekWhile, ekFunc, ekSignatures, ekSignature, ekCall, ekStatements, ekIf, ekElseIf, ekArray, ekVector, ekVectors, ekVector2d, ekVec1delement, ekVec2delement, ekVecAssignment, ekVec2dAssignment, ekRtrnByExp, ekFuncAssign, ekLastElement} kind;
+    enum {ekId, ekNumber, ekBinExpression, ekAssignment, ekWhile, ekFunc, ekSignatures, ekSignature, ekCall, ekStatements, ekIf, ekElseIf, ekArray, ekVector, ekVectors, ekVector2d, ekVec1delement, ekVec2delement, ekVecAssignment, ekVec2dAssignment, ekRtrnByExp, ekFuncAssign, ekPow, ekFact, ekAcos, ekSqrt, ekRotatez, ekMagnitudesqr, ekTransform, ekMin, ekDot, ekCross, ekLastElement} kind;
     struct
     {
         double val; //only one value... arrays implementation as a struct refer below
@@ -14,7 +14,7 @@ struct AstElement
         struct
         {
             struct AstElement *left, *right;
-            char op;
+            char* op;
         }expression;
 		//create a left node here to hold data type as int or double
         struct
@@ -55,6 +55,7 @@ struct AstElement
 		//added function what is call above
 		struct
 		{
+			int count;
 			char* name;
 			struct AstElement* signatures;
 			struct AstElement* statements;
@@ -117,9 +118,54 @@ struct AstElement
 		}Vec2dAssignment;
 		struct
 		{
-			char* name;
+			char* op;
 			struct AstElement* exp;
 		}returnData;
+		struct
+		{
+			struct AstElement* right;
+			struct AstElement* left;
+		}pow;
+		struct
+		{
+			struct AstElement* expr;
+		}fact;
+		struct
+		{
+			struct AstElement* expr;
+		}Acos;
+		struct
+		{
+			struct AstElement* expr;
+		}Sqrt;
+		struct
+		{
+			struct AstElement* expr;
+		}rotatez;
+		struct
+		{
+			struct AstElement* expr;
+		}magnitudeSqr;
+		struct
+		{
+			struct AstElement* expr;
+		}transform;
+		struct
+		{
+			struct AstElement* first;
+			struct AstElement* second;
+			struct AstElement* third;
+		}min;
+		struct
+		{
+			struct AstElement* left;
+			struct AstElement* right;
+		}dot;
+		struct
+		{
+			struct AstElement* first;
+			struct AstElement* second;
+		}cross;
     } data;
 };
 
@@ -127,14 +173,17 @@ struct AstElement* makeAssignment(char*name, struct AstElement* val);
 struct AstElement* makeAssignment(char*name);
 struct AstElement* makeExpByNum(double val);
 struct AstElement* makeExpByName(char*name);
-struct AstElement* makeExp(struct AstElement* left, struct AstElement* right, char op);
+struct AstElement* makeExp(struct AstElement* left, struct AstElement* right, char* op);
 struct AstElement* makeStatement(struct AstElement* dest, struct AstElement* toAppend);
 struct AstElement* makeWhile(struct AstElement* cond, struct AstElement* exec);
 struct AstElement* makeCall(char* name, struct AstElement* param);
+struct AstElement* makeIf(struct AstElement* cond, struct AstElement* ifTrue);
 struct AstElement* makeIf(struct AstElement* cond, struct AstElement* ifTrue, struct AstElement* ifFalse);
 struct AstElement* makeElseIf(struct AstElement* condIf, struct AstElement* ifTrue, struct AstElement* condElseIf, struct AstElement* elseIfTrue, struct AstElement* elseIfFalse);
 struct AstElement* makeFunc(char* name, struct AstElement* signature, struct AstElement* statement);
+struct AstElement* makeFunc(char* name, struct AstElement* statement);
 struct AstElement* makeSignatures(struct AstElement* result,struct AstElement* signature);
+struct AstElement* makeSignatures();
 struct AstElement* makeSignature(char* type,struct AstElement* assignment);
 struct AstElement* makeArray(struct AstElement* result, struct AstElement* expression);
 struct AstElement* makeVector(char* name, struct AstElement* vector);
@@ -148,4 +197,14 @@ struct AstElement* makeVecAssignment(char* name, int elementPos, struct AstEleme
 struct AstElement* makeVec2dAssignment(char* name, int elementPos1, int elementPos2, struct AstElement* right);
 struct AstElement* makeReturnByExp(struct AstElement* exp);
 struct AstElement* makeFuncAssignment( char*name, struct AstElement* val);
+struct AstElement* makePow( struct AstElement* left, struct AstElement* right);
+struct AstElement* makeMin( struct AstElement* first, struct AstElement* second,struct AstElement* third);
+struct AstElement* makeFact( struct AstElement* expr);
+struct AstElement* makeAcos( struct AstElement* expr);
+struct AstElement* makeSqrt( struct AstElement* expr);
+struct AstElement* makeRotatez( struct AstElement* expr);
+struct AstElement* makeMagnitudesqr( struct AstElement* expr);
+struct AstElement* makeTransform( struct AstElement* expr);
+struct AstElement* makeDot( struct AstElement* left,struct AstElement* right);
+struct AstElement* makeCross( struct AstElement* first,struct AstElement* second);
 #endif

@@ -11,18 +11,20 @@ extern int yylex();
 
 %union {
     double val;
-    char op;
+    char* op;
     char* name;
     struct AstElement* ast; /* this is the new member to store AST elements */
 }
 
 %token TOKEN_BEGIN TOKEN_END TOKEN_WHILE TOKEN_DO BOX_OPEN BOX_CLOSE
 %token TOKEN_IF TOKEN_ELSE TOKEN_COMMA TOKEN_VECTOR TOKEN_RETURN
+%token TOKEN_POW TOKEN_FACTORIAL TOKEN_ACOS TOKEN_SQRT TOKEN_MIN
+%token TOKEN_ROTATEZ TOKEN_MAGNITUDESQR TOKEN_TRANSFORM TOKEN_DOT TOKEN_CROSS
 %token TOKEN_VECTOR2d
 %token<name> TOKEN_ID
 %token<val> TOKEN_NUMBER
 %token<op> TOKEN_OPERATOR
-%type<ast> program block statements statement assignment expression whileStmt call ifStmt func 
+%type<ast> program block statements statement assignment expression arrExpression whileStmt call ifStmt func 
 %type<ast> signature signatures array vector vector2d vectors return
 %start program
 
@@ -44,8 +46,7 @@ statements: {$$=0;}
     | statements block';' {$$=makeStatement($1, $2);};
 
 statement: 
-      assignment {$$=$1;}
-    | whileStmt {$$=$1;}
+      whileStmt {$$=$1;}
 	| ifStmt{$$=$1;}
     | block {$$=$1;}
     | call {$$=$1;}
@@ -53,6 +54,7 @@ statement:
 	| vector {$$=$1;}
 	| vector2d {$$=$1;}
 	| return {$$=$1;}
+	| assignment {$$=$1;}
 
 assignment: TOKEN_ID '=' expression {$$=makeAssignment($1, $3);}
           | TOKEN_ID {$$=makeAssignment($1);};
@@ -63,20 +65,36 @@ assignment: TOKEN_ID '=' expression {$$=makeAssignment($1, $3);}
 /* see how to support x=a[]+b[]*/
 expression: TOKEN_ID {$$=makeExpByName($1);}
     | TOKEN_NUMBER {$$=makeExpByNum($1);}
+	| TOKEN_OPERATOR expression {$$=makeExp(NULL,$2,$1);}
     | expression TOKEN_OPERATOR expression {$$=makeExp($1, $3, $2);}
 	| TOKEN_ID BOX_OPEN TOKEN_NUMBER BOX_CLOSE {$$=makeVec1delement($1, $3);};
 	| TOKEN_ID BOX_OPEN TOKEN_NUMBER BOX_CLOSE BOX_OPEN TOKEN_NUMBER BOX_CLOSE {$$=makeVec2delement($1, $3, $6);};
+	| TOKEN_POW '(' expression TOKEN_COMMA expression ')'{$$=makePow($3, $5);};
+	| TOKEN_FACTORIAL '(' expression ')'{$$=makeFact($3);};
+	| TOKEN_ACOS '(' expression ')'{$$=makeAcos($3);};
+	| TOKEN_SQRT '(' expression ')'{$$=makeSqrt($3);};
+	| TOKEN_ROTATEZ '(' expression ')'{$$=makeRotatez($3);};
+	| TOKEN_MAGNITUDESQR '(' expression ')'{$$=makeMagnitudesqr($3);};
+	| TOKEN_MIN '(' expression TOKEN_COMMA expression TOKEN_COMMA expression ')'{$$=makeMin($3,$5,$7);};
+	| TOKEN_DOT '(' expression TOKEN_COMMA expression ')'{$$=makeDot($3,$5);};
+	| TOKEN_CROSS '(' expression TOKEN_COMMA expression ')'{$$=makeCross($3,$5);};
+	| TOKEN_TRANSFORM '(' expression ')'{$$=makeTransform($3);};
+	| '(' expression TOKEN_OPERATOR expression ')' {$$=makeExp($2, $4, $3);}
+
+arrExpression: TOKEN_ID {$$=makeExpByName($1);}
+    | TOKEN_NUMBER {$$=makeExpByNum($1);}
+    | arrExpression TOKEN_OPERATOR arrExpression {$$=makeExp($1, $3, $2);}
 
 array: {$$=0;}
-     | array TOKEN_COMMA expression {$$=makeArray($1,$3);}
-	 | array expression  {$$=makeArray($1,$2);}
+     | array TOKEN_COMMA arrExpression {$$=makeArray($1,$3);}
+	 | array arrExpression  {$$=makeArray($1,$2);}
 
 vector: TOKEN_VECTOR TOKEN_ID '=' '(' array ')' {$$=makeVector($2,$5);}
       | TOKEN_VECTOR TOKEN_ID '=' '(' ')' {$$=makeNullVector($2);}
-	  | TOKEN_VECTOR TOKEN_ID '=' expression {$$=makeAssignment($2, $4);}
+	  | TOKEN_VECTOR TOKEN_ID '=' arrExpression {$$=makeAssignment($2, $4);}
 
 vector2d: TOKEN_VECTOR2d TOKEN_ID '=' BOX_OPEN vectors BOX_CLOSE {$$=makeVector2d($2,$5);}
-        | TOKEN_VECTOR2d TOKEN_ID '=' expression {$$=makeAssignment($2, $4);}
+        | TOKEN_VECTOR2d TOKEN_ID '=' arrExpression {$$=makeAssignment($2, $4);}
 
 /*check null vectors creation*/
 vectors: {$$=0;}
@@ -88,14 +106,16 @@ vectors: {$$=0;}
 whileStmt: TOKEN_WHILE '(' expression ')' TOKEN_DO statement{$$=makeWhile($3, $6);};
 
 /*if multiple else if support is required create a separate structure*/
-ifStmt: TOKEN_IF  '(' expression ')' TOKEN_DO statement TOKEN_ELSE TOKEN_DO statement{$$=makeIf($3, $6, $9);};
+ifStmt: TOKEN_IF  '(' expression ')' TOKEN_DO statement{$$=makeIf($3, $6);};
+      | TOKEN_IF  '(' expression ')' TOKEN_DO statement TOKEN_ELSE TOKEN_DO statement{$$=makeIf($3, $6, $9);};
       | TOKEN_IF  '(' expression ')' TOKEN_DO statement TOKEN_ELSE  TOKEN_IF '(' expression ')' TOKEN_DO statement TOKEN_ELSE TOKEN_DO statement{$$=makeElseIf($3, $6, $10, $13, $16);};
 
-func: TOKEN_ID TOKEN_ID '(' signatures ')' statement {$$=makeFunc($2, $4, $6);};
+func:  TOKEN_ID TOKEN_ID '('  ')' statement {$$=makeFunc($2, $5);};
+     | TOKEN_ID TOKEN_ID '(' signatures ')' statement {$$=makeFunc($2, $4, $6);};
+     
 
 signatures: {$$=0;}
           |signature signatures{$$=makeSignatures($2,$1);}
-		  |'(' ')'{;};
 
 signature: 
          TOKEN_COMMA TOKEN_ID assignment{$$=makeSignature($2,$3);} 
