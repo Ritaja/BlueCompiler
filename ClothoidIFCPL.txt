@@ -1,32 +1,4 @@
-{ # Adapted from Clothoid.py
-
-#####################################################
-# This is sample comment line.						#
-# These lines are not parsed by language.			#
-########### User Properties #########################
-#start = Vector2(861.369007, 537.722476)			#
-#end = Vector2(930.775243, 503.483954)				#
-#length		= 77.500241								#
-#startCurvature = 1.0/500							#
-#endCurvature = 1.0/367								#
-#clockwise = False									#
-#####################################################
-
-#############################################################
-# This language has different parsing capabilities			#
-# Please note that v1,v2 represents the second and			#
-# third value of vector v. if you need to name your         #
-# vectors differently, use vOne, vTwo. Names of				#
-# variables with numbers appended to them are illegal		#
-# in this language. E.G: Name10 is internal representation	#
-# of 2d array element at row 1 and column 0					#
-# inbuilt functions like dot only supports					#
-# a vector with two elements. e.g. x and y coords			#
-# cross supports 3 elements.								#
-# Complicated comparison with && is not handled.			#
-# Language does not know return to stop execution of		#
-# current function.								            #
-#############################################################
+{
 
 void getClothoidConstant() 
 {
@@ -76,10 +48,10 @@ void computeX(double L,double A)
 		L_exponent = 5 + (i - 1) * 4.0;
 
 		A_exponent = i*4.0;
-		A = factorial(2.0*i);
+		Atemp = factorial(2.0*i);
 		B = pow(2.0, 2.0*i);
 		C = 5.0 + (i - 1) * 4;
-		factor = A * B * C;
+		factor = Atemp * B * C;
 
 	    D = pow(L, L_exponent);
 		E = factor * pow(A, A_exponent);
@@ -103,10 +75,10 @@ void computeY(double L, double A)
 		
 		L_exponent = 3.0+(i*4.0);
 		A_exponent = 2.0+(i*4.0);
-		A = factorial(2*i+1);
+		Atemp = factorial(2*i+1);
 		B = pow(2.0, i * 2.0);
 		C = A_exponent + 1.0;
-		factor = A * B * 2.0  * C;
+		factor = Atemp * B * 2.0  * C;
 
 		D = pow(L, L_exponent);
 		E = factor * pow(A, A_exponent);
@@ -120,7 +92,6 @@ void computeY(double L, double A)
 void minimalComponent(double v)
 {
 	return min(v0, v1, v2);
-	#return 2.2;
 };
 	
 void calculateAngleBetweenVectorsHalfCircle(double vOne, double vTwo)
@@ -139,15 +110,14 @@ void calculateAngleBetweenVectorsHalfCircle(double vOne, double vTwo)
 
 	a = magnitude_squared(vOne);
 	b = magnitude_squared(vTwo);
-	# the magnitude_squared returns a array multiplication on arrays is not defined.
 
-	if ((a1 * b1) == 0.0) do
+	if ((a * b) == 0.0) do
 	{
 		returnVal = 0.0;
 	};
 	
 
-	if ((a1 > 0) && (b1 >0)) do  
+	if ((a > 0) && (b >0)) do  
 	{
 		vector vThreeOne = (vOne0, vOne1, 0);
 		vector vThreeTwo = (vTwo0, vTwo1, 0);
@@ -158,15 +128,17 @@ void calculateAngleBetweenVectorsHalfCircle(double vOne, double vTwo)
 		if (sign < 0) do
 		{
 		    A = dot(vOne,vTwo);
-			B = sqrt(a1*b1);
-			returnVal = acos(A * B);
+			B = sqrt(a*b);
+			C = A / B;
+			returnVal = acos(C);
 			return -returnVal;
 		}
 		else do
 		{
 			A = dot(vOne,vTwo);
-			B = sqrt(a1*b1);
-			returnVal = acos(A * B);
+			B = sqrt(a*b);
+			C = A / B;
+			returnVal = acos(C);
 			return returnVal;
 		};
 		
@@ -175,8 +147,7 @@ void calculateAngleBetweenVectorsHalfCircle(double vOne, double vTwo)
 
 void calculateAngleBetweenVectors(double vOne,double vTwo)
 {
-vector vOne = (1,2);
-vector vTwo = (2,3); 
+
 	angle = calculateAngleBetweenVectorsHalfCircle(vOne, vTwo);
 	
 	if (angle < 0.0) do
@@ -194,7 +165,7 @@ void calculateGlobalRotation()
 	A = getClothoidConstant();
 		
 	signY = 1;
-	#and startCurvature < endCurvature) or (clockwise==False and endCurvature < startCurvature
+	
 	if ( (clockwise == 1) && (startCurvature < endCurvature) ) do
 	{
 		signY = -1;
@@ -238,9 +209,12 @@ void calculateGlobalRotation()
 		
 		
 	return globalRotationAngle;
-};
-	
-void getLength()
+	print (globalRotationAngle);
+  };
+
+
+
+  void getLength()
 {
 	return length;
 };
@@ -304,11 +278,13 @@ void getPosition(double lerpParameter)
 	# output global coordinates on clothoid intersection point
 	if (startCurvature < endCurvature) do
 	{
-		return (tP + start);
+	    vector returnVec = tP + start;
+		return returnVec;
 	}
 	else if (endCurvature < startCurvature) do
 	{ 
-		return (start - tP);
+		vector returnVec = start - tP;
+		return returnVec;
 	}
 	else do
 	{
@@ -318,8 +294,7 @@ void getPosition(double lerpParameter)
 
 }; #function ends
 
-	x = getPosition(0.5);
-	print (x);
-	print(i);
-	
-}; #program ends
+  
+  x = getPosition(0.9);
+  print (x);
+};

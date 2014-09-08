@@ -1424,13 +1424,14 @@ static int execAcos(struct ExecEnviron* e, struct AstElement* a)
 
 	if(length == 1)
 	{
-		e->var[temp] = std::acos(val);
+		e->var[temp] = ( std::acos(val) * 180.0/3.14159265 );
+		std::cout<<"Value of Acos calculated "<<( std::acos(val) * 180.0/3.14159265 )<<"Value: "<<val<<std::endl;
 		e->varName = temp;
 		return 1;
 	}
 	else
 	{
-		std::cout<<"Unsupported Math operation on vectors!"<<std::cout;
+		std::cout<<"Unsupported Math operation on vectors!"<<std::endl;
 	}
 
 	return NULL;
@@ -1477,6 +1478,7 @@ static int execMagnitudesqr(struct ExecEnviron* e, struct AstElement* a)
 	int length = dispatchExpression(e,a->data.magnitudeSqr.expr);
 	std::string varName = e->varName;
 	std::string temp = "Temp";
+	double sum = 0.0;
 	if(length==1)
 	{
 		std::cout<<"Magnitude square operation undefined for non array type elements"<<std::endl;
@@ -1486,11 +1488,12 @@ static int execMagnitudesqr(struct ExecEnviron* e, struct AstElement* a)
 		//found 1d array. Names with Sample0 Sample1
 		for(int i=0;i<length;i++)
 		{
-			e->var[(temp+std::to_string(i))] = std::pow( (e->var[(varName+std::to_string(i))]),2 ) ;
+			sum  =  sum + std::pow( (e->var[(varName+std::to_string(i))]),2 ) ;
 		}
 		//calculation done set variables and return.
+		e->var[temp] = sum;
 		e->varName = temp;
-		return length;
+		return 1;
 	}
 	else
 	{
