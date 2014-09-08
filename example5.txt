@@ -12,9 +12,11 @@
 
 	#void funcA(int test,int temp,int tar)
 	#{
-	a=4;
-	b=4;
-	 x=sqrt(a*b);
+	vector a= (4,4);
+	vector b= (4,3);
+	C = magnitude_squared(a);
+	D = magnitude_squared(b);
+	 x=acos(C/D);
 	 #print(temp);
 	 #print(temp);
 	 #print(tar);
