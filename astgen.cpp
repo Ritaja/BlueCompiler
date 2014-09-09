@@ -420,12 +420,13 @@ struct AstElement* makeSqrt( struct AstElement* expr)
 	return result;
 }
 
-struct AstElement* makeRotatez( struct AstElement* expr)
+struct AstElement* makeRotatez( struct AstElement* angle, struct AstElement* coords)
 {
 	std::cout<<"\n makeRotatez "<<std::endl;
 	struct AstElement* result = new AstElement();
 	result->kind = AstElement::ekRotatez;
-	result->data.rotatez.expr = expr;
+	result->data.rotatez.angle = angle;
+	result->data.rotatez.coords = coords;
 	return result;
 }
 
