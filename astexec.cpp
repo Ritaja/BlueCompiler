@@ -1469,7 +1469,34 @@ static int execSqrt(struct ExecEnviron* e, struct AstElement* a)
 
 static int execRotatez(struct ExecEnviron* e, struct AstElement* a)
 {
-	return 2.2;
+	std::string temp = "Temp";
+	int length = dispatchExpression(e,a->data.rotatez.angle);
+	if (length != 1)
+	{
+		std::cout<<"Unsupported operation! Error angle cannot be 2d (rotatez)!!"<<std::endl;
+	}
+	double angle = e->var[e->varName];
+    // clear temop
+	destroyTemp(e,1);
+
+	length = dispatchExpression(e,a->data.rotatez.coords);
+
+	if (length != 3)
+	{
+		std::cout<<"Unsupported operation! Coords must have x,y,z values (rotatez)!!"<<std::endl;
+	}
+
+	/*operation on arrays. Temp needs to be free explicitly after use. 
+	Hence copy to array type and delete the rest.*/
+
+	double arrCoords[3] = { (e->var[(e->varName+std::to_string(0))]),(e->var[(e->varName+std::to_string(1))]),(e->var[(e->varName+std::to_string(2))]) };
+	destroyTemp(e,length);
+
+	e->var[(temp+std::to_string(0))] = ((e->var[(e->varName+std::to_string(0))]) * std::cos(angle)) + ((e->var[(e->varName+std::to_string(1))]) * std::sin(angle));
+	e->var[(temp+std::to_string(1))] = ((e->var[(e->varName+std::to_string(1))]) * std::cos(angle)) - ((e->var[(e->varName+std::to_string(0))]) * std::sin(angle));
+
+	e->varName = temp;
+	return 2;
 }
 
 static int execMagnitudesqr(struct ExecEnviron* e, struct AstElement* a)

@@ -261,19 +261,10 @@ void getPosition(double lerpParameter)
 	D = computeY(smallerLength,A);
 	localY = signY * C - D;
 
-	# calculate the global rotation angle and create rotation matrix
-	#rotation = rotation.rotatez(calculateGlobalRotation())
-	Z = calculateGlobalRotation();
-	rotation = rotatez(Z);
-
-	
-	# rotate point with global rotation angle
-	#tP_3 = rotation.transform(Vector3(localX,localY,0))
-
-	vector vTemp = (localX,localY,0);
-	tP_3 = transform(tp_3);
-	#tP = Vector2(tP_3.x, tP_3.y)
-	vector tP = (2.2,2.3);
+	#rotatez accepts angle of rotation and rotates a
+	# given matrix(x,y,z) on z-axis. Returns the teransformed x,y coords
+	rotationAngle = calculateGlobalRotation();
+	tP = rotatez(rotationAngle,vTemp);
 	
 	# output global coordinates on clothoid intersection point
 	if (startCurvature < endCurvature) do
@@ -295,6 +286,6 @@ void getPosition(double lerpParameter)
 }; #function ends
 
   
-  x = getPosition(0.9);
-  print (x);
+  x = getPosition(0.5);
+  print (angle);
 };

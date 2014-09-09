@@ -140,7 +140,8 @@ struct AstElement
 		}Sqrt;
 		struct
 		{
-			struct AstElement* expr;
+			struct AstElement* angle;
+			struct AstElement* coords;
 		}rotatez;
 		struct
 		{
@@ -202,7 +203,7 @@ struct AstElement* makeMin( struct AstElement* first, struct AstElement* second,
 struct AstElement* makeFact( struct AstElement* expr);
 struct AstElement* makeAcos( struct AstElement* expr);
 struct AstElement* makeSqrt( struct AstElement* expr);
-struct AstElement* makeRotatez( struct AstElement* expr);
+struct AstElement* makeRotatez( struct AstElement* angle, struct AstElement* coords);
 struct AstElement* makeMagnitudesqr( struct AstElement* expr);
 struct AstElement* makeTransform( struct AstElement* expr);
 struct AstElement* makeDot( struct AstElement* left,struct AstElement* right);

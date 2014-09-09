@@ -12,11 +12,14 @@
 
 	#void funcA(int test,int temp,int tar)
 	#{
-	vector a= (4,4);
-	vector b= (4,3);
-	C = magnitude_squared(a);
-	D = magnitude_squared(b);
-	 x=acos(C/D);
+	#vector a= (4,4);
+	#vector b= (4,3);
+	#C = magnitude_squared(a);
+	#D = magnitude_squared(b);
+	 #x=acos(C/D);
+	vector points = (6,9,5);
+	angle = 90;
+	x = rotatez(angle,points);
 	 #print(temp);
 	 #print(temp);
 	 #print(tar);
