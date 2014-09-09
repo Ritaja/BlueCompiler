@@ -259,7 +259,9 @@ void getPosition(double lerpParameter)
 	localX = B - C;
 	C = computeY(currentLength, A);
 	D = computeY(smallerLength,A);
-	localY = signY * C - D;
+	localY = signY * (C - D);
+
+	vector vTemp = (localX,localY,0);
 
 	#rotatez accepts angle of rotation and rotates a
 	# given matrix(x,y,z) on z-axis. Returns the teransformed x,y coords
@@ -286,6 +288,6 @@ void getPosition(double lerpParameter)
 }; #function ends
 
   
-  x = getPosition(0.5);
-  print (angle);
+  x = getPosition(4);
+  print (x);
 };

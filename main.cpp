@@ -35,7 +35,7 @@ int main()
     struct ExecEnviron* e = createEnv();
 	//setPropertySet(e,"lerp",3.4);
 	setPropertySet(e,"start",861.369007, 537.722476);
-	setPropertySet(e,"clockwise",1);
+	setPropertySet(e,"clockwise",0);
 	setPropertySet(e,"startCurvature",1.0/500);
 	setPropertySet(e,"endCurvature",1.0/367);
 	setPropertySet(e,"end",930.775243, 503.483954);
