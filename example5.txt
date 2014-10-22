@@ -1,11 +1,57 @@
 { # example of the simple language
-	void funcA(int test,int temp,int tar)
-	{
-	 x=8;
-	 print(test);
-	 print(temp);
-	 print(tar);
-	};
 
-	funcA(5,7,4);
+	#vector A = (1.0,2.1,3.1);
+	#vector B = (1.1,1.1,1.1);
+	#vector C = A + B + A;
+	#print (C);
+
+	#vector2d E = [(strt_radius,2.0),(1.2,lerp,3.2),(1.3,endradius_,1.3,1.3)];
+	#vector2d D = [(1.1,2.0),(1.2,2.2,3.2),(1.3,1.3,1.3,1.3)];
+	#vector2d F = E + D + D;
+	#print (F);
+
+	#void funcA(int test,int temp,int tar)
+	#{
+	#vector a= (4,4);
+	#vector b= (4,3);
+	#C = magnitude_squared(a);
+	#D = magnitude_squared(b);
+	 #x=acos(C/D);
+	vector points = (6,9,5);
+	angle = 90;
+	x = rotatez(angle,points);
+	 #print(temp);
+	 #print(temp);
+	 #print(tar);
+	 #return -x;
+	#};
+
+    #y = funcA(5,start,4);
+	#y = y + 1;
+	#a = -0.1;
+	#b = 2;
+	#c = 0.2;
+	#d = 1.1;
+	#e = 0.3; 
+	#x = (4.4 * 2) - 0.2;
+	#x = (5 / 2) / 2;
+	#print (x);
+	#y = 5;
+	#x = (y + (4.4 - 0.2)) * 2;
+	#x = 10;
+	#vector y = (2.0,3.0,0);
+	#vector x = (3.0,4.0,0);
+	#z = cross(y,x);
+	#if ( (x >= 20) || (x <= 10) ) do
+	#{
+	#print (x);
+	#};
+	#else if (x == 10) do
+	#{
+	 #print (2);
+	#}
+	#else do
+	#{
+	 print(x);
+	#};
 };
