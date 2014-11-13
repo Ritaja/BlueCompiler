@@ -1424,7 +1424,7 @@ static int execAcos(struct ExecEnviron* e, struct AstElement* a)
 
 	if(length == 1)
 	{
-		e->var[temp] = ( std::acos(val) * 180.0/3.14159265 );
+		e->var[temp] = ( std::acos(val));
 		/*std::cout<<"execAcos: Value of Acos calculated "<<( std::acos(val) * 180.0/3.14159265 )<<"Value: "<<val<<std::endl;*/
 		e->varName = temp;
 		return 1;
@@ -1492,8 +1492,8 @@ static int execRotatez(struct ExecEnviron* e, struct AstElement* a)
 	double arrCoords[3] = { (e->var[(e->varName+std::to_string(0))]),(e->var[(e->varName+std::to_string(1))]),(e->var[(e->varName+std::to_string(2))]) };
 	destroyTemp(e,length);
 
-	e->var[(temp+std::to_string(0))] = ((e->var[(e->varName+std::to_string(0))]) * std::cos(angle)) + ((e->var[(e->varName+std::to_string(1))]) * std::sin(angle));
-	e->var[(temp+std::to_string(1))] = ((e->var[(e->varName+std::to_string(1))]) * std::cos(angle)) - ((e->var[(e->varName+std::to_string(0))]) * std::sin(angle));
+	e->var[(temp+std::to_string(0))] = ((e->var[(e->varName+std::to_string(0))]) * std::cos(angle)) - ((e->var[(e->varName+std::to_string(1))]) * std::sin(angle));
+	e->var[(temp+std::to_string(1))] = ((e->var[(e->varName+std::to_string(1))]) * std::cos(angle)) + ((e->var[(e->varName+std::to_string(0))]) * std::sin(angle));
 
 	e->varName = temp;
 	return 2;
@@ -1535,6 +1535,7 @@ static int execDot(struct ExecEnviron* e, struct AstElement* a)
 	int lengthRight = dispatchExpression(e,a->data.dot.right);
 	double b[2];
 	double c[2];
+	double sum = 0;
 	std::string varNameRight = e->varName;
 	int lengthLeft = dispatchExpression(e,a->data.dot.left);
 	std::string varNameLeft = e->varName;
@@ -1551,10 +1552,14 @@ static int execDot(struct ExecEnviron* e, struct AstElement* a)
 		{
 			b[i] = e->var[(varNameRight+std::to_string(i))]  ;
 			c[i] = e->var[(varNameLeft+std::to_string(i))]  ;
+			
+			sum += (b[i]*c[i]);
 		}
 
-		e->var[temp] = std::inner_product(b, b + sizeof(b) / sizeof(b[0]), c, 0);
+		//e->var[temp] = std::inner_product(b, b + sizeof(b) / sizeof(b[0]), c, 0);
+		e->var[temp]=sum;
 		e->varName = temp;
+		
 		return 1;
 	}
 	else

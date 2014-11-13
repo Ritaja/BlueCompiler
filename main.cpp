@@ -36,10 +36,11 @@ int main()
 	//setPropertySet(e,"lerp",3.4);
 	setPropertySet(e,"start",861.369007, 537.722476);
 	setPropertySet(e,"clockwise",0);
-	setPropertySet(e,"startCurvature",1.0/500);
-	setPropertySet(e,"endCurvature",1.0/367);
+	setPropertySet(e,"startCurvature", 1.0/500);
+	setPropertySet(e,"endCurvature", 1.0/367);
 	setPropertySet(e,"end",930.775243, 503.483954);
 	setPropertySet(e,"length",77.500241);
+	//setPropertySet(e,"lerpParameter",1);
     execAst(e, astDest);
     
 	std::map<std::string,double> propertySet = getPropertySet(e);
