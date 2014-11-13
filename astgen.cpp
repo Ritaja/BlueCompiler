@@ -24,9 +24,9 @@ struct AstElement* makeAssignment( char*name, struct AstElement* val)
     result->kind = AstElement::ekAssignment;
     result->data.assignment.name = name;
     result->data.assignment.right = val;
-	std::cout<<"makeAssign:: pushed: "<<std::endl;
+	/*std::cout<<"makeAssign:: pushed: "<<std::endl;
 	std::cout<<"makeAssign:: pushed var: "<<result->data.assignment.name<<std::endl;
-	std::cout<<"makeAssign:: pushed val: "<<result->data.assignment.right<<std::endl;
+	std::cout<<"makeAssign:: pushed val: "<<result->data.assignment.right<<std::endl;*/
     return result;
 }
 
@@ -37,9 +37,9 @@ struct AstElement* makeFuncAssignment( char*name, struct AstElement* val)
     result->kind = AstElement::ekFuncAssign;
     result->data.assignment.name = name;
     result->data.assignment.right = val;
-	std::cout<<"makeFuncAssign:: pushed: "<<std::endl;
+	/*std::cout<<"makeFuncAssign:: pushed: "<<std::endl;
 	std::cout<<"makeFuncAssign:: pushed var: "<<result->data.assignment.name<<std::endl;
-	std::cout<<"makeFuncAssign:: pushed val: "<<result->data.assignment.right<<std::endl;
+	std::cout<<"makeFuncAssign:: pushed val: "<<result->data.assignment.right<<std::endl;*/
     return result;
 }
 
@@ -51,9 +51,9 @@ struct AstElement* makeAssignment( char*name)
     result->kind = AstElement::ekAssignment;
     result->data.assignment.name = name;
 	result->data.assignment.right = NULL;
-	std::cout<<"makeAssign (for signature):: pushed: "<<std::endl;
+	/*std::cout<<"makeAssign (for signature):: pushed: "<<std::endl;
 	std::cout<<"makeAssign (Si):: pushed var: "<<result->data.assignment.name<<std::endl;
-	std::cout<<"makeAssign (Si):: pushed val: "<<result->data.assignment.right<<std::endl;
+	std::cout<<"makeAssign (Si):: pushed val: "<<result->data.assignment.right<<std::endl;*/
     return result;
 }
 
@@ -63,7 +63,7 @@ struct AstElement* makeExpByNum(double val)
 	struct AstElement* result = new AstElement();
     result->kind = AstElement::ekNumber;
     result->data.val = val;
-	std::cout<<"makeExpByNum:: pushed val: "<<val<<std::endl;
+	/*std::cout<<"makeExpByNum:: pushed val: "<<val<<std::endl;*/
     return result;
 }
 
@@ -81,16 +81,16 @@ struct AstElement* makeArray(struct AstElement* result, struct AstElement* expre
 	result->data.array.count++;
 	result->data.array.element.resize(result->data.array.count);
 	result->data.array.element[result->data.array.count-1]=expression;
-	std::cout<<"makeArray:: count"<<result->data.array.count<<" Pushed:: "<<result->data.array.element[result->data.array.count-1]->kind<<std::endl;
+	/*std::cout<<"makeArray:: count"<<result->data.array.count<<" Pushed:: "<<result->data.array.element[result->data.array.count-1]->kind<<std::endl;*/
 	return result;
 }
 
 struct AstElement* makeVector(char* name, struct AstElement* vector)
 {
-	std::cout<<"MakeVector:: name:: "<< name <<std::endl;
+	/*std::cout<<"MakeVector:: name:: "<< name <<std::endl;*/
 	struct AstElement* result = new AstElement();
     result->kind = AstElement::ekVector;
-	std::cout<<"MakeVector:: kind:: "<<result->kind<<std::endl;
+	/*std::cout<<"MakeVector:: kind:: "<<result->kind<<std::endl;*/
 	result->data.vector.name = name;
 	result->data.vector.array = vector;
 	return result;
@@ -98,7 +98,7 @@ struct AstElement* makeVector(char* name, struct AstElement* vector)
 
 struct AstElement* makeNullVector(char* name)
 {
-	std::cout<<"MakeNullVector:: "<<std::endl;
+	/*std::cout<<"MakeNullVector:: "<<std::endl;*/
 	struct AstElement* result = new AstElement();
     result->kind = AstElement::ekVector;
 	result->data.vector.name = name;
@@ -109,7 +109,7 @@ struct AstElement* makeNullVector(char* name)
 
 struct AstElement* makeVector2d(char* name, struct AstElement* vectors)
 {
-	std::cout<<"MakeVector2d:: "<<std::endl;
+	/*std::cout<<"MakeVector2d:: "<<std::endl;*/
 	struct AstElement* result = new AstElement();
 	result->kind = AstElement::ekVector2d;
 	result->data.vector2d.name=name;
@@ -124,7 +124,7 @@ struct AstElement* makeNullVectors()
 	result->data.vectors.vector.resize(1);
 	result->data.vectors.vector[result->data.vectors.count]=NULL;
 	result->data.vectors.name = NULL;
-	std::cout<<"MakeNullVectors:: "<<std::endl;
+	/*std::cout<<"MakeNullVectors:: "<<std::endl;*/
 	return result;
 }
 
@@ -141,7 +141,7 @@ struct AstElement* makeVectors(struct AstElement* result, struct AstElement* arr
 	result->data.vectors.vector.resize(result->data.vectors.count);
 	result->data.vectors.vector[result->data.vectors.count-1]=array;
 	result->data.vectors.name = NULL;
-	std::cout<<"MakeVectors:: "<<std::endl;
+	/*std::cout<<"MakeVectors:: "<<std::endl;*/
 	return result;
 }
 
@@ -164,7 +164,7 @@ struct AstElement* makeExp(struct AstElement* left, struct AstElement* right, ch
     result->data.expression.left = left;
     result->data.expression.right = right;
     result->data.expression.op = op;
-	std::cout<<"SCOPE ASTGEN::operator found at: "<<left<<op<<right<<std::endl;
+	/*std::cout<<"SCOPE ASTGEN::operator found at: "<<left<<op<<right<<std::endl;*/
     return result;
 }
 
@@ -177,7 +177,7 @@ struct AstElement* makeStatement(struct AstElement* result, struct AstElement* t
 		result = new AstElement();
         result->kind = AstElement::ekStatements;
         result->data.statements.count = 0;
-		std::cout<<"makeStatement:: count: "<<result->data.statements.count<<std::endl;
+		/*std::cout<<"makeStatement:: count: "<<result->data.statements.count<<std::endl;*/
         //result->data.statements.statements = 0;
 		//std::vector <AstElement**> x;
     }
@@ -186,10 +186,10 @@ struct AstElement* makeStatement(struct AstElement* result, struct AstElement* t
 	//increases the size of the pointer by the required no using realloc:: obsolete in C++
     //result->data.statements.statements = realloc(result->data.statements.statements, result->data.statements.count*sizeof(*result->data.statements.statements));
 	result->data.statements.statements.resize(result->data.statements.count);
-	std::cout<<"makeStatement:: no of Statement: "<<result->data.statements.count<<std::endl;
-	std::cout<<"makeStatement:: kind: "<<result->kind<<std::endl;
+	/*std::cout<<"makeStatement:: no of Statement: "<<result->data.statements.count<<std::endl;
+	std::cout<<"makeStatement:: kind: "<<result->kind<<std::endl;*/
     result->data.statements.statements[result->data.statements.count-1] = toAppend;
-	std::cout<<"makeStatement:: pushed: "<<(result->data.statements.statements[result->data.statements.count-1])->kind<<std::endl;
+	/*std::cout<<"makeStatement:: pushed: "<<(result->data.statements.statements[result->data.statements.count-1])->kind<<std::endl;*/
     return result;
 }
 
@@ -200,7 +200,7 @@ struct AstElement* makeWhile(struct AstElement* cond, struct AstElement* exec)
     result->kind = AstElement::ekWhile;
     result->data.whileStmt.cond = cond;
     result->data.whileStmt.statements = exec;
-	std::cout<<"makeWhile:: pushed: "<<std::endl;
+	/*std::cout<<"makeWhile:: pushed: "<<std::endl;*/
     return result;
 }
 
@@ -211,7 +211,7 @@ struct AstElement* makeIf(struct AstElement* cond, struct AstElement* ifTrue, st
 	result->data.ifStatement.cond = cond;
 	result->data.ifStatement.ifTrue = ifTrue;
 	result->data.ifStatement.ifFalse = ifFalse;
-	std::cout<<"makeIf:: pushed: "<<std::endl;
+	/*std::cout<<"makeIf:: pushed: "<<std::endl;*/
 	return result;
 }
 
@@ -222,7 +222,7 @@ struct AstElement* makeIf(struct AstElement* cond, struct AstElement* ifTrue)
 	result->data.ifStatement.cond = cond;
 	result->data.ifStatement.ifTrue = ifTrue;
 	result->data.ifStatement.ifFalse = NULL;
-	std::cout<<"makeIf:: pushed: "<<std::endl;
+	/*std::cout<<"makeIf:: pushed: "<<std::endl;*/
 	return result;
 }
 
@@ -245,33 +245,33 @@ struct AstElement* makeCall(char* name, struct AstElement* param)
     result->kind = AstElement::ekCall;
     result->data.call.name = name;
 	result->data.call.param = param;
-	std::cout<<"makeCall:: pushed: "<<result->data.call.name<<std::endl;
-	std::cout<<"makeCall:: param: "<< result->data.call.param <<std::endl;
+	/*std::cout<<"makeCall:: pushed: "<<result->data.call.name<<std::endl;
+	std::cout<<"makeCall:: param: "<< result->data.call.param <<std::endl;*/
     return result;
 }
 
 struct AstElement* makeFunc(char* name, struct AstElement* signature, struct AstElement* statement)
 {
-	std::cout<<"\n ########         makeFunction:: creating "<<name<<std::endl;
+	/*std::cout<<"\n ########         makeFunction:: creating "<<name<<std::endl;*/
 	struct AstElement* result = new AstElement();
 	result->kind = AstElement::ekFunc;
 	result->data.func.name = name;
 	result->data.func.signatures = signature;
 	result->data.func.statements= statement;
-	std::cout<<"makeFunc:: pushed: "<<std::endl;
+	/*std::cout<<"makeFunc:: pushed: "<<std::endl;*/
 	return result;
 }
 
 struct AstElement* makeFunc(char* name, struct AstElement* statement)
 {
-	std::cout<<"\n ########         makeFunction:: creating "<<name<<std::endl;
+	/*std::cout<<"\n ########         makeFunction:: creating "<<name<<std::endl;*/
 	struct AstElement* result = new AstElement();
 	result->kind = AstElement::ekFunc;
 	result->data.func.name = name;
 	result->data.func.signatures = NULL;
 	result->data.func.statements= statement;
 	result->data.func.count=0;
-	std::cout<<"makeFunc:: pushed: "<<std::endl;
+	/*std::cout<<"makeFunc:: pushed: "<<std::endl;*/
 	return result;
 }
 
@@ -280,7 +280,7 @@ struct AstElement* makeSignatures(struct AstElement* result,struct AstElement* s
 {
 	if(!result)
 	{
-		std::cout<<"\n makeSignatures:: creating result";
+		/*std::cout<<"\n makeSignatures:: creating result";*/
         result = new AstElement();
 		result->kind = AstElement::ekSignatures;
 		result->data.signatures.count = 0;
@@ -289,7 +289,7 @@ struct AstElement* makeSignatures(struct AstElement* result,struct AstElement* s
 	result->data.signatures.signature.resize(result->data.signatures.count);
 	result->data.signatures.signature[result->data.signatures.count-1] = signature;
 	//test code
-	std::cout<<"\n Signature: pushed signature: "<<result->data.signatures.signature[result->data.signatures.count-1];	
+	/*std::cout<<"\n Signature: pushed signature: "<<result->data.signatures.signature[result->data.signatures.count-1];	*/
 	return result;
 }
 
@@ -297,7 +297,7 @@ struct AstElement* makeSignatures(struct AstElement* result,struct AstElement* s
 struct AstElement* makeSignatures()
 {
 	//blank signature with count 0
-	std::cout<<"\n makeSignatures:: creating result";
+	/*std::cout<<"\n makeSignatures:: creating result";*/
     AstElement* result = new AstElement();
 	result->kind = AstElement::ekSignatures;
 	result->data.signatures.count = 0;
@@ -312,9 +312,9 @@ struct AstElement* makeSignature(char* type,struct AstElement* assignment)
 	struct AstElement* result = new AstElement();
 	result->kind = AstElement::ekSignature;
 	result->data.signature.type = type;
-	std::cout<<"\n makeSignature:pushed type: "<<result->data.signature.type;
+	/*std::cout<<"\n makeSignature:pushed type: "<<result->data.signature.type;*/
 	result->data.signature.assignment = assignment;
-	std::cout<<"\n makeSignature:pushed assignment: "<<result->data.signature.assignment;
+	/*std::cout<<"\n makeSignature:pushed assignment: "<<result->data.signature.assignment;*/
 	return result;
 }
 
@@ -364,7 +364,7 @@ struct AstElement* makeVec2dAssignment(char* name, int elementPos1, int elementP
 
 struct AstElement* makeReturnByExp(struct AstElement* exp)
 {
-	std::cout<<"\n makeReturnByExp:pushed type: "<<std::endl;
+	/*std::cout<<"\n makeReturnByExp:pushed type: "<<std::endl;*/
 	struct AstElement* result = new AstElement();
 	result->kind = AstElement::ekRtrnByExp;
 	result->data.returnData.exp = exp;
@@ -374,7 +374,7 @@ struct AstElement* makeReturnByExp(struct AstElement* exp)
 
 struct AstElement* makePow( struct AstElement* left, struct AstElement* right)
 {
-	std::cout<<"\n makePow "<<std::endl;
+	/*std::cout<<"\n makePow "<<std::endl;*/
 	struct AstElement* result = new AstElement();
 	result->kind = AstElement::ekPow;
 	result->data.pow.right = right;
@@ -384,7 +384,7 @@ struct AstElement* makePow( struct AstElement* left, struct AstElement* right)
 
 struct AstElement* makeMin( struct AstElement* first, struct AstElement* second,struct AstElement* third)
 {
-	std::cout<<"\n makeMin "<<std::endl;
+	/*std::cout<<"\n makeMin "<<std::endl;*/
 	struct AstElement* result = new AstElement();
 	result->kind = AstElement::ekMin;
 	result->data.min.first = first;
@@ -395,7 +395,7 @@ struct AstElement* makeMin( struct AstElement* first, struct AstElement* second,
 
 struct AstElement* makeFact( struct AstElement* expr)
 {
-	std::cout<<"\n makefact "<<std::endl;
+	/*std::cout<<"\n makefact "<<std::endl;*/
 	struct AstElement* result = new AstElement();
 	result->kind = AstElement::ekFact;
 	result->data.fact.expr = expr;
@@ -404,7 +404,7 @@ struct AstElement* makeFact( struct AstElement* expr)
 
 struct AstElement* makeAcos( struct AstElement* expr)
 {
-	std::cout<<"\n makeAcos "<<std::endl;
+	/*std::cout<<"\n makeAcos "<<std::endl;*/
 	struct AstElement* result = new AstElement();
 	result->kind = AstElement::ekAcos;
 	result->data.Acos.expr = expr;
@@ -413,7 +413,7 @@ struct AstElement* makeAcos( struct AstElement* expr)
 
 struct AstElement* makeSqrt( struct AstElement* expr)
 {
-	std::cout<<"\n makeSqrt "<<std::endl;
+	/*std::cout<<"\n makeSqrt "<<std::endl;*/
 	struct AstElement* result = new AstElement();
 	result->kind = AstElement::ekSqrt;
 	result->data.Sqrt.expr = expr;
@@ -422,7 +422,7 @@ struct AstElement* makeSqrt( struct AstElement* expr)
 
 struct AstElement* makeRotatez( struct AstElement* angle, struct AstElement* coords)
 {
-	std::cout<<"\n makeRotatez "<<std::endl;
+	/*std::cout<<"\n makeRotatez "<<std::endl;*/
 	struct AstElement* result = new AstElement();
 	result->kind = AstElement::ekRotatez;
 	result->data.rotatez.angle = angle;
@@ -432,7 +432,7 @@ struct AstElement* makeRotatez( struct AstElement* angle, struct AstElement* coo
 
 struct AstElement* makeMagnitudesqr( struct AstElement* expr)
 {
-	std::cout<<"\n makeMagnitudesqr "<<std::endl;
+	/*std::cout<<"\n makeMagnitudesqr "<<std::endl;*/
 	struct AstElement* result = new AstElement();
 	result->kind = AstElement::ekMagnitudesqr;
 	result->data.magnitudeSqr.expr = expr;
@@ -441,7 +441,7 @@ struct AstElement* makeMagnitudesqr( struct AstElement* expr)
 
 struct AstElement* makeTransform( struct AstElement* expr)
 {
-	std::cout<<"\n makeTransform "<<std::endl;
+	/*std::cout<<"\n makeTransform "<<std::endl;*/
 	struct AstElement* result = new AstElement();
 	result->kind = AstElement::ekTransform;
 	result->data.transform.expr = expr;
@@ -450,7 +450,7 @@ struct AstElement* makeTransform( struct AstElement* expr)
 
 struct AstElement* makeDot( struct AstElement* left,struct AstElement* right)
 {
-	std::cout<<"\n makeDot "<<std::endl;
+	/*std::cout<<"\n makeDot "<<std::endl;*/
 	struct AstElement* result = new AstElement();
 	result->kind = AstElement::ekDot;
 	result->data.dot.left = left;
@@ -460,7 +460,7 @@ struct AstElement* makeDot( struct AstElement* left,struct AstElement* right)
 
 struct AstElement* makeCross( struct AstElement* first,struct AstElement* second)
 {
-	std::cout<<"\n makeCross "<<std::endl;
+	/*std::cout<<"\n makeCross "<<std::endl;*/
 	struct AstElement* result = new AstElement();
 	result->kind = AstElement::ekCross;
 	result->data.cross.first = first;
