@@ -52,7 +52,7 @@ struct AstElement
             char* name;
             struct AstElement* param;
         }call;
-		//added function what is call above
+		
 		struct
 		{
 			int count;
