@@ -1279,7 +1279,7 @@ static void execStmt(struct ExecEnviron* e, struct AstElement* a)
     }
 }
 
-//not req chng
+
 //responsible for storing the function address in the map.. execution should be done in a separate map
 static void execFunc(struct ExecEnviron* e, struct AstElement* a)
 {

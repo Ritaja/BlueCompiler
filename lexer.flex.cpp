@@ -533,9 +533,8 @@ char *yytext;
 #line 1 "lexer.l"
 #line 4 "lexer.l"
 #include "parser.tab.h"
-#include "atodCustom.h"
 #include <stdlib.h>
-#line 539 "lexer.flex.cpp"
+#line 538 "lexer.flex.cpp"
 
 #define INITIAL 0
 
@@ -714,10 +713,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 11 "lexer.l"
+#line 10 "lexer.l"
 
 
-#line 721 "lexer.flex.cpp"
+#line 720 "lexer.flex.cpp"
 
 	if ( !(yy_init) )
 		{
@@ -802,181 +801,181 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 13 "lexer.l"
+#line 12 "lexer.l"
 return TOKEN_WHILE;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 14 "lexer.l"
+#line 13 "lexer.l"
 {yylval.op = _strdup(yytext); return TOKEN_OPERATOR;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 15 "lexer.l"
+#line 14 "lexer.l"
 {yylval.op = _strdup(yytext); return TOKEN_OPERATOR;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 16 "lexer.l"
+#line 15 "lexer.l"
 {yylval.op = _strdup(yytext); return TOKEN_OPERATOR;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 17 "lexer.l"
+#line 16 "lexer.l"
 {yylval.op = _strdup(yytext); return TOKEN_OPERATOR;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 18 "lexer.l"
+#line 17 "lexer.l"
 {yylval.op = _strdup(yytext); return TOKEN_OPERATOR;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 19 "lexer.l"
+#line 18 "lexer.l"
 return TOKEN_BEGIN;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 20 "lexer.l"
+#line 19 "lexer.l"
 return TOKEN_END;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 21 "lexer.l"
+#line 20 "lexer.l"
 return BOX_OPEN;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 22 "lexer.l"
+#line 21 "lexer.l"
 return BOX_CLOSE;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 23 "lexer.l"
+#line 22 "lexer.l"
 return TOKEN_DO;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 24 "lexer.l"
+#line 23 "lexer.l"
 return TOKEN_IF;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 25 "lexer.l"
+#line 24 "lexer.l"
 return TOKEN_ELSE;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 26 "lexer.l"
+#line 25 "lexer.l"
 return TOKEN_VECTOR;
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 27 "lexer.l"
+#line 26 "lexer.l"
 return TOKEN_VECTOR2d;
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 28 "lexer.l"
+#line 27 "lexer.l"
 return TOKEN_RETURN;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 29 "lexer.l"
+#line 28 "lexer.l"
 return TOKEN_POW;
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 30 "lexer.l"
+#line 29 "lexer.l"
 return TOKEN_FACTORIAL;
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 31 "lexer.l"
+#line 30 "lexer.l"
 return TOKEN_ACOS;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 32 "lexer.l"
+#line 31 "lexer.l"
 return TOKEN_SQRT;
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 33 "lexer.l"
+#line 32 "lexer.l"
 return TOKEN_ROTATEZ;
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 34 "lexer.l"
+#line 33 "lexer.l"
 return TOKEN_MAGNITUDESQR;
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 35 "lexer.l"
+#line 34 "lexer.l"
 return TOKEN_TRANSFORM;
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 36 "lexer.l"
+#line 35 "lexer.l"
 return TOKEN_MIN;
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 37 "lexer.l"
+#line 36 "lexer.l"
 return TOKEN_DOT;
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 38 "lexer.l"
+#line 37 "lexer.l"
 return TOKEN_CROSS;
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 39 "lexer.l"
+#line 38 "lexer.l"
 return TOKEN_COMMA;
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 40 "lexer.l"
+#line 39 "lexer.l"
 {yylval.op = _strdup(yytext); return TOKEN_OPERATOR;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 41 "lexer.l"
+#line 40 "lexer.l"
 {yylval.name = _strdup(yytext); return TOKEN_ID;}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 42 "lexer.l"
+#line 41 "lexer.l"
 {yylval.val = atof(yytext); return TOKEN_NUMBER;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 43 "lexer.l"
+#line 42 "lexer.l"
 {return *yytext;}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 44 "lexer.l"
+#line 43 "lexer.l"
 {yylval.op = _strdup(yytext); return TOKEN_OPERATOR;}
 	YY_BREAK
 case 33:
 /* rule 33 can match eol */
 YY_RULE_SETUP
-#line 45 "lexer.l"
+#line 44 "lexer.l"
 {/* suppress the output of the whitespaces from the input file to stdout */}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 46 "lexer.l"
+#line 45 "lexer.l"
 {/* one-line comment */}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 48 "lexer.l"
+#line 47 "lexer.l"
 ECHO;
 	YY_BREAK
-#line 980 "lexer.flex.cpp"
+#line 979 "lexer.flex.cpp"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1970,6 +1969,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 48 "lexer.l"
+#line 47 "lexer.l"
 
 

@@ -315,6 +315,6 @@ void getPosition(double lerpParameter)
 }; #function ends
 
   
-  x = getPosition(0.64);
+  x = getPosition(0.84);
   print (x);
 };

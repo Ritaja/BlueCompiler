@@ -1,9 +1,0 @@
-{ # example of the simple language
-    y = 23;
-	x = y - 20;
-    while y>=x do 
-	{
-        y = y - 1;
-        print(y*y);
-    }; #IMP use ; to terminate blocks
-};

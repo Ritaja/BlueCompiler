@@ -2,7 +2,6 @@
 
 %{
 #include "parser.tab.h"
-#include "atodCustom.h"
 #include <stdlib.h>
 %}
 
