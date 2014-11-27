@@ -1336,7 +1336,7 @@ static int execPow(struct ExecEnviron* e, struct AstElement* a)
 	}
 	else
 	{
-		std::cout<<"execPow: Unsupported Math operation on vectors!"<<std::cout;
+		std::cout<<"execPow: Unsupported Math operation on vectors!"<<std::endl;
 	}
 
 
@@ -1347,7 +1347,7 @@ static int execPow(struct ExecEnviron* e, struct AstElement* a)
 	}
 	else
 	{
-		std::cout<<"execPow: Unsupported Math operation on vectors!"<<std::cout;
+		std::cout<<"execPow: Unsupported Math operation on vectors!"<<std::endl;
 	}
 
 
@@ -1359,7 +1359,7 @@ static int execPow(struct ExecEnviron* e, struct AstElement* a)
 	}
 	else
 	{
-		std::cout<<"execPow: Unsupported Math operation on vectors!"<<std::cout;
+		std::cout<<"execPow: Unsupported Math operation on vectors!"<<std::endl;
 	}
 
 	return NULL;
