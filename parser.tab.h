@@ -62,15 +62,16 @@ extern int yydebug;
      TOKEN_ACOS = 271,
      TOKEN_SQRT = 272,
      TOKEN_MIN = 273,
-     TOKEN_ROTATEZ = 274,
-     TOKEN_MAGNITUDESQR = 275,
-     TOKEN_TRANSFORM = 276,
-     TOKEN_DOT = 277,
-     TOKEN_CROSS = 278,
-     TOKEN_VECTOR2d = 279,
-     TOKEN_ID = 280,
-     TOKEN_NUMBER = 281,
-     TOKEN_OPERATOR = 282
+     BEGIN_FUNC = 274,
+     TOKEN_ROTATEZ = 275,
+     TOKEN_MAGNITUDESQR = 276,
+     TOKEN_TRANSFORM = 277,
+     TOKEN_DOT = 278,
+     TOKEN_CROSS = 279,
+     TOKEN_VECTOR2d = 280,
+     TOKEN_ID = 281,
+     TOKEN_NUMBER = 282,
+     TOKEN_OPERATOR = 283
    };
 #endif
 
@@ -88,7 +89,7 @@ typedef union YYSTYPE
 
 
 /* Line 2058 of yacc.c  */
-#line 92 "parser.tab.h"
+#line 93 "parser.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

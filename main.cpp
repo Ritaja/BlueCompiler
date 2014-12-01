@@ -20,7 +20,7 @@ int main()
     //yydebug = 0;
 	struct AstElement *a = new AstElement;
 	FILE *fp ;
-    //fopen_s(&fp,"example5.txt","r");
+    //fopen_s(&fp,"example.txt","r");
 	fopen_s(&fp,"ClothoidIFCPL.txt","r");
 	//fopen_s(&fp,"ClothoidTest.txt","r");
 	//std::cout<<fp;

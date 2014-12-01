@@ -191,7 +191,9 @@ static int dispatchExpression(struct ExecEnviron* e, struct AstElement* a)
 /* Dispatches any AST statement execution expression */
 static void dispatchStatement(struct ExecEnviron* e, struct AstElement* a)
 {
+	
     assert(a);
+	
 	/*std::cout<< "dispatchStatement:: Array Lookup no: "<<a->kind << std::endl;*/
     assert(runExecs[a->kind]);
 	/*std::cout<<" "<<std::endl;*/

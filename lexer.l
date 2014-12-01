@@ -6,6 +6,7 @@
 %}
 
 %option noyywrap
+%option yylineno
 
 %%
 
@@ -19,6 +20,7 @@
 "}"   return TOKEN_END;
 "["   return BOX_OPEN;
 "]"   return BOX_CLOSE;
+"func" return BEGIN_FUNC;
 "do"  return TOKEN_DO;
 "if"  return TOKEN_IF;
 "else" return TOKEN_ELSE;

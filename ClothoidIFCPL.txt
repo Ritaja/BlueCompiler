@@ -1,6 +1,6 @@
 {
 
-void getClothoidConstant() 
+func getClothoidConstant() 
 {
 	clothoidConstant = 0;
 	# R1>R2
@@ -25,7 +25,7 @@ void getClothoidConstant()
 };
 
 		
-void sgnEven(double number)
+func sgnEven(double number)
 {
     if ((number%2)==0) do
 	{
@@ -38,7 +38,7 @@ void sgnEven(double number)
 	};
 };
 	
-void computeX(double L,double A)
+func computeX(double L,double A)
 {
 	x = L;
 	iterations = 5;
@@ -67,7 +67,7 @@ void computeX(double L,double A)
 };
 	
 
-void computeY(double L, double A) 
+func computeY(double L, double A) 
 {
 	y = 0;
 	iterations = 5;
@@ -93,12 +93,12 @@ void computeY(double L, double A)
 	#print(y);
 };
 	
-void minimalComponent(double v)
+func minimalComponent(double v)
 {
 	return min(v0, v1, v2);
 };
 	
-void calculateAngleBetweenVectorsHalfCircle(double vOne, double vTwo)
+func calculateAngleBetweenVectorsHalfCircle(double vOne, double vTwo)
 {
     vector VectorTwo = (0, 0);
 	#print (vOne);
@@ -160,7 +160,7 @@ void calculateAngleBetweenVectorsHalfCircle(double vOne, double vTwo)
 	#print (returnVal);
 };
 
-void calculateAngleBetweenVectors(double vOne,double vTwo)
+func calculateAngleBetweenVectors(double vOne,double vTwo)
 {
    
 	angle = calculateAngleBetweenVectorsHalfCircle(vOne, vTwo);
@@ -176,7 +176,7 @@ void calculateAngleBetweenVectors(double vOne,double vTwo)
 };
 
 	
-void calculateGlobalRotation()
+func calculateGlobalRotation()
 {
 	A = getClothoidConstant();
 		
@@ -234,17 +234,17 @@ void calculateGlobalRotation()
 
 
 
-  void getLength()
+func getLength()
 {
 	return length;
 };
 
-void lerp(double a, double b, double t) 
+func lerp(double a, double b, double t) 
 {
 	return a + ( (b - a) * t);
 };
 	
-void getPosition(double lerpParameter) 
+func getPosition(double lerpParameter) 
 {
     
 	A = getClothoidConstant();

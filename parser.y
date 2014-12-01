@@ -18,7 +18,7 @@ extern int yylex();
 
 %token TOKEN_BEGIN TOKEN_END TOKEN_WHILE TOKEN_DO BOX_OPEN BOX_CLOSE
 %token TOKEN_IF TOKEN_ELSE TOKEN_COMMA TOKEN_VECTOR TOKEN_RETURN
-%token TOKEN_POW TOKEN_FACTORIAL TOKEN_ACOS TOKEN_SQRT TOKEN_MIN
+%token TOKEN_POW TOKEN_FACTORIAL TOKEN_ACOS TOKEN_SQRT TOKEN_MIN BEGIN_FUNC
 %token TOKEN_ROTATEZ TOKEN_MAGNITUDESQR TOKEN_TRANSFORM TOKEN_DOT TOKEN_CROSS
 %token TOKEN_VECTOR2d
 %token<name> TOKEN_ID
@@ -110,8 +110,8 @@ ifStmt: TOKEN_IF  '(' expression ')' TOKEN_DO statement{$$=makeIf($3, $6);};
       | TOKEN_IF  '(' expression ')' TOKEN_DO statement TOKEN_ELSE TOKEN_DO statement{$$=makeIf($3, $6, $9);};
       | TOKEN_IF  '(' expression ')' TOKEN_DO statement TOKEN_ELSE  TOKEN_IF '(' expression ')' TOKEN_DO statement TOKEN_ELSE TOKEN_DO statement{$$=makeElseIf($3, $6, $10, $13, $16);};
 
-func:  TOKEN_ID TOKEN_ID '('  ')' statement {$$=makeFunc($2, $5);};
-     | TOKEN_ID TOKEN_ID '(' signatures ')' statement {$$=makeFunc($2, $4, $6);};
+func: BEGIN_FUNC TOKEN_ID '('  ')' statement {$$=makeFunc($2, $5);};
+     | BEGIN_FUNC TOKEN_ID '(' signatures ')' statement {$$=makeFunc($2, $4, $6);};
      
 
 signatures: {$$=0;}
@@ -134,7 +134,8 @@ return: TOKEN_RETURN expression{$$=makeReturnByExp($2);}
 
 void yyerror(const char* const message)
 {
+	extern int yylineno;
+    fprintf(stderr, "Error occurred near line: %d\n", yylineno);
     fprintf(stderr, "Parse error:%s\n", message);
-    //exit(1);
 }
 
