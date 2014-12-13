@@ -14,10 +14,12 @@ Logical Components and functions
 
 **
 
+```sequence
 Title: logical components
 Lexer->Parser: scan text
 Parser->Interpreter: read tokens, Create AST
 Interpreter->Interpreter: execution environment,Run program
+```
 
 
 **
