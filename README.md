@@ -7,23 +7,27 @@ This is a barebones compiler written with the project [IFC Allignment](https://w
 
 Feel free to extend and modify the source code as you please but please remember to provide references to this repo.
 
-**
 
 Logical components
 ----------------------------------------------
 
-**
 
 ![enter image description here](https://lh3.googleusercontent.com/-0ezxCgqcDG8/VI2jJbJojcI/AAAAAAAABrU/Jk8Jt0CUZd8/s0/Screen+Shot+2014-12-14+at+15.42.18+1.png "Compiler Logical Components")
 
-**
 
-**
+Language Layout
+----------------------------------------------
+
+The basic programming language that the compiler understands is organised in blocks. An overview of the language that the compiler understands:
+
+
+![enter image description here](https://lh4.googleusercontent.com/-H8XpEukV78A/VI25O6bzXMI/AAAAAAAABr0/9SCisNK9Z_4/s0/Screen+Shot+2014-12-14+at+16.10.59.png "Program structure Example")
+
+
 
 List of supported tokens and inbuilt functions
 ----------------------------------------------
 
-**
 
 
 | Token(in Program)    | Internal Representation |
