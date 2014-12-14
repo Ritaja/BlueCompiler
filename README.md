@@ -14,6 +14,7 @@ Logical components
 ![enter image description here](https://lh3.googleusercontent.com/-0ezxCgqcDG8/VI2jJbJojcI/AAAAAAAABrU/Jk8Jt0CUZd8/s0/Screen+Shot+2014-12-14+at+15.42.18+1.png "Compiler Logical Components")
 
 
+
 Language Layout
 ----------------------------------------------
 
@@ -21,6 +22,7 @@ The basic programming language that the compiler understands is organised in blo
 
 
 ![enter image description here](https://lh4.googleusercontent.com/-H8XpEukV78A/VI25O6bzXMI/AAAAAAAABr0/9SCisNK9Z_4/s0/Screen+Shot+2014-12-14+at+16.10.59.png "Program structure Example")
+
 
 
 Programming with the Language
@@ -62,6 +64,7 @@ Here is a simple example program:
 
 	}; # program block ends here
 
+
 Railroad Diagrams for the Grammar
 ----------------------------------------------
 The grammar is the star of the show here, so if things start getting confusing please revert to the full blown html which can be found in the repo as Grammar.html
@@ -84,6 +87,21 @@ The grammar is the star of the show here, so if things start getting confusing p
 
 ![enter image description here](https://lh4.googleusercontent.com/-c6VqKPuXWps/VI3KodoNzqI/AAAAAAAABto/PimihaYzUoU/s0/Program.png "Program.png")
 
+![enter image description here](https://lh4.googleusercontent.com/-DIX3-HNow_M/VI3KtZtVwkI/AAAAAAAABt0/2tvho8L8nAs/s0/Return.png "Return.png")
+
+![enter image description here](https://lh6.googleusercontent.com/-08aqTV98xr4/VI3KycqLMWI/AAAAAAAABuE/3dAMVm_7iGM/s0/Signature.png "Signature.png")
+
+![enter image description here](https://lh4.googleusercontent.com/-JZyoxf4KpPI/VI3K5aNR4lI/AAAAAAAABuQ/hextNUY-KsI/s0/Signatures.png "Signatures.png")
+
+![enter image description here](https://lh5.googleusercontent.com/-XFfSVnlKOec/VI3K_pxJeMI/AAAAAAAABuc/shGusq9e-wI/s0/statement.png "statement.png")
+
+![enter image description here](https://lh6.googleusercontent.com/-slP5ZeGY_Ps/VI3LEz8RnqI/AAAAAAAABus/110quBbAYjU/s0/Statements.png "Statements.png")
+
+![enter image description here](https://lh6.googleusercontent.com/-GX4UGTtnyGc/VI3LJowuDvI/AAAAAAAABvE/NbG9_l3xURs/s0/vector2d.png "vector2d.png")
+
+![enter image description here](https://lh3.googleusercontent.com/-X9R3mEqp2C8/VI3LOHj5kCI/AAAAAAAABvQ/vYa44hQmuZE/s0/vectors.png "vectors.png")
+
+![enter image description here](https://lh6.googleusercontent.com/-t7rphKvCWYg/VI3LT7ChMtI/AAAAAAAABvc/SNu94oq-Orc/s0/whileStmt.png "whileStmt.png")
 
 
 List of supported tokens and inbuilt functions
@@ -119,4 +137,8 @@ List of supported tokens and inbuilt functions
 | [-]?[0-9]*[.]?[0-9]+  | TOKEN_NUMBER  |
 | * , /, +, -, <, >, % | TOKEN_OPERATOR  |
 
-The grammer in BNF form can be found in the developer documentation.
+The grammar in BNF form can be found in the developer documentation.
+
+
+
+
