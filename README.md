@@ -139,6 +139,7 @@ List of supported tokens and inbuilt functions
 
 The grammar in BNF form can be found in the developer documentation.
 
-
-
+LICENSE
+----------------------------------------------
+[MIT LICENSE](LICENSE.txt)
 
