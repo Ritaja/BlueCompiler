@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Bluecompiler by Ritaja</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Bluecompiler</h1>
+      <h2 class="project-tagline">This is a barebones compiler written with the project IFC Allignment in mind.</h2>
+      <a href="https://github.com/Ritaja/BlueCompiler" class="btn">View on GitHub</a>
+      <a href="https://github.com/Ritaja/BlueCompiler/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/Ritaja/BlueCompiler/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <p><img src="https://cdn3.iconfinder.com/data/icons/3d-printing-icon-set/256/Cube.png" alt="enter image description here"></p>
+
+<h1>
+<a id="welcome-to-bluecompiler-" class="anchor" href="#welcome-to-bluecompiler-" aria-hidden="true"><span class="octicon octicon-link"></span></a>Welcome to BlueCompiler! </h1>
+
+<p><img src="https://lh5.googleusercontent.com/DXaAlI3SBkadm9BNQMgcCPtTcgTGLZ3gZhRAytdIdw=s0" alt="enter image description here"></p>
+
+<p>This is a barebones compiler written with the project <a href="https://www.cms.bgu.tum.de/de/forschung/projekte/31-forschung/projekte/411-ifcalignment">IFC Allignment</a> in mind.  The interpreter was written in C++ for the project but it has scope to be plugged in with an LLVM implementation (refer developer documentation for details). A complete list of supported tokens and the supported inbuilt functions are provided below. A example program is also included to showcase what this language can do.</p>
+
+<p>Feel free to extend and modify the source code as you please but please remember to provide references to this repo.</p>
+
+<h2>
+<a id="logical-components" class="anchor" href="#logical-components" aria-hidden="true"><span class="octicon octicon-link"></span></a>Logical components</h2>
+
+<p><img src="https://lh3.googleusercontent.com/-0ezxCgqcDG8/VI2jJbJojcI/AAAAAAAABrU/Jk8Jt0CUZd8/s0/Screen+Shot+2014-12-14+at+15.42.18+1.png" alt="enter image description here" title="Compiler Logical Components"></p>
+
+<h2>
+<a id="language-layout" class="anchor" href="#language-layout" aria-hidden="true"><span class="octicon octicon-link"></span></a>Language Layout</h2>
+
+<p>The basic programming language that the compiler understands is organised in blocks. An overview of the language that the compiler understands:</p>
+
+<p><img src="https://lh4.googleusercontent.com/-H8XpEukV78A/VI25O6bzXMI/AAAAAAAABr0/9SCisNK9Z_4/s0/Screen+Shot+2014-12-14+at+16.10.59.png" alt="enter image description here" title="Program structure Example"></p>
+
+<h2>
+<a id="programming-with-the-language" class="anchor" href="#programming-with-the-language" aria-hidden="true"><span class="octicon octicon-link"></span></a>Programming with the Language</h2>
+
+<p>The compiler reads a program from the file. It currenly only understands the txt files with <code>.txt</code> extension.
+To get a better flavour of what BlueCompiler can actually do, please refer the example program for Ifc Allignment: ClothoidIFCPL.txt.</p>
+
+<p>Here is a simple example program:</p>
+
+<pre><code>{
+
+func computeX(double L,double A)
+{
+    x = L;
+    iterations = 5;
+    i = 1;
+    while(i &lt; 6) do
+    {
+        sign = sgnEven(i);
+
+        L_exponent = 5 + (i - 1) * 4.0;
+
+        A_exponent = i*4.0;
+        Atemp = factorial(2.0*i);
+        B = pow(2.0, 2.0*i);
+        C = 5.0 + (i - 1) * 4;
+        factor = Atemp * B * C;
+
+
+        D = pow(L, L_exponent);
+        E = factor * pow(A, A_exponent);
+        x = x + (sign * (D / E));
+        i = i + 1;
+    }; # while ends here
+
+    return x;
+
+}; # func computeX() ends here  
+
+}; # program block ends here
+</code></pre>
+
+<h2>
+<a id="railroad-diagrams-for-the-grammar" class="anchor" href="#railroad-diagrams-for-the-grammar" aria-hidden="true"><span class="octicon octicon-link"></span></a>Railroad Diagrams for the Grammar</h2>
+
+<p>The grammar is the star of the show here, so if things start getting confusing please revert to the full blown html which can be found in the repo as Grammar.html</p>
+
+<p><img src="https://lh3.googleusercontent.com/-TuKrJkAMc1g/VI3JejsrYbI/AAAAAAAABsI/5hqzJBVIVJU/s0/array.png" alt="enter image description here" title="array.png"></p>
+
+<p><img src="https://lh5.googleusercontent.com/-ZdqNqg_ZffA/VI3Jw75sWpI/AAAAAAAABsU/mnpKxpkMhHE/s0/arrExpression.png" alt="enter image description here" title="arrExpression.png"></p>
+
+<p><img src="https://lh6.googleusercontent.com/-z6pPnujtJDA/VI3J3WKDlWI/AAAAAAAABsg/p2iMh9ikmIc/s0/Assignment.png" alt="enter image description here" title="Assignment.png"></p>
+
+<p><img src="https://lh3.googleusercontent.com/-ERgXPQNBMig/VI3J-Gq55GI/AAAAAAAABss/tIjp-61N728/s0/Block.png" alt="enter image description here" title="Block.png"></p>
+
+<p><img src="https://lh6.googleusercontent.com/-LszOKb29oBw/VI3KEJwgyxI/AAAAAAAABs4/QGrT70OWxiE/s0/call.png" alt="enter image description here" title="call.png"></p>
+
+<p><img src="https://lh4.googleusercontent.com/-eSKVTHq-16o/VI3KJq4Qe8I/AAAAAAAABtE/sed2iq7nnjk/s0/Expression.png" alt="enter image description here" title="Expression.png"></p>
+
+<p><img src="https://lh6.googleusercontent.com/-wYe7m6CuACU/VI3KdR9_vyI/AAAAAAAABtQ/ygzKg1VtzYw/s0/func.png" alt="enter image description here" title="func.png"></p>
+
+<p><img src="https://lh4.googleusercontent.com/-YT0Clc4mlxA/VI3KjEJCP8I/AAAAAAAABtc/8bvsOb8mXBM/s0/ifStmt.png" alt="enter image description here" title="ifStmt.png"></p>
+
+<p><img src="https://lh4.googleusercontent.com/-c6VqKPuXWps/VI3KodoNzqI/AAAAAAAABto/PimihaYzUoU/s0/Program.png" alt="enter image description here" title="Program.png"></p>
+
+<p><img src="https://lh4.googleusercontent.com/-DIX3-HNow_M/VI3KtZtVwkI/AAAAAAAABt0/2tvho8L8nAs/s0/Return.png" alt="enter image description here" title="Return.png"></p>
+
+<p><img src="https://lh6.googleusercontent.com/-08aqTV98xr4/VI3KycqLMWI/AAAAAAAABuE/3dAMVm_7iGM/s0/Signature.png" alt="enter image description here" title="Signature.png"></p>
+
+<p><img src="https://lh4.googleusercontent.com/-JZyoxf4KpPI/VI3K5aNR4lI/AAAAAAAABuQ/hextNUY-KsI/s0/Signatures.png" alt="enter image description here" title="Signatures.png"></p>
+
+<p><img src="https://lh5.googleusercontent.com/-XFfSVnlKOec/VI3K_pxJeMI/AAAAAAAABuc/shGusq9e-wI/s0/statement.png" alt="enter image description here" title="statement.png"></p>
+
+<p><img src="https://lh6.googleusercontent.com/-slP5ZeGY_Ps/VI3LEz8RnqI/AAAAAAAABus/110quBbAYjU/s0/Statements.png" alt="enter image description here" title="Statements.png"></p>
+
+<p><img src="https://lh6.googleusercontent.com/-GX4UGTtnyGc/VI3LJowuDvI/AAAAAAAABvE/NbG9_l3xURs/s0/vector2d.png" alt="enter image description here" title="vector2d.png"></p>
+
+<p><img src="https://lh3.googleusercontent.com/-X9R3mEqp2C8/VI3LOHj5kCI/AAAAAAAABvQ/vYa44hQmuZE/s0/vectors.png" alt="enter image description here" title="vectors.png"></p>
+
+<p><img src="https://lh6.googleusercontent.com/-t7rphKvCWYg/VI3LT7ChMtI/AAAAAAAABvc/SNu94oq-Orc/s0/whileStmt.png" alt="enter image description here" title="whileStmt.png"></p>
+
+<h2>
+<a id="list-of-supported-tokens-and-inbuilt-functions" class="anchor" href="#list-of-supported-tokens-and-inbuilt-functions" aria-hidden="true"><span class="octicon octicon-link"></span></a>List of supported tokens and inbuilt functions</h2>
+
+<table>
+<thead>
+<tr>
+<th align="left">Token(in Program)</th>
+<th align="right">Internal Representation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">while</td>
+<td align="right">TOKEN_WHILE</td>
+</tr>
+<tr>
+<td align="left">!= , &lt;= , &gt;= , &amp;&amp;  , ==</td>
+<td align="right">TOKEN_OPERATOR</td>
+</tr>
+<tr>
+<td align="left">￼￼{</td>
+<td align="right">TOKEN_BEGIN</td>
+</tr>
+<tr>
+<td align="left">￼￼}</td>
+<td align="right">TOKEN_END</td>
+</tr>
+<tr>
+<td align="left">￼￼[</td>
+<td align="right">BOX_OPEN</td>
+</tr>
+<tr>
+<td align="left">￼￼]</td>
+<td align="right">BOX_CLOSE</td>
+</tr>
+<tr>
+<td align="left">￼￼func</td>
+<td align="right">BEGIN_FUNC</td>
+</tr>
+<tr>
+<td align="left">￼￼do</td>
+<td align="right">TOKEN_DO</td>
+</tr>
+<tr>
+<td align="left">￼￼if</td>
+<td align="right">TOKEN_IF</td>
+</tr>
+<tr>
+<td align="left">￼￼else</td>
+<td align="right">TOKEN_ELSE</td>
+</tr>
+<tr>
+<td align="left">￼￼vector</td>
+<td align="right">TOKEN_VECTOR</td>
+</tr>
+<tr>
+<td align="left">￼￼vector2d</td>
+<td align="right">TOKEN_VECTOR2d</td>
+</tr>
+<tr>
+<td align="left">￼￼return</td>
+<td align="right">TOKEN_RETURN</td>
+</tr>
+<tr>
+<td align="left">￼￼pow</td>
+<td align="right">TOKEN_POW</td>
+</tr>
+<tr>
+<td align="left">acos</td>
+<td align="right">TOKEN_ACOS</td>
+</tr>
+<tr>
+<td align="left">￼￼sqrt</td>
+<td align="right">TOKEN_SQRT</td>
+</tr>
+<tr>
+<td align="left">￼￼rotatez</td>
+<td align="right">TOKEN_ROTATEZ</td>
+</tr>
+<tr>
+<td align="left">￼￼magnitude_squared</td>
+<td align="right">TOKEN_MAGNITUDESQR</td>
+</tr>
+<tr>
+<td align="left">￼￼transform</td>
+<td align="right">TOKEN_TRANSFORM</td>
+</tr>
+<tr>
+<td align="left">min</td>
+<td align="right">TOKEN_MIN</td>
+</tr>
+<tr>
+<td align="left">dot</td>
+<td align="right">TOKEN_DOT</td>
+</tr>
+<tr>
+<td align="left">cross</td>
+<td align="right">TOKEN_CROSS</td>
+</tr>
+<tr>
+<td align="left">[a-zA-Z_][a-zA-Z0-9_]*</td>
+<td align="right">TOKEN_ID</td>
+</tr>
+<tr>
+<td align="left">[-]?[0-9]*[.]?[0-9]+</td>
+<td align="right">TOKEN_NUMBER</td>
+</tr>
+<tr>
+<td align="left">* , /, +, -, &lt;, &gt;, %</td>
+<td align="right">TOKEN_OPERATOR</td>
+</tr>
+</tbody>
+</table>
+
+<p>The grammar in BNF form can be found in the developer documentation.</p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>LICENSE</h2>
+
+<p><a href="LICENSE.txt">MIT LICENSE</a></p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/Ritaja/BlueCompiler">Bluecompiler</a> is maintained by <a href="https://github.com/Ritaja">Ritaja</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
+
